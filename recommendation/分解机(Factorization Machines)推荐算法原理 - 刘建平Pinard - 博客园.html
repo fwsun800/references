@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<!-- saved from url=(0045)https://www.cnblogs.com/pinard/p/6370127.html -->
+<html lang="zh-cn"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="origin">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园</title>
+    <meta property="og:description" content="对于分解机(Factorization Machines，FM)推荐算法原理，本来想自己单独写一篇的。但是看到peghoty写的FM不光简单易懂，而且排版也非常好，因此转载过来，自己就不再单独写FM了">
+    <link type="text/css" rel="stylesheet" href="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/bundle-BlackLowKey.css">
+<link type="text/css" rel="stylesheet" href="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/311024.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/bundle-BlackLowKey-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="http://www.cnblogs.com/pinard/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="http://www.cnblogs.com/pinard/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="http://www.cnblogs.com/pinard/wlwmanifest.xml">
+    <script async="" src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/analytics.js"></script><script src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/jquery-2.2.0.min.js"></script>
+    <script>var currentBlogId=311024;var currentBlogApp='pinard',cb_enable_mathjax=true;var isLogined=false;</script>
+    <script type="text/x-mathjax-config;executed=true">
+    MathJax.Hub.Config({
+        tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']], processClass: 'math', processEscapes: true },
+        TeX: { 
+            equationNumbers: { autoNumber: ['AMS'], useLabelIds: true }, 
+            extensions: ['extpfeil.js'],
+            Macros: {bm: "\\boldsymbol"}
+        },
+        'HTML-CSS': { linebreaks: { automatic: true } },
+        SVG: { linebreaks: { automatic: true } }
+        });
+    </script><script src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/MathJax.js"></script>
+<script src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/blog-common.js" type="text/javascript"></script>
+<link rel="preload" href="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/f.txt" as="script"><script type="text/javascript" src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/f.txt"></script><script src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/pubads_impl_2019053001.js" async=""></script><style type="text/css">.tctip{position:fixed;right:0;z-index:10000;padding-left:34px;width:0;overflow:hidden;box-sizing:content-box;background-color:transparent}.tctip li,.tctip ul{margin:0;padding:0}.tctip img{border:0;display:block}.tctip a{color:#000;text-decoration:none;outline:0 none}.tctip .tctip-btn-box{position:absolute;left:0;top:50%;margin-top:-46px;width:34px;height:93px}.tctip .tctip-main-box{width:240px;height:332px;font:12px/1.5 microsoft yahei,tahoma,arial,sans-serif;color:#000;background-color:#fff;border:1px solid #dbdbdb;border-right:none}.tctip .tctip-main-box .tctip-footer,.tctip .tctip-main-box .tctip-title{margin:0;height:26px;line-height:26px;background-color:#e7e7e7}.tctip .tctip-main-box .tctip-title{padding:0 0 0 6px;font-size:14px;font-weight:400;background-image:none}.tctip .tctip-main-box .tctip-footer{padding-right:6px;font-size:12px;text-align:right}.tctip .tctip-main-box .tctip-footer a:hover{text-decoration:underline}.tctip .tctip-main-box .tctip-body-box{font-size:0;background-color:#eee;width:240px}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box{display:inline-block;vertical-align:middle;width:90px;font-size:12px}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul{list-style:none}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul a.fifth{border-bottom:none}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul.not-full{border-top:1px solid #dfdfdf}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul li{display:block;height:56px;transition:background-color .2s linear}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul li.tctip-current{border-right:none}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul li.tctip-current a,.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul li.tctip-current a:hover{background-color:#fff}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul li a{position:relative;display:block;padding-left:40px;height:55px;line-height:55px;font-size:12px;border-bottom:1px solid #ccc}.tctip .tctip-main-box .tctip-body-box .tctip-icon-box ul li a img{position:absolute;left:6px;top:13px;width:30px;height:30px}.tctip .tctip-main-box .tctip-body-box .tctip-qr-detail{display:inline-block;vertical-align:middle;width:150px;height:280px;font-size:12px;background-color:#fff}.tctip .tctip-main-box .tctip-body-box .tctip-qr-detail .tctip-qr-box{padding:14px 0 0 10px}.tctip .tctip-main-box .tctip-body-box .tctip-qr-detail .tctip-qr-box .tctip-qr-title{margin:0 0 20px;width:132px;height:30px;line-height:30px;font-size:12px;text-align:center}.tctip .tctip-main-box .tctip-body-box .tctip-qr-detail .tctip-qr-box .tctip-qr-code{margin:0 0 20px;padding:12px;width:106px;height:106px;background:url(data:image/jpeg;base64,/9j/4QAYRXhpZgAASUkqAAgAAAAAAAAAAAAAAP/sABFEdWNreQABAAQAAABkAAD/4QNvaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wLwA8P3hwYWNrZXQgYmVnaW49Iu+7vyIgaWQ9Ilc1TTBNcENlaGlIenJlU3pOVGN6a2M5ZCI/PiA8eDp4bXBtZXRhIHhtbG5zOng9ImFkb2JlOm5zOm1ldGEvIiB4OnhtcHRrPSJBZG9iZSBYTVAgQ29yZSA1LjMtYzAxMSA2Ni4xNDU2NjEsIDIwMTIvMDIvMDYtMTQ6NTY6MjcgICAgICAgICI+IDxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+IDxyZGY6RGVzY3JpcHRpb24gcmRmOmFib3V0PSIiIHhtbG5zOnhtcE1NPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvbW0vIiB4bWxuczpzdFJlZj0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL3NUeXBlL1Jlc291cmNlUmVmIyIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bXBNTTpPcmlnaW5hbERvY3VtZW50SUQ9InhtcC5kaWQ6QjgxOTIzMjRGMjhCRTQxMTk5QjZGNERBNDI5NUVBNjEiIHhtcE1NOkRvY3VtZW50SUQ9InhtcC5kaWQ6NjkxODAwMUY4Q0Y4MTFFNEE0NkVCQUVGNjA3MDhFMzUiIHhtcE1NOkluc3RhbmNlSUQ9InhtcC5paWQ6NjkxODAwMUU4Q0Y4MTFFNEE0NkVCQUVGNjA3MDhFMzUiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNiAoV2luZG93cykiPiA8eG1wTU06RGVyaXZlZEZyb20gc3RSZWY6aW5zdGFuY2VJRD0ieG1wLmlpZDpBNzMwMTIzMEZBOEJFNDExOTlCNkY0REE0Mjk1RUE2MSIgc3RSZWY6ZG9jdW1lbnRJRD0ieG1wLmRpZDpCODE5MjMyNEYyOEJFNDExOTlCNkY0REE0Mjk1RUE2MSIvPiA8L3JkZjpEZXNjcmlwdGlvbj4gPC9yZGY6UkRGPiA8L3g6eG1wbWV0YT4gPD94cGFja2V0IGVuZD0iciI/Pv/uAA5BZG9iZQBkwAAAAAH/2wCEAAEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQECAgICAgICAgICAgMDAwMDAwMDAwMBAQEBAQEBAgEBAgICAQICAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDA//AABEIAIIAggMBEQACEQEDEQH/xAB+AAEAAwEBAQEAAAAAAAAAAAAABgcIBQMECgEBAAAAAAAAAAAAAAAAAAAAABAAAQIEAAoGBgcJAQAAAAAAAAIDAQQFBhHUlbUWNlZ2mNgxYRITMzUhUVODFDRBIjJSYmNlcYEjcyRUdRc4SBEBAAAAAAAAAAAAAAAAAAAAAP/aAAwDAQACEQMRAD8A/eRLy6rpi7PTzr8KHB99im01h52Xan2pd1bC6lUlsqbdmW5l1tUWWYq7mDPZUpKlK+oH26HWl9Nr27HrVRaapUeuKlS0VRj+0BodaOy1uZEpmKgNDrR2WtzIlMxUBodaOy1uZEpmKgNDrR2WtzIlMxUBodaOy1uZEpmKgNDrR2WtzIlMxUBodaOy1uZEpmKgNDrR2WtzIlMxUBodaOy1uZEpmKgNDrR2WtzIlMxUBodaOy1uZEpmKgNDrR2WtzIlMxUBodaOy1uZEpmKgeL1uNSCVTVswRSJ1qEVok2Yqao0/wBmGH4Wdp6P6ZpL3RB5pCHm4xwwjGGFKg5n+wKZ/azflHx3QnzPZ7/K9X2OsDs2dqla8fXbtFVHrUqmyylRj1xVHCBIwAAAAAAAAAAAAAAAADOeCHq/9D9x7n2X8vq6ALps7VG1t3KJmyVAkYAAAAAAAAAAAAAAAABnPmMAumztUbW3combJUCRgAAAAAAAAAAAAAAAAGc+YwC6bO1RtbdyiZslQJGAAAAAAAAAAAAAAAAAZz5jALps7VG1t3KJmyVAkYAAAAAAAAAAAAAAAABnPmMAumztUbW3combJUCRgAAAABznaRSX5pE8/S6c9OtqQtucdkpZyaQtpSFtqRMLai8lTa20xTGEcMIphGHRADogAAAAAAAAAGc+YwC6bO1RtbdyiZslQJGAAAAAAAAAAAAAAAAAZz5jALps7VG1t3KJmyVAkYAAAAAAAAAAAAAAAABnPmMAumztUbW3combJUCRgAAAAAAAAAAAAAAAAGc+YwC6bO1RtbdyiZslQJGAAAAAAAAAAAAAAAAAZz5jALps7VG1t3KJmyVAkYAAAAAAAAAAAAAAAABnPmMAumztUbW3combJUCRgAAAAB4PTDcv3XbS+rvXm2EdzLTEzgW6qCUqd+Had7lmEY/WcX2W0Q9KlQh6QPcAAAAAAAAAAznzGAXTZ2qNrbuUTNkqBIwAAAAAAAAAAAAAAAADOfMYBdNnao2tu5RM2SoEjAAAAAAAAAAAAAAAAAM58xgFxW2+iQaTbM0qDU7SUKZk21xgn46jNLiinzsrhwd8luV7Db0E4YtvJjCPoimKglQAAAAAAAAAAAAAAADm1Sqy1Jlu/fipbriu6k5NrAqbn5tUP4UpKNYcLr7qv3JhhUqMEwjGAVjoNW/ayvj6Y+JHXn2PR5d+Z0/hAkt/eVy3lPzUPnvMvsR1f/Vfu/hwgVdDoh/0P7jwfdfl+rqAcRgDiMAcRgDiMAcRgDiMAcRgDiMAcRgDiMAcRgDiMAcRgEssbzl3xvlV64a8/R4P6b9/rwAXAB//2Q==) no-repeat;box-sizing:content-box}.tctip .tctip-main-box .tctip-body-box .tctip-qr-detail .tctip-qr-box .tctip-qr-code img{width:106px;height:106px}.tctip .tctip-main-box .tctip-body-box .tctip-qr-detail .tctip-qr-box .tctip-qr-desc{font-size:12px;word-break:break-all;text-align:center}</style><style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 5px 0px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 5px; -webkit-border-radius: 5px; -moz-border-radius: 5px; -khtml-border-radius: 5px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 1px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: .7em}
+.MathJax_MenuRadioCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuLabel {padding: 1px 2em 3px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #DDDDDD; margin: 4px 3px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: #606872; color: white}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1em; bottom: 1.5em; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><style type="text/css">.MathJax_Display {text-align: center; margin: 1em 0em; position: relative; display: block!important; text-indent: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; width: 100%}
+.MathJax .merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MathJax .MJX-monospace {font-family: monospace}
+.MathJax .MJX-sans-serif {font-family: sans-serif}
+#MathJax_Tooltip {background-color: InfoBackground; color: InfoText; border: 1px solid black; box-shadow: 2px 2px 5px #AAAAAA; -webkit-box-shadow: 2px 2px 5px #AAAAAA; -moz-box-shadow: 2px 2px 5px #AAAAAA; -khtml-box-shadow: 2px 2px 5px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true'); padding: 3px 4px; z-index: 401; position: absolute; left: 0; top: 0; width: auto; height: auto; display: none}
+.MathJax {display: inline; font-style: normal; font-weight: normal; line-height: normal; font-size: 100%; font-size-adjust: none; text-indent: 0; text-align: left; text-transform: none; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; direction: ltr; max-width: none; max-height: none; min-width: 0; min-height: 0; border: 0; padding: 0; margin: 0}
+.MathJax:focus, body :focus .MathJax {display: inline-table}
+.MathJax.MathJax_FullWidth {text-align: center; display: table-cell!important; width: 10000em!important}
+.MathJax img, .MathJax nobr, .MathJax a {border: 0; padding: 0; margin: 0; max-width: none; max-height: none; min-width: 0; min-height: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+img.MathJax_strut {border: 0!important; padding: 0!important; margin: 0!important; vertical-align: 0!important}
+.MathJax span {display: inline; position: static; border: 0; padding: 0; margin: 0; vertical-align: 0; line-height: normal; text-decoration: none}
+.MathJax nobr {white-space: nowrap!important}
+.MathJax img {display: inline!important; float: none!important}
+.MathJax * {transition: none; -webkit-transition: none; -moz-transition: none; -ms-transition: none; -o-transition: none}
+.MathJax_Processing {visibility: hidden; position: fixed; width: 0; height: 0; overflow: hidden}
+.MathJax_Processed {display: none!important}
+.MathJax_ExBox {display: block!important; overflow: hidden; width: 1px; height: 60ex; min-height: 0; max-height: none}
+.MathJax .MathJax_EmBox {display: block!important; overflow: hidden; width: 1px; height: 60em; min-height: 0; max-height: none}
+.MathJax_LineBox {display: table!important}
+.MathJax_LineBox span {display: table-cell!important; width: 10000em!important; min-width: 0; max-width: none; padding: 0; border: 0; margin: 0}
+.MathJax .MathJax_HitBox {cursor: text; background: white; opacity: 0; filter: alpha(opacity=0)}
+.MathJax .MathJax_HitBox * {filter: none; opacity: 1; background: transparent}
+#MathJax_Tooltip * {filter: none; opacity: 1; background: transparent}
+@font-face {font-family: MathJax_Blank; src: url('about:blank')}
+.MathJax .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style></head>
+<body><div style="visibility: hidden; overflow: hidden; position: absolute; top: 0px; height: 1px; width: auto; padding: 0px; border: 0px; margin: 0px; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal;"><div id="MathJax_Hidden"></div></div><div id="MathJax_Message" style="display: none;"></div>
+<a name="top"></a>
+
+<!--PageBeginHtml Block Begin-->
+<a class="git-link" href="https://github.com/ljpzzz/machinelearning"></a>
+<!--PageBeginHtml Block End-->
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="http://www.cnblogs.com/pinard/"><img id="blogLogo" src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/pinard/">刘建平Pinard</a></h1>
+<h2>十年码农，对数学统计学，数据挖掘，机器学习，大数据平台，大数据平台应用开发，大数据可视化感兴趣。</h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/pinard/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/pinard/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/pinard/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 133&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 6462</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/pinard/p/6370127.html">分解机(Factorization Machines)推荐算法原理</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>　　　　对于分解机(Factorization Machines，FM)推荐算法原理，本来想自己单独写一篇的。但是看到peghoty写的<a href="https://www.cnblogs.com/pinard/p/blog.csdn.net/itplus/article/details/40534923" target="_blank">FM</a>不光简单易懂，而且排版也非常好，因此转载过来，自己就不再单独写FM了。</p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206135921885-935760124.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206135946041-1294500667.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206135958885-1040242136.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140117213-967734026.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140158151-1613362741.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140209760-1698072242.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140224166-2002517422.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140238151-1914591474.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140249994-546797094.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140313057-979438300.png" alt=""></p>
+<p><span style="color: #ff0000;">Pinard注：上面最后一句话应该是"而<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-1-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;&amp;#x03B8;&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-1" style="width: 2.531em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.053em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1001.98em, 2.941em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-2"><span class="msubsup" id="MathJax-Span-3"><span style="display: inline-block; position: relative; width: 0.96em; height: 0px;"><span style="position: absolute; clip: rect(3.419em, 1000.48em, 4.443em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-4" style="font-family: STIXGeneral; font-style: italic;">g</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.482em;"><span class="texatom" id="MathJax-Span-5"><span class="mrow" id="MathJax-Span-6"><span class="mi" id="MathJax-Span-7" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">θ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-8" style="font-family: STIXGeneral;">(</span><span class="mi" id="MathJax-Span-9" style="font-family: STIXGeneral; font-style: italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-10" style="font-family: STIXGeneral;">)</span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.329em; border-left: 0px solid; width: 0px; height: 1.254em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>g</mi><mrow class="MJX-TeXAtom-ORD"><mi>θ</mi></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-1">g_{\theta}(x)</script>则利用<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-2-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mover&gt;&lt;mi&gt;y&lt;/mi&gt;&lt;mo&gt;&amp;#x005E;&lt;/mo&gt;&lt;/mover&gt;&lt;/mrow&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mi&gt;&amp;#x03B8;&lt;/mi&gt;&lt;msub&gt;&lt;mi&gt;h&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;&amp;#x03B8;&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-11" style="width: 6.697em; display: inline-block;"><span style="display: inline-block; position: relative; width: 5.468em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.506em, 1005.4em, 2.941em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-12"><span class="texatom" id="MathJax-Span-13"><span class="mrow" id="MathJax-Span-14"><span class="munderover" id="MathJax-Span-15"><span style="display: inline-block; position: relative; width: 0.55em; height: 0px;"><span style="position: absolute; clip: rect(3.419em, 1000.41em, 4.443em, -999.997em); top: -4.027em; left: 0.072em;"><span class="mi" id="MathJax-Span-16" style="font-family: STIXGeneral; font-style: italic;">y</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; clip: rect(3.077em, 1000.55em, 3.692em, -999.997em); top: -4.095em; left: 0em;"><span class="mo" id="MathJax-Span-17" style=""><span style="font-family: STIXSizeOneSym;">ˆ</span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span></span><span class="mo" id="MathJax-Span-18" style="font-family: STIXGeneral;">(</span><span class="mi" id="MathJax-Span-19" style="font-family: STIXGeneral; font-style: italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-20" style="font-family: STIXGeneral;">)</span><span class="mo" id="MathJax-Span-21" style="font-family: STIXGeneral; padding-left: 0.277em;">−</span><span class="mi" id="MathJax-Span-22" style="font-family: STIXGeneral; font-style: italic; padding-left: 0.277em;">θ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="msubsup" id="MathJax-Span-23"><span style="display: inline-block; position: relative; width: 0.96em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.48em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-24" style="font-family: STIXGeneral; font-style: italic;">h</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.482em;"><span class="texatom" id="MathJax-Span-25"><span class="mrow" id="MathJax-Span-26"><span class="mi" id="MathJax-Span-27" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">θ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-28" style="font-family: STIXGeneral;">(</span><span class="mi" id="MathJax-Span-29" style="font-family: STIXGeneral; font-style: italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-30" style="font-family: STIXGeneral;">)</span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.329em; border-left: 0px solid; width: 0px; height: 1.421em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mrow class="MJX-TeXAtom-ORD"><mover><mi>y</mi><mo>^</mo></mover></mrow><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo><mo>−</mo><mi>θ</mi><msub><mi>h</mi><mrow class="MJX-TeXAtom-ORD"><mi>θ</mi></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-2">\widehat{y}(x) - \theta h_{\theta}(x)</script>来计算"</span></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140331994-286872150.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140348463-1121558265.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140401307-1728849713.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140418838-1573333021.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140431854-886558581.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140442744-2079852926.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140454010-1393532205.png" alt=""></p>
+<p><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/1042406-20170206140527354-1280787124.png" alt=""></p></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory">分类: <a href="https://www.cnblogs.com/pinard/category/894692.html" target="_blank">0081. 机器学习</a></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/pinard/tag/%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95/">推荐算法</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6370127,cb_blogId,1);green_channel_success(this,&#39;谢谢推荐！&#39;);">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow(&#39;7d95b75d-b891-e611-845c-ac853d9f53ac&#39;);" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/pinard/" target="_blank"><img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/20161104225142.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/pinard/">刘建平Pinard</a><br>
+            <a href="https://home.cnblogs.com/u/pinard/followees">关注 - 15</a><br>
+            <a href="https://home.cnblogs.com/u/pinard/followers">粉丝 - 4106</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow(&#39;7d95b75d-b891-e611-845c-ac853d9f53ac&#39;);return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6370127,&#39;Digg&#39;)">
+        <span class="diggnum" id="digg_count">4</span>
+    </div>
+    <div class="buryit" onclick="votePost(6370127,&#39;Bury&#39;)">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/pinard/p/6364932.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/pinard/p/6364932.html" title="发布于2017-02-04 15:55">用Spark学习矩阵分解推荐算法</a><br><a href="https://www.cnblogs.com/pinard/p/6418668.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/pinard/p/6418668.html" title="发布于2017-02-20 15:08">深度神经网络（DNN）模型与前向传播算法</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2017-02-06 14:06</span> <a href="https://www.cnblogs.com/pinard/">刘建平Pinard</a> 阅读(<span id="post_view_count">21847</span>) 评论(<span id="post_comment_count">46</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=6370127" rel="nofollow">编辑</a> <a href="https://www.cnblogs.com/pinard/p/6370127.html#" onclick="AddToWz(6370127);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=311024,cb_entryId=6370127,cb_blogApp=currentBlogApp,cb_blogUserGuid='7d95b75d-b891-e611-845c-ac853d9f53ac',cb_entryCreatedDate='2017/2/6 14:06:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<br>
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3621674" class="layer">#1楼</a><a name="3621674" id="comment_anchor_3621674"></a>  <span class="comment_date">2017-02-19 01:57</span> <a id="a_comment_author_3621674" href="https://www.cnblogs.com/xulu1352/" target="_blank">xulu1352</a> <a href="http://msg.cnblogs.com/send/xulu1352" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3621674" class="blog_comment_body">有好段时间没来了，看了大神最近更新几篇，大神加油(ง •̀_•́)ง</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3621674,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3621674,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3668813" class="layer">#2楼</a><a name="3668813" id="comment_anchor_3668813"></a>  <span class="comment_date">2017-04-15 18:51</span> <a id="a_comment_author_3668813" href="https://www.cnblogs.com/zlszhonglongshen/" target="_blank">心冷2080</a> <a href="http://msg.cnblogs.com/send/%E5%BF%83%E5%86%B72080" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3668813" class="blog_comment_body">一直看大神的文章，收益颇多，大神在广州吗？我也在广州，有空可以聊聊吗？大神方不方便留下联系方式，我的qq，593956670</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3668813,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3668813,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3843636" class="layer">#3楼</a><a name="3843636" id="comment_anchor_3843636"></a>  <span class="comment_date">2017-11-17 23:22</span> <a id="a_comment_author_3843636" href="https://www.cnblogs.com/SouthWind-YouKnow/" target="_blank">心悦君兮君不知</a> <a href="http://msg.cnblogs.com/send/%E5%BF%83%E6%82%A6%E5%90%9B%E5%85%AE%E5%90%9B%E4%B8%8D%E7%9F%A5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3843636" class="blog_comment_body">好文章必顶！很清晰！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3843636,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3843636,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3854310" class="layer">#4楼</a><a name="3854310" id="comment_anchor_3854310"></a>  <span class="comment_date">2017-11-30 11:42</span> <a id="a_comment_author_3854310" href="http://home.cnblogs.com/u/535963/" target="_blank">刘梁</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E6%A2%81" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3854310" class="blog_comment_body">我问个问题：当k足够大时，对于任意的对称正定实矩阵W∈R^(n×n)，均存在实矩阵V∈R^(n×k)，使得成立W=V×V^T。这是矩阵的Cholesky分解吗？如果是，那么V是下三角矩阵？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3854310,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3854310,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3854450" class="layer">#5楼</a><a name="3854450" id="comment_anchor_3854450"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-11-30 13:57</span> <a id="a_comment_author_3854450" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3854450" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3854310" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3854310);">@</a>
+刘梁<br>你好，就是矩阵的Cholesky分解。类似的一篇英文的文档也提到了，给你做参考：<br><a href="http://www.jefkine.com/recsys/2017/03/27/factorization-machines/" target="_blank">http://www.jefkine.com/recsys/2017/03/27/factorization-machines/</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3854450,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3854450,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3854450_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3854538" class="layer">#6楼</a><a name="3854538" id="comment_anchor_3854538"></a>  <span class="comment_date">2017-11-30 15:06</span> <a id="a_comment_author_3854538" href="http://home.cnblogs.com/u/535963/" target="_blank">刘梁</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E6%A2%81" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3854538" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3854450" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3854450);">@</a>
+刘建平Pinard<br>如果是Cholesky分解，V矩阵应该是上三角矩阵，三角矩阵都是方阵，那么V应该是R^(n×n)，为什么是R^(n×k)呢，而且我看有的文章上说k&lt;&lt;n，这是为什么呢？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3854538,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3854538,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3854782" class="layer">#7楼</a><a name="3854782" id="comment_anchor_3854782"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2017-11-30 17:05</span> <a id="a_comment_author_3854782" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3854782" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3854538" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3854538);">@</a>
+刘梁<br>你好，你说的是数学意义上完整的Cholesky分解。在FM这里，由于原始数据的稀疏性，所以分解得到的矩阵<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-3-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-31" style="width: 0.891em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.686em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1000.69em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-32"><span class="mi" id="MathJax-Span-33" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.004em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi></math></span></span><script type="math/tex" id="MathJax-Element-3">V</script>的秩远远小于n，如果仍然保持数学意义上的完整性，这里的k最小应该不小于矩阵<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-4-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-34" style="width: 0.891em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.686em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1000.69em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-35"><span class="mi" id="MathJax-Span-36" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.004em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi></math></span></span><script type="math/tex" id="MathJax-Element-4">V</script>的秩。<br><br>当然，在FM里面，k小于矩阵<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-5-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-37" style="width: 0.891em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.686em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1000.69em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-38"><span class="mi" id="MathJax-Span-39" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.004em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi></math></span></span><script type="math/tex" id="MathJax-Element-5">V</script>的秩也是可以的，虽然此时数学意义上的式子不能完全相等，但是从数学角度上可以理解为一种近似，即<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-6-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mi&gt;T&lt;/mi&gt;&lt;/msup&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-40" style="width: 2.462em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.984em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.506em, 1001.98em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-41"><span class="mi" id="MathJax-Span-42" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span class="msubsup" id="MathJax-Span-43"><span style="display: inline-block; position: relative; width: 1.301em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.69em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-44" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -4.368em; left: 0.755em;"><span class="mi" id="MathJax-Span-45" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi><msup><mi>V</mi><mi>T</mi></msup></math></span></span><script type="math/tex" id="MathJax-Element-6">VV^T</script>非常接近于<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-7-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;R&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-46" style="width: 0.755em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.618em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1000.62em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-47"><span class="mi" id="MathJax-Span-48" style="font-family: STIXGeneral; font-style: italic;">R</span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.004em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>R</mi></math></span></span><script type="math/tex" id="MathJax-Element-7">R</script>。如果是从算法角度理解，这里可以看做是一种正则化，即增加模型的泛化能力。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3854782,&#39;Digg&#39;,this)">支持(2)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3854782,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3854782_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3855301" class="layer">#8楼</a><a name="3855301" id="comment_anchor_3855301"></a>  <span class="comment_date">2017-12-01 10:22</span> <a id="a_comment_author_3855301" href="http://home.cnblogs.com/u/535963/" target="_blank">刘梁</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E6%A2%81" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3855301" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3854782" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3854782);">@</a>
+刘建平Pinard<br>嗯，明白了，谢谢。我看好多的文章这个地方没说清楚，给整糊涂了</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3855301,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3855301,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3906887" class="layer">#9楼</a><a name="3906887" id="comment_anchor_3906887"></a>  <span class="comment_date">2018-02-10 14:50</span> <a id="a_comment_author_3906887" href="http://home.cnblogs.com/u/579658/" target="_blank">扼杀</a> <a href="http://msg.cnblogs.com/send/%E6%89%BC%E6%9D%80" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3906887" class="blog_comment_body">请问这本书名叫做什么，我也买本去，感觉看不懂呢，公式好多，为啥原作者会这样做，做的意图是什么。博主你闭上眼睛，也能回顾到吗</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3906887,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3906887,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3906888" class="layer">#10楼</a><a name="3906888" id="comment_anchor_3906888"></a>  <span class="comment_date">2018-02-10 14:55</span> <a id="a_comment_author_3906888" href="http://home.cnblogs.com/u/579658/" target="_blank">扼杀</a> <a href="http://msg.cnblogs.com/send/%E6%89%BC%E6%9D%80" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3906888" class="blog_comment_body">看到计算复杂度的地方看懂了，低秩分解，后面说mutilienar就不太懂了。一个参数一个参数的学，跟svm的omp类似，期望值最大利用杰森不等式处理也是逐渐迭代。后面的都是使用类似的方式吗？我看到这儿就感觉太复杂，不知道原作者为啥要这么做，就看不下去了。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3906888,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3906888,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3906897" class="layer">#11楼</a><a name="3906897" id="comment_anchor_3906897"></a>  <span class="comment_date">2018-02-10 15:14</span> <a id="a_comment_author_3906897" href="http://home.cnblogs.com/u/579658/" target="_blank">扼杀</a> <a href="http://msg.cnblogs.com/send/%E6%89%BC%E6%9D%80" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3906897" class="blog_comment_body">又看了一遍，看的懂了些。mutilinear是为了把不相关的参数分离出来，逐个击破，每次学习一个最优的，之后再更新其他部分参数。    公式都是假的，只要推就行了，使用的道理和公式配合起来，就好难呢。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3906897,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3906897,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3906901" class="layer">#12楼</a><a name="3906901" id="comment_anchor_3906901"></a>  <span class="comment_date">2018-02-10 15:16</span> <a id="a_comment_author_3906901" href="http://home.cnblogs.com/u/579658/" target="_blank">扼杀</a> <a href="http://msg.cnblogs.com/send/%E6%89%BC%E6%9D%80" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3906901" class="blog_comment_body">请问可以加你好友吗，我也是码农呢，都是自己看书和博客学习。你的每个问题都详细回答，说明博主是个究极的好想法和公式爱好者，激励了我的学习的触角，更细腻了。我的qq是646677064</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3906901,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3906901,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3907259" class="layer">#13楼</a><a name="3907259" id="comment_anchor_3907259"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-02-11 13:49</span> <a id="a_comment_author_3907259" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3907259" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3906887" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3906887);">@</a>
+扼杀<br>你好，这一篇不是我原创的，原来是CSDN上一位牛人的博客。我的文章开始部分有链接。<br>不过要搞懂这个算法，推荐你还得看下原论文。<br><a href="https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf" target="_blank">https://www.csie.ntu.edu.tw/~b97053/paper/Rendle2010FM.pdf</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3907259,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3907259,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3907259_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3911641" class="layer">#14楼</a><a name="3911641" id="comment_anchor_3911641"></a>  <span class="comment_date">2018-02-27 08:58</span> <a id="a_comment_author_3911641" href="http://home.cnblogs.com/u/1337982/" target="_blank">学习并长成</a> <a href="http://msg.cnblogs.com/send/%E5%AD%A6%E4%B9%A0%E5%B9%B6%E9%95%BF%E6%88%90" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3911641" class="blog_comment_body">博主您好，这个FM模型感觉和您之前写的<a href="https://www.cnblogs.com/pinard/p/6351319.html" target="_blank">矩阵分解在协同过滤推荐算法中的应用</a>的思想很类似，不知道我的理解是否正确。<br>另外我觉得这个文章看起来有头无尾似得，最后没有回到最前面的电影打分上进行解释。因为我对最开始的电影打分的特征工程很感兴趣，也就是X矩阵的构造，不知道最后有没有什么相关说明，谢谢！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3911641,&#39;Digg&#39;,this)">支持(1)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3911641,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3911736" class="layer">#15楼</a><a name="3911736" id="comment_anchor_3911736"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-02-27 10:23</span> <a id="a_comment_author_3911736" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3911736" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3911641" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3911641);">@</a>
+学习并长成<br>你好，的确这里的FM和之前我写的SVD都用到了矩阵分解的思想，但是FM还是比SVD要复杂很多的。<br><br>这篇文章是我转的另一位大神的，前面已经提到了。至于Ｘ矩阵的构造，其实与FM本身没有关系，其实就是one hot encoding，是最常见的处理离散特征的工程方法了。<br><br>在sklearn里对应的文档为：<br><a href="http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-categorical-features" target="_blank">http://scikit-learn.org/stable/modules/preprocessing.html#preprocessing-categorical-features</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3911736,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3911736,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3911736_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3911780" class="layer">#16楼</a><a name="3911780" id="comment_anchor_3911780"></a>  <span class="comment_date">2018-02-27 10:56</span> <a id="a_comment_author_3911780" href="http://home.cnblogs.com/u/1337982/" target="_blank">学习并长成</a> <a href="http://msg.cnblogs.com/send/%E5%AD%A6%E4%B9%A0%E5%B9%B6%E9%95%BF%E6%88%90" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3911780" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3911736" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3911736);">@</a>
+刘建平Pinard<br>谢谢您这么快的回复。<br>FM比SVD复杂的地方在哪里呢？不知您是否可以点一下，谢谢。<br><br>还有我对X的特征比较感兴趣的是：<br>1、蓝色的User的one hot编码。User个数如此之多，做One hot后是要为矩阵相乘做准备吗？<br>2、黄色的评价过电影的比率。也是很有意思的一个特征构造想法。后面怎么用，看起来很有有意思。<br>3、绿色的时间特征。这个就是纯粹的从起始月份数数了，对于一个电影评价来说，时间有很大的重要性吗？（或许确实一个人随着时间的变化对电影的评价也确实会不一样。）<br>4、棕色的上一次评价过的电影记录。这个看起来也是和时序相关的一个特征。<br><br>如果是我之前的想法的话，我以为直接对用户和电影组成的打分矩阵做因子分解就可以了，没想过要加入这么多的特征工程在里面。所以比较好奇。<br><br>再次感谢您的回复！</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3911780,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3911780,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3911829" class="layer">#17楼</a><a name="3911829" id="comment_anchor_3911829"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-02-27 11:34</span> <a id="a_comment_author_3911829" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3911829" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3911780" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3911780);">@</a>
+学习并长成<br>你好！<br><br>个人理解， SVD是将样本数据特征做一个整体做矩阵分解，但是FM考虑了任意两两特征之间的矩阵分解，所以复杂度要高很多。<br><br>对于特征工程这一部分，作为工程方法，更多的是个人经验，所以每个人的偏好不一样，这里我不好评价。<br><br>这样编码后，整个矩阵非常的稀疏，所以做矩阵分解的时候，对应矩阵V的的第二维度k可以取的比较小。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3911829,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3911829,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3911829_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3911874" class="layer">#18楼</a><a name="3911874" id="comment_anchor_3911874"></a>  <span class="comment_date">2018-02-27 13:31</span> <a id="a_comment_author_3911874" href="http://home.cnblogs.com/u/1337982/" target="_blank">学习并长成</a> <a href="http://msg.cnblogs.com/send/%E5%AD%A6%E4%B9%A0%E5%B9%B6%E9%95%BF%E6%88%90" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3911874" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3911829" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3911829);">@</a>
+刘建平Pinard<br>嗯嗯，非常感谢。<br><br>回头我再看看一些实际的FM例子，加深下理解，非常感谢您的回答和这篇文章。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3911874,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3911874,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#3947958" class="layer">#19楼</a><a name="3947958" id="comment_anchor_3947958"></a>  <span class="comment_date">2018-04-10 18:49</span> <a id="a_comment_author_3947958" href="https://www.cnblogs.com/zhangdashuai/" target="_blank">_一千零一夜</a> <a href="http://msg.cnblogs.com/send/_%E4%B8%80%E5%8D%83%E9%9B%B6%E4%B8%80%E5%A4%9C" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_3947958" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#3668813" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,3668813);">@</a>
+心冷2080<br>你俩聊了吗</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(3947958,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(3947958,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_3947958_avatar" style="display:none;">http://pic.cnblogs.com/face/582077/20140430160050.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4000535" class="layer">#20楼</a><a name="4000535" id="comment_anchor_4000535"></a>  <span class="comment_date">2018-06-19 09:44</span> <a id="a_comment_author_4000535" href="http://home.cnblogs.com/u/1423161/" target="_blank">aaronwang123</a> <a href="http://msg.cnblogs.com/send/aaronwang123" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4000535" class="blog_comment_body">请教一下博主，FM里面提的特征两两组合指的是什么？<br><br>比如 用户一 onehot后是 100000；<br>物品一one后台后是10000；<br>比如这个组合x1*x2是指的谁乘以谁啊？ 1*1；<br>还是100000*10000？<br><br>读了这篇文章，感觉坑有点多？论文本身也是含糊其辞，有头无尾。<br><br>如果把fm模型看做与推荐算法无关的独立机器学习方法到没有什么问题。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4000535,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4000535,&#39;Bury&#39;,this)">反对(1)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4000593" class="layer">#21楼</a><a name="4000593" id="comment_anchor_4000593"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-06-19 10:14</span> <a id="a_comment_author_4000593" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4000593" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4000535" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4000535);">@</a>
+aaronwang123<br>你好，onehot后得到用户的<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-8-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-49" style="width: 1.37em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.233em, 1001.1em, 2.462em, -999.997em); top: -2.114em; left: 0em;"><span class="mrow" id="MathJax-Span-50"><span class="msubsup" id="MathJax-Span-51"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-52" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-53" style="font-size: 70.7%; font-family: STIXGeneral;">1</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.121em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.246em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>N</mi><mn>1</mn></msub></math></span></span><script type="math/tex" id="MathJax-Element-8">N_1</script>个特征,物品的<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-9-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-54" style="width: 1.37em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.233em, 1001.1em, 2.462em, -999.997em); top: -2.114em; left: 0em;"><span class="mrow" id="MathJax-Span-55"><span class="msubsup" id="MathJax-Span-56"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-57" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-58" style="font-size: 70.7%; font-family: STIXGeneral;">2</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.121em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.246em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>N</mi><mn>2</mn></msub></math></span></span><script type="math/tex" id="MathJax-Element-9">N_2</script>个特征, 此时就有<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-10-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-59" style="width: 4.17em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.419em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1003.42em, 2.872em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-60"><span class="msubsup" id="MathJax-Span-61"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-62" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-63" style="font-size: 70.7%; font-family: STIXGeneral;">1</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-64" style="font-family: STIXGeneral; padding-left: 0.277em;">+</span><span class="msubsup" id="MathJax-Span-65" style="padding-left: 0.277em;"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-66" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-67" style="font-size: 70.7%; font-family: STIXGeneral;">2</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.246em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub></math></span></span><script type="math/tex" id="MathJax-Element-10">N_1+N_2</script>个特征，那么这个特征组合就是在这<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-11-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-68" style="width: 4.17em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.419em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1003.42em, 2.872em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-69"><span class="msubsup" id="MathJax-Span-70"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-71" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-72" style="font-size: 70.7%; font-family: STIXGeneral;">1</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-73" style="font-family: STIXGeneral; padding-left: 0.277em;">+</span><span class="msubsup" id="MathJax-Span-74" style="padding-left: 0.277em;"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-75" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-76" style="font-size: 70.7%; font-family: STIXGeneral;">2</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.246em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub></math></span></span><script type="math/tex" id="MathJax-Element-11">N_1+N_2</script>个特征中任意两两组合了，就是<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-12-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;+&lt;/mo&gt;&lt;msub&gt;&lt;mi&gt;N&lt;/mi&gt;&lt;mn&gt;2&lt;/mn&gt;&lt;/msub&gt;&lt;mo&gt;&amp;#x2212;&lt;/mo&gt;&lt;mn&gt;1&lt;/mn&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-77" style="width: 12.094em; display: inline-block;"><span style="display: inline-block; position: relative; width: 9.908em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1009.84em, 2.941em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-78"><span class="mo" id="MathJax-Span-79" style="font-family: STIXGeneral;">(</span><span class="msubsup" id="MathJax-Span-80"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-81" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-82" style="font-size: 70.7%; font-family: STIXGeneral;">1</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-83" style="font-family: STIXGeneral; padding-left: 0.277em;">+</span><span class="msubsup" id="MathJax-Span-84" style="padding-left: 0.277em;"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-85" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-86" style="font-size: 70.7%; font-family: STIXGeneral;">2</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-87" style="font-family: STIXGeneral;">)</span><span class="mo" id="MathJax-Span-88" style="font-family: STIXGeneral;">(</span><span class="msubsup" id="MathJax-Span-89"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-90" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-91" style="font-size: 70.7%; font-family: STIXGeneral;">1</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-92" style="font-family: STIXGeneral; padding-left: 0.277em;">+</span><span class="msubsup" id="MathJax-Span-93" style="padding-left: 0.277em;"><span style="display: inline-block; position: relative; width: 1.096em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.75em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-94" style="font-family: STIXGeneral; font-style: italic;">N<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.686em;"><span class="mn" id="MathJax-Span-95" style="font-size: 70.7%; font-family: STIXGeneral;">2</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-96" style="font-family: STIXGeneral; padding-left: 0.277em;">−</span><span class="mn" id="MathJax-Span-97" style="font-family: STIXGeneral; padding-left: 0.277em;">1</span><span class="mo" id="MathJax-Span-98" style="font-family: STIXGeneral;">)</span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.329em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mo stretchy="false">(</mo><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub><mo stretchy="false">)</mo><mo stretchy="false">(</mo><msub><mi>N</mi><mn>1</mn></msub><mo>+</mo><msub><mi>N</mi><mn>2</mn></msub><mo>−</mo><mn>1</mn><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-12">(N_1+N_2)(N_1+N_2-1)</script>种组合了。<br><br>这篇文章不是我写的，所以风格不同。：） 你可以理解FM算法是逻辑回归算法的二阶版本。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4000593,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4000593,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4000593_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4038884" class="layer">#22楼</a><a name="4038884" id="comment_anchor_4038884"></a>  <span class="comment_date">2018-08-09 10:54</span> <a id="a_comment_author_4038884" href="http://home.cnblogs.com/u/1295716/" target="_blank">wwwssss</a> <a href="http://msg.cnblogs.com/send/wwwssss" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4038884" class="blog_comment_body">您好！请问w被分解成vi·vj之后，vi和vj互相并不是转置，为什么最后化简后就剩下一个v来表示w了</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4038884,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4038884,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4038953" class="layer">#23楼</a><a name="4038953" id="comment_anchor_4038953"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-08-09 11:48</span> <a id="a_comment_author_4038953" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4038953" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4038884" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4038884);">@</a>
+wwwssss<br>你好，在迭代优化之前，我们已经假定模型是<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-13-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;W&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;msup&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mi&gt;T&lt;/mi&gt;&lt;/msup&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-99" style="width: 5.195em; display: inline-block;"><span style="display: inline-block; position: relative; width: 4.238em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.506em, 1004.24em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-100"><span class="mi" id="MathJax-Span-101" style="font-family: STIXGeneral; font-style: italic;">W<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span class="mo" id="MathJax-Span-102" style="font-family: STIXGeneral; padding-left: 0.345em;">=</span><span class="mi" id="MathJax-Span-103" style="font-family: STIXGeneral; font-style: italic; padding-left: 0.345em;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span class="msubsup" id="MathJax-Span-104"><span style="display: inline-block; position: relative; width: 1.301em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.69em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-105" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -4.368em; left: 0.755em;"><span class="mi" id="MathJax-Span-106" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">T<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.171em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>W</mi><mo>=</mo><mi>V</mi><msup><mi>V</mi><mi>T</mi></msup></math></span></span><script type="math/tex" id="MathJax-Element-13">W=VV^T</script>了，所以最后只剩下一个<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-14-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-107" style="width: 0.891em; display: inline-block;"><span style="display: inline-block; position: relative; width: 0.686em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1000.69em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-108"><span class="mi" id="MathJax-Span-109" style="font-family: STIXGeneral; font-style: italic;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.004em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>V</mi></math></span></span><script type="math/tex" id="MathJax-Element-14">V</script>,如果我们假定的是<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-15-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;mi&gt;W&lt;/mi&gt;&lt;mo&gt;=&lt;/mo&gt;&lt;mi&gt;V&lt;/mi&gt;&lt;mi&gt;H&lt;/mi&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-110" style="width: 4.58em; display: inline-block;"><span style="display: inline-block; position: relative; width: 3.76em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1003.76em, 2.736em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-111"><span class="mi" id="MathJax-Span-112" style="font-family: STIXGeneral; font-style: italic;">W<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span class="mo" id="MathJax-Span-113" style="font-family: STIXGeneral; padding-left: 0.345em;">=</span><span class="mi" id="MathJax-Span-114" style="font-family: STIXGeneral; font-style: italic; padding-left: 0.345em;">V<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span><span class="mi" id="MathJax-Span-115" style="font-family: STIXGeneral; font-style: italic;">H<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.072em;"></span></span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.079em; border-left: 0px solid; width: 0px; height: 1.004em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><mi>W</mi><mo>=</mo><mi>V</mi><mi>H</mi></math></span></span><script type="math/tex" id="MathJax-Element-15">W=VH</script>了，而V和H是完全不同的矩阵的 话，那么久不能只用一个矩阵来表示了。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4038953,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4038953,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4038953_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4038956" class="layer">#24楼</a><a name="4038956" id="comment_anchor_4038956"></a>  <span class="comment_date">2018-08-09 11:52</span> <a id="a_comment_author_4038956" href="http://home.cnblogs.com/u/1295716/" target="_blank">wwwssss</a> <a href="http://msg.cnblogs.com/send/wwwssss" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4038956" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4038953" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4038953);">@</a>
+刘建平Pinard<br>谢谢！是我想复杂了</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4038956,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4038956,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4052155" class="layer">#25楼</a><a name="4052155" id="comment_anchor_4052155"></a>  <span class="comment_date">2018-08-28 10:23</span> <a id="a_comment_author_4052155" href="http://home.cnblogs.com/u/1438470/" target="_blank">hh77</a> <a href="http://msg.cnblogs.com/send/hh77" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4052155" class="blog_comment_body">博主，我想要fm算法做推荐的话，是用libfm来做吗？您用过吗？或者用其他的什么？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4052155,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4052155,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4052315" class="layer">#26楼</a><a name="4052315" id="comment_anchor_4052315"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-08-28 12:27</span> <a id="a_comment_author_4052315" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4052315" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4052155" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4052155);">@</a>
+hh77<br>你好，libfm和libffm都是可以的。目前广告部门libfm用的多一些，我没有用过</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4052315,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4052315,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4052315_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4070709" class="layer">#27楼</a><a name="4070709" id="comment_anchor_4070709"></a>  <span class="comment_date">2018-09-19 08:45</span> <a id="a_comment_author_4070709" href="https://www.cnblogs.com/cowry5/" target="_blank">Cowry5</a> <a href="http://msg.cnblogs.com/send/Cowry5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4070709" class="blog_comment_body">你好，一直看你的博客，收获很多。我现在遇到一个问题想请教一下，我现在有一个很大的数据集，用sklearn的OneHotencode转了之后，只能用csr稀疏矩阵存储（一百万x一万位左右）。这种格式可以在lgbm模型中跑。<br>但是我想用fm或者ffm跑的时候，应该是不支持csr矩阵。可是我想把csr矩阵转成array或者csv格式，一直报内存错误，现在不知如何处理了。网上也没有搜到有效的办法。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4070709,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4070709,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4070709_avatar" style="display:none;">http://pic.cnblogs.com/face/1360444/20180402223128.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4070902" class="layer">#28楼</a><a name="4070902" id="comment_anchor_4070902"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-09-19 11:03</span> <a id="a_comment_author_4070902" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4070902" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4070709" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4070709);">@</a>
+Cowry5<br>你好，你这个数量量乘以维度有点大了，直接单机跑会比较的吃力。<br><br>第一种方法是做一些特征选择，把维度减少一些，在做onehot，然后再转化为dense的矩阵，去跑libfm试一试。如果libfm都撑爆内存，那libffm更不行。<br><br>第二种方法是在分布式环境去跑，现在有一个spark集成的libfm可以用，你可以把数据放到HDFS，然后用spark做处理，应该就可以了。<br><a href="https://github.com/zhengruifeng/spark-libFM" target="_blank">https://github.com/zhengruifeng/spark-libFM</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4070902,&#39;Digg&#39;,this)">支持(2)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4070902,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4070902_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4071772" class="layer">#29楼</a><a name="4071772" id="comment_anchor_4071772"></a>  <span class="comment_date">2018-09-19 20:55</span> <a id="a_comment_author_4071772" href="https://www.cnblogs.com/cowry5/" target="_blank">Cowry5</a> <a href="http://msg.cnblogs.com/send/Cowry5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4071772" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4070902" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4070902);">@</a>
+刘建平Pinard<br>你好，我的原始数据是一百万条，特征只有35维左右，onehot后大概是一万多维，todense和toarray方法已经不能用了。会报内存错误。不知如何是好。<br>还有一个小问题，是不是传入lgbm等树模型的数据是不需要onehot的？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4071772,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4071772,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4071772_avatar" style="display:none;">http://pic.cnblogs.com/face/1360444/20180402223128.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4072448" class="layer">#30楼</a><a name="4072448" id="comment_anchor_4072448"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-09-20 15:20</span> <a id="a_comment_author_4072448" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4072448" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4071772" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4071772);">@</a>
+Cowry5<br>你好，数据量太大了，用sklearn就不太适合了。<br>你可以考虑用spark的pyspark.ml.feature.OneHotEncoder，和sklearn的onehot稍有不同，只是最后一列不写而已。<br><br>接着用spark把稀疏矩阵转化为稠密矩阵：<br>denseVectors =sparseVectors.map(lambda vector: DenseVector(vector.toArray()))<br><br>然后用spark-libFM来训练模型。<br><br>树结构的模型可以不做onehot，可以参考决策树模型的一些实例就知道了。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4072448,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4072448,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4072448_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4072489" class="layer">#31楼</a><a name="4072489" id="comment_anchor_4072489"></a>  <span class="comment_date">2018-09-20 15:39</span> <a id="a_comment_author_4072489" href="https://www.cnblogs.com/cowry5/" target="_blank">Cowry5</a> <a href="http://msg.cnblogs.com/send/Cowry5" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4072489" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4072448" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4072448);">@</a>
+刘建平Pinard<br>感谢耐心回复。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4072489,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4072489,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4072489_avatar" style="display:none;">http://pic.cnblogs.com/face/1360444/20180402223128.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4126627" class="layer">#32楼</a><a name="4126627" id="comment_anchor_4126627"></a>  <span class="comment_date">2018-11-30 10:15</span> <a id="a_comment_author_4126627" href="http://home.cnblogs.com/u/952280/" target="_blank">忆梦涟</a> <a href="http://msg.cnblogs.com/send/%E5%BF%86%E6%A2%A6%E6%B6%9F" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4126627" class="blog_comment_body">想请问下您，基于矩阵分解的方法和统计机器学习方法在方法论上有什么样的不同？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4126627,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4126627,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4140936" class="layer">#33楼</a><a name="4140936" id="comment_anchor_4140936"></a>  <span class="comment_date">2018-12-17 17:10</span> <a id="a_comment_author_4140936" href="https://www.cnblogs.com/zyq11223/" target="_blank">沐埜</a> <a href="http://msg.cnblogs.com/send/%E6%B2%90%E5%9F%9C" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4140936" class="blog_comment_body">Multilinearity部分有句好像写错了，应该是gø(x) 可以y^(x) -øhø(x)来求得吧</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4140936,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4140936,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4140936_avatar" style="display:none;">http://pic.cnblogs.com/face/317625/20171126113221.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4141477" class="layer">#34楼</a><a name="4141477" id="comment_anchor_4141477"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-12-18 10:20</span> <a id="a_comment_author_4141477" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4141477" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4126627" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4126627);">@</a>
+忆梦涟<br>你好！<br>不好意思之前漏掉了你这个问题。<br><br>矩阵分解有点黑盒子的味道，分解的过程有时候不能有很好的物理解释。而统计机器学习方法则是按照数理统计的方法来处理数据，理论上会更严密一些。<br>实践上的结果则要看具体的问题和拿到手的数据集合。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4141477,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4141477,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4141477_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4141487" class="layer">#35楼</a><a name="4141487" id="comment_anchor_4141487"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2018-12-18 10:25</span> <a id="a_comment_author_4141487" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4141487" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4140936" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4140936);">@</a>
+沐埜<br>这里的确应该是<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-16-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;g&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;&amp;#x03B8;&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-116" style="width: 2.531em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.053em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1001.98em, 2.941em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-117"><span class="msubsup" id="MathJax-Span-118"><span style="display: inline-block; position: relative; width: 0.96em; height: 0px;"><span style="position: absolute; clip: rect(3.419em, 1000.48em, 4.443em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-119" style="font-family: STIXGeneral; font-style: italic;">g</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.482em;"><span class="texatom" id="MathJax-Span-120"><span class="mrow" id="MathJax-Span-121"><span class="mi" id="MathJax-Span-122" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">θ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-123" style="font-family: STIXGeneral;">(</span><span class="mi" id="MathJax-Span-124" style="font-family: STIXGeneral; font-style: italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-125" style="font-family: STIXGeneral;">)</span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.329em; border-left: 0px solid; width: 0px; height: 1.254em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>g</mi><mrow class="MJX-TeXAtom-ORD"><mi>θ</mi></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-16">g_{\theta}(x)</script>,而不是<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-17-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msub&gt;&lt;mi&gt;h&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mi&gt;&amp;#x03B8;&lt;/mi&gt;&lt;/mrow&gt;&lt;/msub&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;x&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-126" style="width: 2.531em; display: inline-block;"><span style="display: inline-block; position: relative; width: 2.053em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(1.643em, 1001.98em, 2.941em, -999.997em); top: -2.524em; left: 0em;"><span class="mrow" id="MathJax-Span-127"><span class="msubsup" id="MathJax-Span-128"><span style="display: inline-block; position: relative; width: 0.96em; height: 0px;"><span style="position: absolute; clip: rect(3.145em, 1000.48em, 4.238em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-129" style="font-family: STIXGeneral; font-style: italic;">h</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; top: -3.89em; left: 0.482em;"><span class="texatom" id="MathJax-Span-130"><span class="mrow" id="MathJax-Span-131"><span class="mi" id="MathJax-Span-132" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">θ<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span><span class="mo" id="MathJax-Span-133" style="font-family: STIXGeneral;">(</span><span class="mi" id="MathJax-Span-134" style="font-family: STIXGeneral; font-style: italic;">x<span style="display: inline-block; overflow: hidden; height: 1px; width: 0.003em;"></span></span><span class="mo" id="MathJax-Span-135" style="font-family: STIXGeneral;">)</span></span><span style="display: inline-block; width: 0px; height: 2.531em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.329em; border-left: 0px solid; width: 0px; height: 1.254em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msub><mi>h</mi><mrow class="MJX-TeXAtom-ORD"><mi>θ</mi></mrow></msub><mo stretchy="false">(</mo><mi>x</mi><mo stretchy="false">)</mo></math></span></span><script type="math/tex" id="MathJax-Element-17">h_{\theta}(x)</script>。<br>这篇是我转的peghoty的，他的图片我改不了，我在中间加上这个勘误。<br>感谢指出错误。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4141487,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4141487,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4141487_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4176976" class="layer">#36楼</a><a name="4176976" id="comment_anchor_4176976"></a>  <span class="comment_date">2019-02-10 20:28</span> <a id="a_comment_author_4176976" href="http://home.cnblogs.com/u/1576058/" target="_blank">老周吃包子</a> <a href="http://msg.cnblogs.com/send/%E8%80%81%E5%91%A8%E5%90%83%E5%8C%85%E5%AD%90" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4176976" class="blog_comment_body">楼主，您好！引入辅助向量的原理是什么？可以分析一下吗？这个不是很明白</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4176976,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4176976,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4178535" class="layer">#37楼</a><a name="4178535" id="comment_anchor_4178535"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2019-02-13 12:23</span> <a id="a_comment_author_4178535" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4178535" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4176976" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4176976);">@</a>
+老周吃包子<br>你好，你说的是<span class="MathJax_Preview" style="color: inherit; display: none;"></span><span class="MathJax" id="MathJax-Element-18-Frame" tabindex="0" data-mathml="&lt;math xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&gt;&lt;msubsup&gt;&lt;mi&gt;q&lt;/mi&gt;&lt;mi&gt;m&lt;/mi&gt;&lt;mrow class=&quot;MJX-TeXAtom-ORD&quot;&gt;&lt;mo stretchy=&quot;false&quot;&gt;(&lt;/mo&gt;&lt;mi&gt;i&lt;/mi&gt;&lt;mo stretchy=&quot;false&quot;&gt;)&lt;/mo&gt;&lt;/mrow&gt;&lt;/msubsup&gt;&lt;/math&gt;" role="presentation" style="position: relative;"><nobr aria-hidden="true"><span class="math" id="MathJax-Span-136" style="width: 1.506em; display: inline-block;"><span style="display: inline-block; position: relative; width: 1.233em; height: 0px; font-size: 122%;"><span style="position: absolute; clip: rect(0.96em, 1001.23em, 2.531em, -999.997em); top: -2.114em; left: 0em;"><span class="mrow" id="MathJax-Span-137"><span class="msubsup" id="MathJax-Span-138"><span style="display: inline-block; position: relative; width: 1.233em; height: 0px;"><span style="position: absolute; clip: rect(3.419em, 1000.48em, 4.443em, -999.997em); top: -4.027em; left: 0em;"><span class="mi" id="MathJax-Span-139" style="font-family: STIXGeneral; font-style: italic;">q</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; clip: rect(3.35em, 1000.75em, 4.375em, -999.997em); top: -4.505em; left: 0.482em;"><span class="texatom" id="MathJax-Span-140"><span class="mrow" id="MathJax-Span-141"><span class="mo" id="MathJax-Span-142" style="font-size: 70.7%; font-family: STIXGeneral;">(</span><span class="mi" id="MathJax-Span-143" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">i</span><span class="mo" id="MathJax-Span-144" style="font-size: 70.7%; font-family: STIXGeneral;">)</span></span></span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span><span style="position: absolute; clip: rect(3.487em, 1000.62em, 4.238em, -999.997em); top: -3.89em; left: 0.482em;"><span class="mi" id="MathJax-Span-145" style="font-size: 70.7%; font-family: STIXGeneral; font-style: italic;">m</span><span style="display: inline-block; width: 0px; height: 4.033em;"></span></span></span></span></span><span style="display: inline-block; width: 0px; height: 2.121em;"></span></span></span><span style="display: inline-block; overflow: hidden; vertical-align: -0.329em; border-left: 0px solid; width: 0px; height: 1.588em;"></span></span></nobr><span class="MJX_Assistive_MathML" role="presentation"><math xmlns="http://www.w3.org/1998/Math/MathML"><msubsup><mi>q</mi><mi>m</mi><mrow class="MJX-TeXAtom-ORD"><mo stretchy="false">(</mo><mi>i</mi><mo stretchy="false">)</mo></mrow></msubsup></math></span></span><script type="math/tex" id="MathJax-Element-18">q_m^{(i)}</script>吗？这个只是为了算法实现的时候不用多次计算这同一个中间结果。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4178535,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4178535,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4178535_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4211866" class="layer">#38楼</a><a name="4211866" id="comment_anchor_4211866"></a>  <span class="comment_date">2019-03-24 14:17</span> <a id="a_comment_author_4211866" href="http://home.cnblogs.com/u/1438470/" target="_blank">hh77</a> <a href="http://msg.cnblogs.com/send/hh77" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4211866" class="blog_comment_body">Python 中使用FM<br>python工具包<br>PyFM: <a href="https://github.com/coreylynch/pyFM" target="_blank">https://github.com/coreylynch/pyFM</a><br>安装 pip install git+<a href="https://github.com/coreylynch/pyFM" target="_blank">https://github.com/coreylynch/pyFM</a><br>pip install pyFM 会安装了另一个同名库，注意!<br>--------------------- <br>博主，以上是我在网上看到的，但是安装不了，您能给看看吗？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4211866,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4211866,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4211993" class="layer">#39楼</a><a name="4211993" id="comment_anchor_4211993"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2019-03-24 17:02</span> <a id="a_comment_author_4211993" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4211993" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4211866" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4211866);">@</a>
+hh77<br>你好，应该是可以的，确认下你先前已经安装成功了numpy和sklearn，然后再pip install git+<a href="https://github.com/coreylynch/pyFM" target="_blank">https://github.com/coreylynch/pyFM</a><br><br>如果遇到VC的问题，可以参考这个：<br><a href="https://github.com/coreylynch/pyFM/issues/27" target="_blank">https://github.com/coreylynch/pyFM/issues/27</a></div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4211993,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4211993,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4211993_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4212017" class="layer">#40楼</a><a name="4212017" id="comment_anchor_4212017"></a>  <span class="comment_date">2019-03-24 17:28</span> <a id="a_comment_author_4212017" href="http://home.cnblogs.com/u/1438470/" target="_blank">hh77</a> <a href="http://msg.cnblogs.com/send/hh77" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4212017" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4211993" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4211993);">@</a>
+刘建平Pinard<br>报的是这个错呢 博主  <br>Error [WinError 2] 系统找不到指定的文件。 while executing command git clone -q<br> <a href="https://github.com/coreylynch/pyFM" target="_blank">https://github.com/coreylynch/pyFM</a> C:\Users\ADMINI~1\AppData\Local\Temp\pip-req<br>-build-pyegxiqp<br>Cannot find command 'git' - do you have 'git' installed and in your PATH?<br>You are using pip version 18.1, however version 19.0.3 is available.<br>You should consider upgrading via the 'python -m pip install --upgrade pip' command.</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4212017,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4212017,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4212071" class="layer">#41楼</a><a name="4212071" id="comment_anchor_4212071"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2019-03-24 19:05</span> <a id="a_comment_author_4212071" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4212071" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4212017" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4212017);">@</a>
+hh77<br>你好，看你的错误应该是git没有装。<br><br>你先安装windows版的git，然后把git执行文件的路径加入到你的环境变量的path中。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4212071,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4212071,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4212071_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4212505" class="layer">#42楼</a><a name="4212505" id="comment_anchor_4212505"></a>  <span class="comment_date">2019-03-25 11:27</span> <a id="a_comment_author_4212505" href="http://home.cnblogs.com/u/1438470/" target="_blank">hh77</a> <a href="http://msg.cnblogs.com/send/hh77" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4212505" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4211993" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4211993);">@</a>
+刘建平Pinard<br>您好 确实遇到VC问题了 但是解决方案没有看懂<br>我一直找不到解决方法中的setup.py在哪里，是在python的文件夹里还是在vc的文件夹里？更没办法删除里面的参数m，真心求教博主。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4212505,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4212505,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4213599" class="layer">#43楼</a><a name="4213599" id="comment_anchor_4213599"></a>[<span class="louzhu">楼主</span>]  <span class="comment_date">2019-03-26 11:04</span> <a id="a_comment_author_4213599" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4213599" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4212505" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4212505);">@</a>
+hh77<br>你好，你说的遇到VC问题是哪个python库需要？可以找到已经编译好的库，这里可以去掉VC的依赖。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4213599,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4213599,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4213599_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4220382" class="layer">#44楼</a><a name="4220382" id="comment_anchor_4220382"></a>  <span class="comment_date">2019-04-02 10:40</span> <a id="a_comment_author_4220382" href="https://www.cnblogs.com/cold-city/" target="_blank">菜鸟小垃圾</a> <a href="http://msg.cnblogs.com/send/%E8%8F%9C%E9%B8%9F%E5%B0%8F%E5%9E%83%E5%9C%BE" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4220382" class="blog_comment_body">厉害，很透彻</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4220382,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4220382,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4220382_avatar" style="display:none;">http://pic.cnblogs.com/face/1509249/20181128224127.png</span>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4258810" class="layer">#45楼</a><a name="4258810" id="comment_anchor_4258810"></a>  <span class="comment_date">2019-05-18 14:32</span> <a id="a_comment_author_4258810" href="https://www.cnblogs.com/fanxiaoxu/" target="_blank">帆小徐</a> <a href="http://msg.cnblogs.com/send/%E5%B8%86%E5%B0%8F%E5%BE%90" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4258810" class="blog_comment_body">您好，请问：<br>1.这里的矩阵分解方法是什么呢？我知道的有特征值分解，奇异值分解。<br>2.优化方法那么多，为什么常用的都是梯度下降法呢？</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4258810,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4258810,&#39;Bury&#39;,this)">反对(0)</a></div>
+			</div>
+		</div>
+	
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="https://www.cnblogs.com/pinard/p/6370127.html#4259371" class="layer">#46楼</a><a name="4259371" id="comment_anchor_4259371"></a>[<span class="louzhu">楼主</span>]<span id="comment-maxId" style="display:none;">4259371</span><span id="comment-maxDate" style="display:none;">2019/5/19 17:37:24</span>  <span class="comment_date">2019-05-19 17:37</span> <a id="a_comment_author_4259371" href="https://www.cnblogs.com/pinard/" target="_blank">刘建平Pinard</a> <a href="http://msg.cnblogs.com/send/%E5%88%98%E5%BB%BA%E5%B9%B3Pinard" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4259371" class="blog_comment_body"><a href="https://www.cnblogs.com/pinard/p/6370127.html#4258810" title="查看所回复的评论" onclick="commentManager.renderComments(0,50,4258810);">@</a>
+帆小徐<br>你好！<br>1. 这里的矩阵分解方法除了特征值分解，奇异值分解。主要还有一类是只分裂为2个矩阵的矩阵分解方法，比如funkSVD，非负矩阵分解(NMF)，在我的博文里都有，你可以看看。<br><br>2. 个人理解是因为它是迭代方法，不受数据量大小的影响，同时批量迭代使用程序实现也是最容易的，比牛顿法等二阶导数的方法更好实现。所以是大数据量下的优化方法首选。</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4259371,&#39;Digg&#39;,this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4259371,&#39;Bury&#39;,this)">反对(0)</a></div><span id="comment_4259371_avatar" style="display:none;">http://pic.cnblogs.com/face/1042406/20161104225142.png</span>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="https://www.cnblogs.com/pinard/p/6370127.html#" onclick="return RefreshPage();">刷新页面</a><a href="https://www.cnblogs.com/pinard/p/6370127.html#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login(&#39;commentform&#39;);">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-工控&#39;)">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://q.cnblogs.com/" target="_blank" onclick="ga(&#39;send&#39;, &#39;event&#39;, &#39;Link&#39;, &#39;click&#39;, &#39;T2-博问&#39;)">【推荐】程序员问答平台，解决您开发中遇到的技术难题</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block"></div>
+<div id="under_post_news"><div class="itnews c_ad_block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/lcchuguo/p/4621003.html" target="_blank" onclick="clickRecomItmem(4621003)">Factorization Machines 学习笔记（四）学习算法</a><br>·  <a href="https://www.cnblogs.com/mfrbuaa/p/4293345.html" target="_blank" onclick="clickRecomItmem(4293345)">Factorization Machines 学习笔记（二）模型方程</a><br>·  <a href="https://www.cnblogs.com/Oythonhill/p/8544085.html" target="_blank" onclick="clickRecomItmem(8544085)">Factorization Machine 因子分解机</a><br>·  <a href="https://www.cnblogs.com/lcchuguo/p/5262604.html" target="_blank" onclick="clickRecomItmem(5262604)">Factorization Machines 学习笔记（三）回归和分类</a><br>·  <a href="https://www.cnblogs.com/libaoquan/p/8476157.html" target="_blank" onclick="clickRecomItmem(8476157)">矩阵分解在协同过滤推荐算法中的应用</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block" style="display: none;">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;"></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/626272/" target="_blank">百度 CTO 的三生三世</a><br> ·  <a href="https://news.cnblogs.com/n/626271/" target="_blank">怕了：这四种人招蚊子 O型血蒙冤</a><br> ·  <a href="https://news.cnblogs.com/n/626270/" target="_blank">苹果WWDC2019最全前瞻汇总：超强模块化Mac即将面市！</a><br> ·  <a href="https://news.cnblogs.com/n/626269/" target="_blank">紫光国微：拟180亿元收购安全芯片组件生产商Linxens</a><br> ·  <a href="https://news.cnblogs.com/n/626268/" target="_blank">华为事件启思：美国究竟有多少高科技公司？</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div>★珠江追梦，饮岭南茶，恋鄂北家★</div>
+<div>你的支持是我写作的动力：</div>
+<img src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/invoice.bmp" height="100" width="100"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/pinard/">刘建平Pinard</a><br>园龄：<a href="https://home.cnblogs.com/u/pinard/" title="入园时间：2016-10-14">2年7个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/pinard/followers/">4106</a><br>关注：<a href="https://home.cnblogs.com/u/pinard/followees/">15</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow(&#39;7d95b75d-b891-e611-845c-ac853d9f53ac&#39;)">+加关注</a></div><script>getFollowStatus('7d95b75d-b891-e611-845c-ac853d9f53ac')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style="display:none"></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block"></div><div id="sidebar_categories">
+<div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+<h3 class="catListTitle">随笔分类<span style="font-size:11px;font-weight:normal">(133)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/pinard/category/894690.html">0040. 数学统计学(9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/pinard/category/894692.html">0081. 机器学习(69)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/pinard/category/894694.html">0082. 深度学习(11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/pinard/category/894695.html">0083. 自然语言处理(23)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/pinard/category/1254674.html">0084.  强化学习(19)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/pinard/category/894700.html">0121. 大数据挖掘(1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/pinard/category/894697.html">0122. 大数据平台(1)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案<span style="font-size:11px;font-weight:normal">(133)</span></h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_1_Link_0" href="https://www.cnblogs.com/pinard/archive/2019/05.html">2019年5月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_1" href="https://www.cnblogs.com/pinard/archive/2019/04.html">2019年4月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_2" href="https://www.cnblogs.com/pinard/archive/2019/03.html">2019年3月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_3" href="https://www.cnblogs.com/pinard/archive/2019/02.html">2019年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_4" href="https://www.cnblogs.com/pinard/archive/2019/01.html">2019年1月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_5" href="https://www.cnblogs.com/pinard/archive/2018/12.html">2018年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_6" href="https://www.cnblogs.com/pinard/archive/2018/11.html">2018年11月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_7" href="https://www.cnblogs.com/pinard/archive/2018/10.html">2018年10月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_8" href="https://www.cnblogs.com/pinard/archive/2018/09.html">2018年9月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_9" href="https://www.cnblogs.com/pinard/archive/2018/08.html">2018年8月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_10" href="https://www.cnblogs.com/pinard/archive/2018/07.html">2018年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_11" href="https://www.cnblogs.com/pinard/archive/2018/06.html">2018年6月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_12" href="https://www.cnblogs.com/pinard/archive/2018/05.html">2018年5月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_13" href="https://www.cnblogs.com/pinard/archive/2017/08.html">2017年8月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_14" href="https://www.cnblogs.com/pinard/archive/2017/07.html">2017年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_15" href="https://www.cnblogs.com/pinard/archive/2017/06.html">2017年6月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_16" href="https://www.cnblogs.com/pinard/archive/2017/05.html">2017年5月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_17" href="https://www.cnblogs.com/pinard/archive/2017/04.html">2017年4月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_18" href="https://www.cnblogs.com/pinard/archive/2017/03.html">2017年3月 (10)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_19" href="https://www.cnblogs.com/pinard/archive/2017/02.html">2017年2月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_20" href="https://www.cnblogs.com/pinard/archive/2017/01.html">2017年1月 (13)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_21" href="https://www.cnblogs.com/pinard/archive/2016/12.html">2016年12月 (17)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_22" href="https://www.cnblogs.com/pinard/archive/2016/11.html">2016年11月 (22)</a> </li>
+
+<li><a id="CatList_LinkList_1_Link_23" href="https://www.cnblogs.com/pinard/archive/2016/10.html">2016年10月 (8)</a> </li>
+
+</ul>
+
+</div>
+
+<div id="sidebar_links964051" class="catList sidebar-block">
+<h3 class="catListTitle">常去的机器学习网站</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_2_Link_0" href="http://www.52nlp.cn/" rel="nofollow">52 NLP</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_1" href="https://www.analyticsvidhya.com/" rel="nofollow">Analytics Vidhya</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_2" href="https://github.com/josephmisiti/awesome-machine-learning" rel="nofollow">机器学习库</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_3" href="https://github.com/hangtwenty/dive-into-machine-learning" rel="nofollow">机器学习路线图</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_4" href="http://incompleteideas.net/book/the-book-2nd.html" rel="nofollow">强化学习入门书</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_5" href="http://www.deeplearningbook.org/" rel="nofollow">深度学习进阶书</a> </li>
+
+<li><a id="CatList_LinkList_2_Link_6" href="http://neuralnetworksanddeeplearning.com/" rel="nofollow">深度学习入门书</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_scorerank" class="sidebar-block">
+<div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	420565
+	</li>
+	<li class="liRank">
+		排名 -	493
+	</li>
+</ul>
+</div>
+
+
+</div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/pinard/p/5970503.html">1. 梯度下降（Gradient Descent）小结(231456)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6140514.html">2. 梯度提升树(GBDT)原理小结(171104)</a></li><li><a href="https://www.cnblogs.com/pinard/p/7160330.html">3. word2vec原理(一) CBOW与Skip-Gram模型基础(138208)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6244265.html">4. 线性判别分析LDA原理总结(117780)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6251584.html">5. 奇异值分解(SVD)原理与在降维中的应用(111128)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/pinard/p/6140514.html">1. 梯度提升树(GBDT)原理小结(359)</a></li><li><a href="https://www.cnblogs.com/pinard/p/7243513.html">2. word2vec原理(二) 基于Hierarchical Softmax的模型(224)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6133937.html">3. 集成学习之Adaboost算法原理小结(198)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6053344.html">4. 决策树算法原理(下)(173)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6221564.html">5. 谱聚类（spectral clustering）原理总结(162)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/pinard/p/5970503.html">1. 梯度下降（Gradient Descent）小结(78)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6251584.html">2. 奇异值分解(SVD)原理与在降维中的应用(63)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6131423.html">3. 集成学习原理小结(33)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6221564.html">4. 谱聚类（spectral clustering）原理总结(32)</a></li><li><a href="https://www.cnblogs.com/pinard/p/6140514.html">5. 梯度提升树(GBDT)原理小结(30)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 刘建平Pinard
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+<!--PageEndHtml Block Begin-->
+<script src="./分解机(Factorization Machines)推荐算法原理 - 刘建平Pinard - 博客园_files/tctip_1.0.3.min.js"></script>
+  <script>  
+  new tctip({
+    top: '50%',
+    button: {
+      id: 9,
+      type: 'dashang',
+    },
+    list: [
+      {
+        type: 'wechat',
+        qrImg: 'https://files.cnblogs.com/files/pinard/invoice.bmp'
+      }，
+      {
+        type: 'alipay',
+        qrImg: 'https://files.cnblogs.com/files/pinard/invoice_ali.bmp'
+      }
+    ]
+  }).init()
+  </script>
+<!--PageEndHtml Block End-->
+
+
+<div style="position: absolute; width: 0px; height: 0px; overflow: hidden; padding: 0px; border: 0px; margin: 0px;"><div id="MathJax_Font_Test" style="position: absolute; visibility: hidden; top: 0px; left: 0px; width: auto; padding: 0px; border: 0px; margin: 0px; white-space: nowrap; text-align: left; text-indent: 0px; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; font-size: 40px; font-weight: normal; font-style: normal; font-family: STIXSizeOneSym, sans-serif;"></div></div></body></html>
