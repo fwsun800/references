@@ -1,0 +1,52 @@
+/**
+* Font Face for Quadraat
+* NEJM-7093
+* Hosted in PageBuilder
+* v1.0.5.1
+*
+* <!-- NEJM-7093 Font Face Quadraat -->
+* <link rel="stylesheet" type="text/css" href="/pb-assets/fonts/quadraat/quadraat.css">
+*
+* Changelog:
+* - Paid Quadraat fonts with typekit-like CSS declaration
+**/
+
+@font-face {
+  font-family: "ff-quadraat-web-pro";
+  src: url("/pb-assets/fonts/quadraat/Quadraat-DemiBold.woff2") format("woff2"), 
+  url("/pb-assets/fonts/quadraat/Quadraat-DemiBold.woff") format("woff"), 
+  url("/pb-assets/fonts/quadraat/QuadraatProWeb-DemiBold.eot?#iefix") format("opentype");
+  font-display: auto;
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "ff-quadraat-web-pro";
+  src: url("/pb-assets/fonts/quadraat/Quadraat-DemiBoldItalic.woff2") format("woff2"), 
+  url("/pb-assets/fonts/quadraat/Quadraat-DemiBoldItalic.woff") format("woff"), 
+  url("/pb-assets/fonts/quadraat/QuadraatProWeb-DemiBoldItalic.eot?#iefix") format("opentype");
+  font-display: auto;
+  font-style: italic;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "ff-quadraat-web-pro";
+  src: url("/pb-assets/fonts/quadraat/Quadraat-Italic.woff2") format("woff2"), 
+  url("/pb-assets/fonts/quadraat/Quadraat-Italic.woff") format("woff"), 
+  url("/pb-assets/fonts/quadraat/QuadraatProWeb-Italic.eot?#iefix") format("opentype");
+  font-display: auto;
+  font-style: italic;
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "ff-quadraat-web-pro";
+  src: url("/pb-assets/fonts/quadraat/Quadraat-Regular.woff2") format("woff2"), 
+  url("/pb-assets/fonts/quadraat/Quadraat-Regular.woff") format("woff"), 
+  url("/pb-assets/fonts/quadraat/QuadraatProWeb-Regular.eot?#iefix") format("opentype");
+  font-display: auto;
+  font-style: normal;
+  font-weight: 400;
+}

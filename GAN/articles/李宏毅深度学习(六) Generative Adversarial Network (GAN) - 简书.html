@@ -1,0 +1,2805 @@
+<!DOCTYPE html>
+<!--[if IE 6]><html class="ie lt-ie8"><![endif]-->
+<!--[if IE 7]><html class="ie lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="ie ie8"><![endif]-->
+<!--[if IE 9]><html class="ie ie9"><![endif]-->
+<!--[if !IE]><!-->
+<html><!--<![endif]--><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+
+  <!-- Start of Baidu Transcode -->
+  <meta http-equiv="Cache-Control" content="no-siteapp">
+  <meta http-equiv="Cache-Control" content="no-transform">
+  <meta name="applicable-device" content="pc,mobile">
+  <meta name="MobileOptimized" content="width">
+  <meta name="HandheldFriendly" content="true">
+  <meta name="mobile-agent" content="format=html5;url=https://www.jianshu.com/p/40feb1aa642a">
+  <!-- End of Baidu Transcode -->
+
+    <meta name="description" content="最近看了李宏毅老师的深度学习视频课程，真的是讲得十分细致，从头到尾看下来一遍，对深度学习模型有了一个基本的认识，趁着脑子还能记着一些东西，赶紧把学到的东西记录下来，以备后用。视频地址：https://www.bilibili.com/video/av9770302/from=search&amp;seid=905421046757750252ppt地址：http://speech.ee.ntu.ed...">
+
+  <meta name="360-site-verification" content="604a14b53c6b871206001285921e81d8">
+  <meta property="wb:webmaster" content="294ec9de89e7fadb">
+  <meta property="qc:admins" content="104102651453316562112116375">
+  <meta property="qc:admins" content="11635613706305617">
+  <meta property="qc:admins" content="1163561616621163056375">
+  <meta name="google-site-verification" content="cV4-qkUJZR6gmFeajx_UyPe47GW9vY6cnCrYtCHYNh4">
+  <meta name="google-site-verification" content="HF7lfF8YEGs1qtCE-kPml8Z469e2RHhGajy6JPVy5XI">
+  <meta http-equiv="mobile-agent" content="format=html5; url=https://www.jianshu.com/p/40feb1aa642a">
+
+  <!-- Apple -->
+  <meta name="apple-mobile-web-app-title" content="简书">
+
+    <!--  Meta for Smart App Banner -->
+  <meta name="apple-itunes-app" content="app-id=888237539, app-argument=jianshu://notes/20549186">
+  <!-- End -->
+
+  <!--  Meta for Twitter Card -->
+  <meta content="summary" property="twitter:card">
+  <meta content="@jianshucom" property="twitter:site">
+  <meta content="李宏毅深度学习(六):Generative Adversarial Network (GAN)" property="twitter:title">
+  <meta content="最近看了李宏毅老师的深度学习视频课程，真的是讲得十分细致，从头到尾看下来一遍，对深度学习模型有了一个基本的认识，趁着脑子还能记着一些东西，赶紧把学到的东西记录下来，以备后用。..." property="twitter:description">
+  <meta content="https://www.jianshu.com/p/40feb1aa642a" property="twitter:url">
+  <!-- End -->
+
+  <!--  Meta for OpenGraph -->
+  <meta property="fb:app_id" content="865829053512461">
+  <meta property="og:site_name" content="简书">
+  <meta property="og:title" content="李宏毅深度学习(六):Generative Adversarial Network (GAN)">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://www.jianshu.com/p/40feb1aa642a">
+  <meta property="og:description" content="最近看了李宏毅老师的深度学习视频课程，真的是讲得十分细致，从头到尾看下来一遍，对深度学习模型有了一个基本的认识，趁着脑子还能记着一些东西，赶紧把学到的东西记录下来，以备后用。视频地址：https...">
+  <!-- End -->
+
+  <!--  Meta for Facebook Applinks -->
+  <meta property="al:ios:url" content="jianshu://notes/20549186">
+  <meta property="al:ios:app_store_id" content="888237539">
+  <meta property="al:ios:app_name" content="简书">
+
+  <meta property="al:android:url" content="jianshu://notes/20549186">
+  <meta property="al:android:package" content="com.jianshu.haruki">
+  <meta property="al:android:app_name" content="简书">
+  <!-- End -->
+
+
+    <title>李宏毅深度学习(六):Generative Adversarial Network (GAN) - 简书</title>
+
+  <meta name="csrf-param" content="authenticity_token">
+<meta name="csrf-token" content="jwABIn6rW8kplozlN91gK3STr4RnaKF3uNux3TqlU7+x9/NwP91FexKWI0WxmqWGrxtcAO2G3GLSj+jW6LRmSA==">
+
+  <link rel="stylesheet" media="all" href="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/web-30728a1164102859481d.css">
+  
+  <link rel="stylesheet" media="all" href="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/entry-aa75deb505b1b600256a.css">
+
+  <link href="https://cdn2.jianshu.io/assets/favicons/favicon-e743bfb1821442341c3ab15bdbe804f7ad97676bd07a770ccc9483473aa76f06.ico" rel="shortcut icon" type="image/x-icon">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/57-a6f1f1ee62ace44f6dc2f6a08575abd3c3b163288881c78dd8d75247682a4b27.png" sizes="57x57">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/72-fb9834bcfce738fd7b9c5e31363e79443e09a81a8e931170b58bc815387c1562.png" sizes="72x72">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/76-49d88e539ff2489475d603994988d871219141ecaa0b1a7a9a1914f4fe3182d6.png" sizes="76x76">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/114-24252fe693524ed3a9d0905e49bff3cbd0228f25a320aa09053c2ebb4955de97.png" sizes="114x114">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/120-1bb7371f5e87f93ce780a5f1a05ff1b176828ee0d1d130e768575918a2e05834.png" sizes="120x120">
+      <link rel="apple-touch-icon-precomposed" href="https://cdn2.jianshu.io/assets/apple-touch-icons/152-bf209460fc1c17bfd3e2b84c8e758bc11ca3e570fd411c3bbd84149b97453b99.png" sizes="152x152">
+
+  <!-- Start of 访问统计 -->
+    <script src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/push.js"></script><script src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/hm.txt"></script><script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "//hm.baidu.com/hm.js?0c0e9d9b1e7d617b3e6842e85b9fb068";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+  <!-- End of 访问统计 -->
+<style type="text/css">@charset "UTF-8";.image-package .image-container .image-view-error:after,.image-package .image-container .image-view-maintain:after{position:absolute;top:50%;left:50%;width:100%;-webkit-transform:translate(-50%,-50%);-ms-transform:translate(-50%,-50%);transform:translate(-50%,-50%);color:#888;font-size:14px}.image-package .image-container{position:relative;z-index:2;background-color:#eee;-webkit-transition:background-color .1s linear;-o-transition:background-color .1s linear;transition:background-color .1s linear;margin:0 auto}body.reader-night-mode .image-package .image-container{background-color:#545454}.image-package .image-container-fill{z-index:1}.image-package .image-container .image-view{position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden}.image-package .image-container .image-view-error:after{content:"图片获取失败，请点击重试"}.image-package .image-container .image-view-maintain:after{content:"系统维护中，图片暂时无法加载"}.image-package .image-container .image-view img.image-loading{opacity:.3}.image-package .image-container .image-view img{-webkit-transition:all .15s linear;-o-transition:all .15s linear;transition:all .15s linear;z-index:2;opacity:1}</style><style type="text/css">fieldset[disabled] .multiselect {
+  pointer-events: none;
+}
+
+.multiselect__spinner {
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  width: 48px;
+  height: 35px;
+  background: #fff;
+  display: block;
+}
+
+.multiselect__spinner:after,
+.multiselect__spinner:before {
+  position: absolute;
+  content: "";
+  top: 50%;
+  left: 50%;
+  margin: -8px 0 0 -8px;
+  width: 16px;
+  height: 16px;
+  border-radius: 100%;
+  border-color: #41b883 transparent transparent;
+  border-style: solid;
+  border-width: 2px;
+  box-shadow: 0 0 0 1px transparent;
+}
+
+.multiselect__spinner:before {
+  animation: a 2.4s cubic-bezier(.41,.26,.2,.62);
+  animation-iteration-count: infinite;
+}
+
+.multiselect__spinner:after {
+  animation: a 2.4s cubic-bezier(.51,.09,.21,.8);
+  animation-iteration-count: infinite;
+}
+
+.multiselect__loading-enter-active,
+.multiselect__loading-leave-active {
+  transition: opacity .4s ease-in-out;
+  opacity: 1;
+}
+
+.multiselect__loading-enter,
+.multiselect__loading-leave-active {
+  opacity: 0;
+}
+
+.multiselect,
+.multiselect__input,
+.multiselect__single {
+  font-family: inherit;
+  font-size: 14px;
+  -ms-touch-action: manipulation;
+  touch-action: manipulation;
+}
+
+.multiselect {
+  box-sizing: content-box;
+  display: block;
+  position: relative;
+  width: 100%;
+  min-height: 40px;
+  text-align: left;
+  color: #35495e;
+}
+
+.multiselect * {
+  box-sizing: border-box;
+}
+
+.multiselect:focus {
+  outline: none;
+}
+
+.multiselect--disabled {
+  opacity: .6;
+}
+
+.multiselect--active {
+  z-index: 1;
+}
+
+.multiselect--active:not(.multiselect--above) .multiselect__current,
+.multiselect--active:not(.multiselect--above) .multiselect__input,
+.multiselect--active:not(.multiselect--above) .multiselect__tags {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.multiselect--active .multiselect__select {
+  transform: rotate(180deg);
+}
+
+.multiselect--above.multiselect--active .multiselect__current,
+.multiselect--above.multiselect--active .multiselect__input,
+.multiselect--above.multiselect--active .multiselect__tags {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
+
+.multiselect__input,
+.multiselect__single {
+  position: relative;
+  display: inline-block;
+  min-height: 20px;
+  line-height: 20px;
+  border: none;
+  border-radius: 5px;
+  background: #fff;
+  padding: 0 0 0 5px;
+  width: 100%;
+  transition: border .1s ease;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  vertical-align: top;
+}
+
+.multiselect__tag~.multiselect__input,
+.multiselect__tag~.multiselect__single {
+  width: auto;
+}
+
+.multiselect__input:hover,
+.multiselect__single:hover {
+  border-color: #cfcfcf;
+}
+
+.multiselect__input:focus,
+.multiselect__single:focus {
+  border-color: #a8a8a8;
+  outline: none;
+}
+
+.multiselect__single {
+  padding-left: 6px;
+  margin-bottom: 8px;
+}
+
+.multiselect__tags-wrap {
+  display: inline;
+}
+
+.multiselect__tags {
+  min-height: 40px;
+  display: block;
+  padding: 8px 40px 0 8px;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+  background: #fff;
+}
+
+.multiselect__tag {
+  position: relative;
+  display: inline-block;
+  padding: 4px 26px 4px 10px;
+  border-radius: 5px;
+  margin-right: 10px;
+  color: #fff;
+  line-height: 1;
+  background: #41b883;
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 100%;
+  text-overflow: ellipsis;
+}
+
+.multiselect__tag-icon {
+  cursor: pointer;
+  margin-left: 7px;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  font-weight: 700;
+  font-style: normal;
+  width: 22px;
+  text-align: center;
+  line-height: 22px;
+  transition: all .2s ease;
+  border-radius: 5px;
+}
+
+.multiselect__tag-icon:after {
+  content: "\D7";
+  color: #266d4d;
+  font-size: 14px;
+}
+
+.multiselect__tag-icon:focus,
+.multiselect__tag-icon:hover {
+  background: #369a6e;
+}
+
+.multiselect__tag-icon:focus:after,
+.multiselect__tag-icon:hover:after {
+  color: #fff;
+}
+
+.multiselect__current {
+  min-height: 40px;
+  overflow: hidden;
+  padding: 8px 12px 0;
+  padding-right: 30px;
+  white-space: nowrap;
+  border-radius: 5px;
+  border: 1px solid #e8e8e8;
+}
+
+.multiselect__current,
+.multiselect__select {
+  line-height: 16px;
+  box-sizing: border-box;
+  display: block;
+  margin: 0;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.multiselect__select {
+  position: absolute;
+  width: 40px;
+  height: 38px;
+  right: 1px;
+  top: 1px;
+  padding: 4px 8px;
+  text-align: center;
+  transition: transform .2s ease;
+}
+
+.multiselect__select:before {
+  position: relative;
+  right: 0;
+  top: 65%;
+  color: #999;
+  margin-top: 4px;
+  border-style: solid;
+  border-width: 5px 5px 0;
+  border-color: #999 transparent transparent;
+  content: "";
+}
+
+.multiselect__placeholder {
+  color: #adadad;
+  display: inline-block;
+  margin-bottom: 10px;
+  padding-top: 2px;
+}
+
+.multiselect--active .multiselect__placeholder {
+  display: none;
+}
+
+.multiselect__content-wrapper {
+  position: absolute;
+  display: block;
+  background: #fff;
+  width: 100%;
+  max-height: 240px;
+  overflow: auto;
+  border: 1px solid #e8e8e8;
+  border-top: none;
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+  z-index: 1;
+  -webkit-overflow-scrolling: touch;
+}
+
+.multiselect__content {
+  list-style: none;
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  min-width: 100%;
+  vertical-align: top;
+}
+
+.multiselect--above .multiselect__content-wrapper {
+  bottom: 100%;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  border-bottom: none;
+  border-top: 1px solid #e8e8e8;
+}
+
+.multiselect__content::webkit-scrollbar {
+  display: none;
+}
+
+.multiselect__element {
+  display: block;
+}
+
+.multiselect__option {
+  display: block;
+  padding: 12px;
+  min-height: 40px;
+  line-height: 16px;
+  text-decoration: none;
+  text-transform: none;
+  vertical-align: middle;
+  position: relative;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.multiselect__option:after {
+  top: 0;
+  right: 0;
+  position: absolute;
+  line-height: 40px;
+  padding-right: 12px;
+  padding-left: 20px;
+}
+
+.multiselect__option--highlight {
+  background: #41b883;
+  outline: none;
+  color: #fff;
+}
+
+.multiselect__option--highlight:after {
+  content: attr(data-select);
+  background: #41b883;
+  color: #fff;
+}
+
+.multiselect__option--selected {
+  background: #f3f3f3;
+  color: #35495e;
+  font-weight: 700;
+}
+
+.multiselect__option--selected:after {
+  content: attr(data-selected);
+  color: silver;
+}
+
+.multiselect__option--selected.multiselect__option--highlight {
+  background: #ff6a6a;
+  color: #fff;
+}
+
+.multiselect__option--selected.multiselect__option--highlight:after {
+  background: #ff6a6a;
+  content: attr(data-deselect);
+  color: #fff;
+}
+
+.multiselect--disabled {
+  background: #ededed;
+  pointer-events: none;
+}
+
+.multiselect--disabled .multiselect__current,
+.multiselect--disabled .multiselect__select,
+.multiselect__option--disabled {
+  background: #ededed;
+  color: #a6a6a6;
+}
+
+.multiselect__option--disabled {
+  cursor: text;
+  pointer-events: none;
+}
+
+.multiselect__option--disabled.multiselect__option--highlight {
+  background: #dedede!important;
+}
+
+.multiselect-enter-active,
+.multiselect-leave-active {
+  transition: all .15s ease;
+}
+
+.multiselect-enter,
+.multiselect-leave-active {
+  opacity: 0;
+}
+
+.multiselect__strong {
+  margin-bottom: 8px;
+  line-height: 20px;
+  display: inline-block;
+  vertical-align: top;
+}
+
+[dir=rtl] .multiselect {
+  text-align: right;
+}
+
+[dir=rtl] .multiselect__select {
+  right: auto;
+  left: 1px;
+}
+
+[dir=rtl] .multiselect__tags {
+  padding: 8px 8px 0 40px;
+}
+
+[dir=rtl] .multiselect__content {
+  text-align: right;
+}
+
+[dir=rtl] .multiselect__option:after {
+  right: auto;
+  left: 0;
+}
+
+[dir=rtl] .multiselect__clear {
+  right: auto;
+  left: 12px;
+}
+
+[dir=rtl] .multiselect__spinner {
+  right: auto;
+  left: 1px;
+}
+
+@keyframes a {
+  0% {
+    transform: rotate(0);
+  }
+
+  to {
+    transform: rotate(2turn);
+  }
+}</style><style type="text/css">
+#free-reward-panel .reward-users-modal main {
+  padding: 0;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.reward-note-modal .v-modal {
+  width: 620px;
+  text-align: center;
+}
+.reward-note-modal .v-modal form {
+    margin: 0 auto 25px auto;
+    padding: 0 40px;
+}
+.reward-note-modal .v-modal .reward-intro {
+    margin-top: 20px;
+    margin-bottom: 20px;
+    font-size: 16px;
+}
+.reward-note-modal .v-modal .reward-intro .avatar {
+      cursor: default !important;
+      width: 36px;
+      height: 36px;
+      margin-right: 10px;
+      display: inline-block;
+}
+.reward-note-modal .v-modal .reward-intro .intro {
+      margin-right: 5px;
+      font-weight: bold;
+      vertical-align: middle;
+}
+.reward-note-modal .v-modal .reward-intro i {
+      color: #EA6F5A;
+      vertical-align: middle;
+}
+.reward-note-modal .v-modal .main-inputs {
+    margin: 25px 0;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group {
+      margin: 0 -5px;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group input {
+        display: none;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group input:checked + .option {
+        color: #EA6F5A;
+        border-color: #EA6F5A;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .custom-amount:checked + .option .custom-text {
+        opacity: 0;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .custom-amount:checked + .option .custom-amount-input {
+        opacity: 1;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option {
+        position: relative;
+        margin: 0 5px 15px;
+        width: 156px;
+        height: 56px;
+        line-height: 54px;
+        border: 1px solid #E6E6E6;
+        border-radius: 4px;
+        font-weight: normal;
+        color: #999999;
+        cursor: pointer;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option i {
+          font-size: 16px;
+          vertical-align: middle;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .amount {
+          font-size: 28px;
+          vertical-align: middle;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .piece {
+          font-size: 13px;
+          vertical-align: sub;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input {
+          position: absolute;
+          top: 0;
+          z-index: -1;
+          width: 100%;
+          opacity: 0;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input i {
+            position: absolute;
+            top: 0;
+            left: 10px;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input .piece {
+            position: absolute;
+            top: 4px;
+            right: 10px;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input input {
+            display: block;
+            margin: 0 auto;
+            width: 80px;
+            height: 54px;
+            line-height: 54px;
+            border: none;
+            font-size: 28px;
+            text-align: center;
+            background: transparent;
+            -moz-appearance: textfield;
+}
+.reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input input::-webkit-outer-spin-button, .reward-note-modal .v-modal .main-inputs .amount-group .option .custom-amount-input input::-webkit-inner-spin-button {
+              -webkit-appearance: none !important;
+}
+.reward-note-modal .v-modal .main-inputs .message {
+      padding: 15px 20px;
+      margin-bottom: 0;
+      font-size: 14px;
+      border: 1px solid #E6E6E6;
+      color: #333333;
+      border-radius: 4px;
+      background-color: rgba(180, 180, 180, 0.1);
+}
+.reward-note-modal .v-modal .main-inputs .message textarea {
+        width: 100%;
+        height: 44px;
+        padding: 0;
+        margin: 0;
+        resize: none;
+        background: none !important;
+        border: none !important;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+        -webkit-box-shadow: none;
+                box-shadow: none;
+}
+.reward-note-modal .v-modal .main-inputs .message textarea:focus {
+          outline: none;
+}
+.reward-note-modal .v-modal .reward-info .amount {
+    font-size: 28px;
+    font-weight: bold;
+    color: #EA6F5A;
+}
+.reward-note-modal .v-modal .reward-info .pay-method {
+    font-size: 14px;
+}
+.reward-note-modal .v-modal .reward-info .pay-method a {
+      color: #3194D0;
+}
+.reward-note-modal .v-modal .choose-pay {
+    margin: 0 -5px;
+}
+.reward-note-modal .v-modal .choose-pay input {
+      display: none;
+}
+.reward-note-modal .v-modal .choose-pay input:checked + .option {
+      color: #EA6F5A;
+      border-color: #EA6F5A;
+}
+.reward-note-modal .v-modal .choose-pay .option {
+      margin: 20px 5px 10px;
+      width: 156px;
+      height: 56px;
+      line-height: 54px;
+      text-align: center;
+      border: 1px solid #E6E6E6;
+      border-radius: 4px;
+      cursor: pointer;
+}
+.reward-note-modal .v-modal .choose-pay .option img {
+        height: 30px;
+}
+.reward-note-modal .v-modal .choose-pay .option img.day.alipay, .reward-note-modal .v-modal .choose-pay .option img.night.alipay {
+        min-width: 85px;
+}
+.reward-note-modal .v-modal .choose-pay .option img.day.wechat, .reward-note-modal .v-modal .choose-pay .option img.night.wechat {
+        min-width: 112px;
+}
+.reward-note-modal .v-modal .choose-pay .option img.night {
+        display: none;
+}
+body.reader-night-mode .reward-note-modal .v-modal .choose-pay .option img.night {
+        display: inline-block;
+}
+body.reader-night-mode .reward-note-modal .v-modal .choose-pay .option img.day {
+        display: none;
+}
+.reward-note-modal .v-modal .choose-pay .tooltip {
+      width: 230px;
+}
+.reward-note-modal .v-modal .modal-footer {
+    padding: 0 15px 20px;
+    border: none;
+    background-color: transparent;
+    text-align: center;
+}
+.reward-note-modal .v-modal .modal-footer .btn {
+      padding: 8px 45px;
+      font-size: 24px;
+}
+.reward-note-modal .v-modal .btn-pay {
+    padding: 8px 25px;
+    font-size: 16px;
+    color: #ffffff;
+    background-color: #F5A623;
+}
+.weixin-pay, .success-pay {
+  text-align: center;
+}
+.weixin-pay .v-modal, .success-pay .v-modal {
+    width: 350px;
+}
+.weixin-pay .ic-successed, .success-pay .ic-successed {
+    font-size: 60px;
+    color: #3db922;
+}
+.weixin-pay h2, .weixin-pay h3, .success-pay h2, .success-pay h3 {
+    margin-bottom: 20px;
+    color: #333333;
+}
+.weixin-pay h2, .success-pay h2 {
+    margin: 0 0 40px 0;
+    font-size: 24px;
+}
+.weixin-pay .bind-text, .success-pay .bind-text {
+    position: relative;
+    margin-bottom: 30px;
+    font-size: 14px;
+    color: #999999;
+}
+.weixin-pay .bind-text:before, .weixin-pay .bind-text:after, .success-pay .bind-text:before, .success-pay .bind-text:after {
+      content: "";
+      border-top: 1px solid #999;
+      display: block;
+      position: absolute;
+      width: 40px;
+      top: 8px;
+}
+.weixin-pay .bind-text:before, .success-pay .bind-text:before {
+      left: 30px;
+}
+.weixin-pay .bind-text:after, .success-pay .bind-text:after {
+      right: 30px;
+}
+.weixin-pay .share-bind, .success-pay .share-bind {
+    display: block;
+    margin-bottom: 30px;
+}
+.weixin-pay .share-bind i, .success-pay .share-bind i {
+      margin-right: 4px;
+      font-size: 22px;
+      vertical-align: middle;
+}
+.weixin-pay .share-bind.wechat i, .success-pay .share-bind.wechat i {
+      color: #00BB29;
+}
+.weixin-pay .share-bind.weibo i, .success-pay .share-bind.weibo i {
+      color: #E05244;
+}
+.weixin-pay .wx-qr-code, .success-pay .wx-qr-code {
+    display: inline-block;
+}
+.weixin-pay .wx-qr-code img, .success-pay .wx-qr-code img {
+      margin: 0 auto;
+      padding: 10px;
+      width: 200px;
+      background-color: #ffffff;
+}
+.weixin-pay .pay-amount, .success-pay .pay-amount {
+    margin: 20px 0;
+    color: #787878;
+}
+.weixin-pay .pay-amount span, .success-pay .pay-amount span {
+      color: #F5A623;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.v-modal-wrap {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background-color: transparent;
+}
+.v-modal-wrap.modal-leave-active {
+    -webkit-transition: opacity 0.3s;
+    -o-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+}
+.v-modal-wrap.modal-enter-active .v-modal-mask, .v-modal-wrap.modal-leave-active .v-modal-mask {
+    opacity: 0;
+}
+.v-modal-wrap.modal-enter-active .v-modal, .v-modal-wrap.modal-leave-active .v-modal {
+    -webkit-transform: translate(-50%, -70%);
+        -ms-transform: translate(-50%, -70%);
+            transform: translate(-50%, -70%);
+    opacity: 0;
+}
+.v-modal-wrap .v-modal-mask {
+    background-color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    -webkit-transition: opacity 0.3s;
+    -o-transition: opacity 0.3s;
+    transition: opacity 0.3s;
+    opacity: 1;
+}
+.v-modal-wrap .v-modal {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+        -ms-transform: translate(-50%, -50%);
+            transform: translate(-50%, -50%);
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    -webkit-box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+    -webkit-transition: opacity 0.3s, -webkit-transform 0.3s;
+    transition: opacity 0.3s, -webkit-transform 0.3s;
+    -o-transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.3s, transform 0.3s;
+    transition: opacity 0.3s, transform 0.3s, -webkit-transform 0.3s;
+    opacity: 1;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: column;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    overflow: hidden;
+}
+.v-modal-wrap .v-modal > header:before, .v-modal-wrap .v-modal > header:after, .v-modal-wrap .v-modal > main:before, .v-modal-wrap .v-modal > main:after, .v-modal-wrap .v-modal > footer:before, .v-modal-wrap .v-modal > footer:after {
+      content: '';
+      clear: both;
+      display: table;
+}
+.v-modal-wrap .v-modal > header {
+      padding: 20px;
+      border-bottom: 1px solid #F0F0F0;
+}
+.v-modal-wrap .v-modal > header h4 {
+        margin: 0;
+        color: #333;
+        text-align: left;
+}
+.v-modal-wrap .v-modal .close {
+      position: absolute;
+      right: 16px;
+      top: 20px;
+      font-size: 26px;
+      line-height: 20px;
+      color: rgba(0, 0, 0, 0.8);
+}
+.v-modal-wrap .v-modal .close:hover {
+        color: #000000;
+}
+.v-modal-wrap .v-modal > main {
+      padding: 20px 20px 20px 20px;
+      font-size: 15px;
+      color: #333;
+      -webkit-box-flex: 1;
+      -webkit-flex-grow: 1;
+          -ms-flex-positive: 1;
+              flex-grow: 1;
+      overflow-x: hidden;
+      overflow-y: auto;
+}
+.v-modal-wrap .v-modal > footer {
+      padding: 20px;
+      background-color: #fff;
+}
+.v-modal-wrap .v-modal > footer button {
+        padding: 0;
+        margin: 0;
+        background-color: transparent;
+        border: 0;
+        float: right;
+}
+.v-modal-wrap .v-modal > footer button:focus {
+          outline: 0;
+}
+.v-modal-wrap .v-modal > footer .submit {
+        padding: 4px 12px;
+        border: 1px solid;
+        border-radius: 20px;
+}
+.v-modal-wrap .v-modal > footer .cancel {
+        margin-top: 5px;
+}
+.v-modal-wrap .v-modal > footer .cancel:hover {
+          color: #333333;
+}
+.reader-night-mode .v-modal-wrap .v-modal-mask {
+  background-color: rgba(63, 63, 63, 0.7);
+}
+.reader-night-mode .v-modal-wrap .v-modal {
+  background-color: #3f3f3f;
+}
+.reader-night-mode .v-modal-wrap .v-modal header {
+    border-color: #2F2F2F;
+}
+.reader-night-mode .v-modal-wrap .v-modal header h4 {
+      color: #C8C8C8;
+}
+.reader-night-mode .v-modal-wrap .v-modal .close {
+    color: #C8C8C8;
+}
+.reader-night-mode .v-modal-wrap .v-modal .close:hover {
+      color: #ffffff;
+}
+.reader-night-mode .v-modal-wrap .v-modal main {
+    color: #C8C8C8;
+}
+.reader-night-mode .v-modal-wrap .v-modal footer {
+    background-color: #3f3f3f;
+}
+.reader-night-mode .v-modal-wrap .v-modal footer .cancel:hover {
+      color: #C8C8C8;
+}
+</style><style type="text/css">
+.nqzzJ71pC-jOnJKAfdtr6_0 {
+  float: right;
+  height: 55px;
+  padding: 15px 0px;
+  margin: 0 12px;
+}
+._3tScN0zmSdGLaUAH4SxTbM_0 {
+    width: 100%;
+    height: 100%;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._3f806byixOPpOPWnx8HiQP_0 {
+    height: 25px;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._2MIQ6sBppQZAKea91We0qf_0 {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #000;
+    opacity: 0.6;
+    z-index: 1000;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 {
+    position: fixed;
+    left: -webkit-calc( 50% - 190px);
+    left: calc( 50% - 190px);
+    top: -webkit-calc( 50% - 300px);
+    top: calc( 50% - 300px);
+    width: 380px;
+    height: 425px;
+    background-color: #fff;
+    padding: 40px 72px 0;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-box-pack: center;
+    -webkit-justify-content: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    z-index: 1000;
+    text-align: center;
+}
+body.reader-night-mode .nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 {
+      background-color: #3f3f3f;
+      color: #c8c8c8;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 h4 {
+      margin: 0;
+      line-height: 25px;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 h4 span {
+        color: #e9634c;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 img {
+      width: 190px;
+      height: 190px;
+      margin: 12px 0 8px 0;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 p {
+      font-size: 14px;
+      line-height: 20px;
+      margin: 0;
+}
+.nqzzJ71pC-jOnJKAfdtr6_0 ._1RppgOJ_CQiXgzd3ke-sbJ_0 ._2WUz9DZJO5DIC_O5sD1kac_0 {
+      background-color: #e9634c;
+      color: #fff;
+      margin: 25px auto 0;
+      width: 190px;
+      height: 40px;
+      border-radius: 20px;
+      line-height: 40px;
+      font-size: 14px;
+      cursor: pointer;
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.youdao-fixed-ad {
+  display: block;
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border: 1px solid #e8eae9;
+}
+.youdao-fixed-ad .img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+}
+.youdao-fixed-ad .ad-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: block;
+    font-size: 12px;
+    padding: 2px 5px 0 6px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+}
+.qingteng-ads {
+  border: 1px solid #e8e8e8;
+  width: 180px;
+}
+</style><style type="text/css">
+.yuxi-fixed-ad {
+  position: relative;
+  width: 180px;
+  height: 180px;
+}
+.yuxi-fixed-ad .img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    background-image: url(//cdn2.jianshu.io/assets/web/yuxi-ads-d73b364baf42dfeca32d518c819a0136.jpg);
+}
+.yuxi-fixed-ad .ad-badge {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    display: block;
+    font-size: 12px;
+    padding: 2px 5px 0 6px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.like[data-v-6ddd02c6] {
+  display: inline-block;
+}
+.like .like-group[data-v-6ddd02c6] {
+    position: relative;
+    padding: 13px 0 15px 0;
+    font-size: 0;
+    border: 1px solid #EA6F5A;
+    border-radius: 40px;
+}
+.like .like-group[data-v-6ddd02c6]:hover {
+      background-color: rgba(236, 97, 73, 0.05);
+}
+.like .like-group .btn-like[data-v-6ddd02c6] {
+      display: inline-block;
+      font-size: 19px;
+}
+.like .like-group .btn-like[data-v-6ddd02c6]:before {
+        content: '';
+        position: absolute;
+        left: 12px;
+        top: 2px;
+        width: 50px;
+        height: 50px;
+        background-image: url(//cdn2.jianshu.io/assets/web/like_animation_steps-62a00a7b52377d3069927cdb8e61fd34.png);
+        background-position: left;
+        background-repeat: no-repeat;
+        background-size: 1000px 50px;
+}
+.like .like-group .btn-like a[data-v-6ddd02c6] {
+        position: relative;
+        padding: 18px 30px 18px 55px;
+        color: #EA6F5A;
+}
+.like .like-group .modal-wrap[data-v-6ddd02c6] {
+      font-size: 18px;
+      border-left: 1px solid rgba(236, 97, 73, 0.4);
+      display: inline-block;
+      margin-left: -15px;
+}
+.like .like-group .modal-wrap a[data-v-6ddd02c6] {
+        color: #EA6F5A;
+        padding: 18px 26px 18px 18px;
+}
+.like .like-group.like-animation[data-v-6ddd02c6], .like .like-group.active[data-v-6ddd02c6] {
+      background-color: #EA6F5A;
+}
+.like .like-group.like-animation .btn-like a[data-v-6ddd02c6], .like .like-group.active .btn-like a[data-v-6ddd02c6] {
+        color: white;
+}
+.like .like-group.like-animation .modal-wrap[data-v-6ddd02c6], .like .like-group.active .modal-wrap[data-v-6ddd02c6] {
+        border-left: 1px solid white;
+}
+.like .like-group.like-animation .modal-wrap a[data-v-6ddd02c6], .like .like-group.active .modal-wrap a[data-v-6ddd02c6] {
+          color: white;
+}
+.like .like-group.like-animation .btn-like[data-v-6ddd02c6]:before {
+      -webkit-animation: likeBlast-data-v-6ddd02c6 0.6s 1 steps(19);
+              animation: likeBlast-data-v-6ddd02c6 0.6s 1 steps(19);
+      background-position: right;
+}
+@-webkit-keyframes likeBlast {
+0% {
+    background-position: left;
+}
+100% {
+    background-position: right;
+}
+}
+@keyframes likeBlast-data-v-6ddd02c6 {
+0% {
+    background-position: left;
+}
+100% {
+    background-position: right;
+}
+}
+.like .like-group.active .btn-like[data-v-6ddd02c6]:before {
+      background-position: right;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.main {
+  position: relative;
+  margin: 0 auto;
+  padding: 0 0 30px 0;
+  width: 620px;
+}
+.main .title {
+    padding-left: 8px;
+    border-left: 3px solid #EA6F5A;
+    line-height: 1;
+    font-size: 15px;
+}
+.main .collection-settings {
+    position: absolute;
+    top: 2px;
+    right: 0;
+    font-size: 13px;
+    color: #A0A0A0;
+}
+.main .collection-settings span {
+      padding-left: 4px;
+}
+.main .include-collection {
+    width: 100%;
+    padding-top: 20px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: start;
+    -webkit-justify-content: flex-start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    -webkit-flex-wrap: wrap;
+        -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+}
+.main .include-collection .item {
+      display: inline-block;
+      margin: 0 12px 12px 0;
+      min-height: 32px;
+      background-color: white;
+      border: 1px solid #DCDCDC;
+      border-radius: 4px;
+      vertical-align: top;
+      overflow: hidden;
+}
+.main .include-collection .item img {
+        width: 32px;
+        height: 32px;
+}
+.main .include-collection .item .name {
+        display: inline-block;
+        padding: 0 10px;
+        font-size: 14px;
+}
+.main .include-collection .add-collection-wrap {
+      margin: 0 12px 12px 0;
+}
+.main .include-collection .add-collection {
+      padding: 8px 12px;
+      font-size: 14px;
+      border: 1px solid #DCDCDC;
+      border-radius: 4px;
+}
+.main .include-collection .add-collection i {
+        margin-right: 4px;
+        color: #969696;
+}
+.main .recommend-note a {
+    position: relative;
+    margin: 20px 2px 0 0;
+    width: 200px;
+    height: 160px;
+    display: inline-block;
+}
+.main .recommend-note a:after {
+      content: "";
+      position: absolute;
+      width: 200px;
+      height: 160px;
+      border-radius: 0 0 4px 4px;
+      -webkit-box-shadow: inset 0px -80px 50px -22px rgba(0, 0, 0, 0.6);
+              box-shadow: inset 0px -80px 50px -22px rgba(0, 0, 0, 0.6);
+      top: 0;
+      left: 0;
+      z-index: 1;
+}
+.main .recommend-note .name {
+    position: absolute;
+    bottom: 40px;
+    left: 10px;
+    right: 10px;
+    font-size: 17px;
+    font-weight: bold;
+    color: #ffffff;
+    z-index: 2;
+}
+.main .recommend-note .author {
+    position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 2;
+}
+.main .recommend-note .avatar {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+}
+.main .recommend-note .avatar img {
+      border-radius: 50%;
+}
+.main .recommend-note .author-name {
+    font-size: 12px;
+    color: #ffffff;
+    display: inline-block;
+    vertical-align: -1px;
+}
+.main .show-more {
+    margin: 0 12px 12px 0;
+    font-size: 14px;
+    color: #A0A0A0;
+}
+</style><style type="text/css">
+#featured-comment-list {
+  margin-top: 30px;
+  margin-bottom: -15px;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.pc-bind-phone-modal .modal-content, .pc-bind-phone-modal .modal-body {
+  overflow: visible;
+}
+.pc-bind-phone-modal .modal-body {
+  padding-top: 14px;
+}
+.pc-bind-phone-modal .dropdown-menu {
+  max-height: 300px;
+  overflow: auto;
+}
+.pc-bind-phone-modal .dropdown-menu .tag {
+    background-color: #efefef;
+    color: #4A4A4A;
+    height: 28px;
+    line-height: 28px;
+    padding-left: 25px;
+    font-size: 12px;
+}
+.pc-bind-phone-modal .tips {
+  color: #999999;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 18px;
+  margin-bottom: 14px;
+}
+.pc-bind-phone-modal .tips a {
+    color: #3194D0;
+}
+.reader-night-mode .pc-bind-phone-modal .dropdown-menu .tag {
+  background-color: #2F2F2F;
+  color: #999999;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.comment-images {
+  display: block;
+  width: 338px;
+  margin-top: 15px;
+  margin-bottom: 15px;
+  position: relative;
+  font-size: 0;
+}
+.comment-images .preview-img {
+    display: block;
+}
+.comment-images .image {
+    position: relative;
+    border-radius: 4px;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
+}
+body.reader-night-mode .comment-images .image {
+      border-color: #2f2f2f;
+}
+.comment-images .image:not(:nth-child(3n)) {
+      margin-right: 4px;
+}
+.comment-images .image:nth-child(n + 4) {
+      margin-top: 4px;
+}
+.comment-images .image.is-long:after {
+      content: '\957F\56FE';
+      position: absolute;
+      bottom: 0;
+      margin-left: -32px;
+      width: 32px;
+      height: 28px;
+      font-size: 12px;
+      text-align: center;
+      line-height: 28px;
+      background-color: #2f2f2f;
+      opacity: 0.5;
+      color: #fff;
+}
+.comment-images .one-image.is-long {
+    width: 110px;
+    height: 220px;
+    background-position: top left;
+    background-size: 110px auto;
+}
+.comment-images .one-image.is-long:after {
+      left: 100%;
+}
+.comment-images .one-image.is-normal {
+    height: 110px;
+    width: 100%;
+    background-size: contain;
+    background-position: center left;
+}
+.comment-images .many-image {
+    background-size: cover;
+    display: inline-block !important;
+    height: 110px;
+    width: 110px;
+}
+.comment-images .many-image:after {
+      left: 100%;
+}
+.comment-images .sub-image {
+    width: 105px;
+    height: 105px;
+}
+.comment-images .collapsed-btn {
+    display: block;
+    color: #3194d0;
+    font-size: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.comment-images .mask {
+    position: absolute;
+    right: 0;
+    top: 0;
+    height: 100%;
+    width: 32%;
+    border-radius: 2px;
+    background-color: rgba(47, 47, 47, 0.6);
+    overflow: hidden;
+    pointer-events: none;
+}
+.comment-images .mask span {
+      font-size: 15px;
+      color: #fff;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      -webkit-transform: translate(-50%, -50%);
+          -ms-transform: translate(-50%, -50%);
+              transform: translate(-50%, -50%);
+      width: 100%;
+      text-align: center;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.tips-card-loading[data-v-f3bf5228], .tips-card[data-v-f3bf5228] {
+  width: 460px;
+  position: relative;
+  left: 0;
+  top: 0;
+  border-radius: 6px;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  background-color: #ffffff;
+  -webkit-box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+          box-shadow: 0 5px 25px rgba(0, 0, 0, 0.1);
+  border: 1px solid #d9d9d9;
+}
+.tips-card-loading[data-v-f3bf5228] {
+  height: 200px;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  -webkit-flex-direction: row;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+      -ms-flex-align: center;
+          align-items: center;
+  position: relative;
+}
+.tips-card-loading div[data-v-f3bf5228] {
+    background-color: #EAEAEA;
+}
+.tips-card-loading .avatar[data-v-f3bf5228] {
+    width: 72px !important;
+    height: 72px !important;
+    border-radius: 50%;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+.tips-card-loading .name[data-v-f3bf5228] {
+    width: 120px;
+    height: 20px;
+    position: absolute;
+    left: 110px;
+    top: 31px;
+}
+.tips-card-loading .content[data-v-f3bf5228] {
+    position: absolute;
+    left: 110px;
+    top: 62px;
+    width: 238px;
+    height: 39.2px;
+    background-color: transparent;
+}
+.tips-card-loading .content .text[data-v-f3bf5228], .tips-card-loading .content .text-delay[data-v-f3bf5228] {
+      height: 14px;
+      position: absolute;
+      left: 0;
+      width: 100%;
+}
+.tips-card-loading .content .text[data-v-f3bf5228] {
+      top: 2px;
+      -webkit-animation: loading-data-v-f3bf5228 1s ease-in-out infinite;
+      animation: loading-data-v-f3bf5228 1s ease-in-out infinite;
+}
+.tips-card-loading .content .text-delay[data-v-f3bf5228] {
+      bottom: 3px;
+      -webkit-animation: loading-data-v-f3bf5228 1s ease-in-out -0.5s infinite;
+      animation: loading-data-v-f3bf5228 1s ease-in-out -0.5s infinite;
+}
+@keyframes loading-data-v-f3bf5228 {
+0% {
+    width: 60%;
+}
+50% {
+    width: 100%;
+}
+100% {
+    width: 60%;
+}
+}
+@-webkit-keyframes loading {
+0% {
+    width: 60%;
+}
+50% {
+    width: 100%;
+}
+100% {
+    width: 60%;
+}
+}
+.tips-card-loading .meta[data-v-f3bf5228] {
+    width: 30px;
+    height: 42px;
+    position: absolute;
+    bottom: 20px;
+    background-color: transparent;
+}
+.tips-card-loading .meta.meta-1[data-v-f3bf5228] {
+      left: 30px;
+}
+.tips-card-loading .meta.meta-2[data-v-f3bf5228] {
+      left: 90px;
+}
+.tips-card-loading .meta.meta-3[data-v-f3bf5228] {
+      left: 150px;
+}
+.tips-card-loading .meta .count[data-v-f3bf5228], .tips-card-loading .meta .type[data-v-f3bf5228] {
+      position: absolute;
+}
+.tips-card-loading .meta .count[data-v-f3bf5228] {
+      left: -5px;
+      top: 6px;
+      height: 18px;
+      width: 40px;
+}
+.tips-card-loading .meta .type[data-v-f3bf5228] {
+      left: 1px;
+      bottom: 2px;
+      height: 13px;
+      width: 28px;
+}
+.tips-card-loading .button[data-v-f3bf5228] {
+    position: absolute;
+    bottom: 17px;
+    width: 90px;
+    height: 40px;
+    border-radius: 40px;
+}
+.tips-card-loading .message[data-v-f3bf5228] {
+    right: 120px;
+}
+.tips-card-loading .follow[data-v-f3bf5228] {
+    right: 17px;
+}
+.tips-card[data-v-f3bf5228] {
+  z-index: 10;
+}
+.tips-card .card-content[data-v-f3bf5228] {
+    padding: 20px 20px 0 20px;
+}
+.tips-card .card-content .summary[data-v-f3bf5228] {
+      padding: 8px 0 20px 90px;
+      min-height: 92px;
+      position: relative;
+}
+.tips-card .card-content .summary .avatar[data-v-f3bf5228] {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 72px;
+        height: 72px;
+        cursor: pointer;
+        border-radius: 50%;
+        background-color: #EAEAEA;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+}
+.tips-card .card-content .summary .name[data-v-f3bf5228] {
+        height: 26px;
+        margin-right: 3px;
+        margin-bottom: 8px;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: horizontal;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: row;
+            -ms-flex-direction: row;
+                flex-direction: row;
+        -webkit-box-pack: start;
+        -webkit-justify-content: flex-start;
+            -ms-flex-pack: start;
+                justify-content: flex-start;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+            -ms-flex-align: center;
+                align-items: center;
+}
+.tips-card .card-content .summary .name .nickname[data-v-f3bf5228] {
+          color: #333333;
+          font-size: 19px;
+          font-weight: bold;
+          overflow: hidden;
+          -o-text-overflow: ellipsis;
+             text-overflow: ellipsis;
+          white-space: nowrap;
+          cursor: pointer;
+}
+.tips-card .card-content .summary .name .sex[data-v-f3bf5228], .tips-card .card-content .summary .name .badge[data-v-f3bf5228] {
+          -webkit-flex-shrink: 0;
+              -ms-flex-negative: 0;
+                  flex-shrink: 0;
+          display: inline-block;
+}
+.tips-card .card-content .summary .name .sex[data-v-f3bf5228] {
+          font-size: 19px;
+          width: 19px;
+          margin: 0 4px;
+}
+.tips-card .card-content .summary .intro[data-v-f3bf5228] {
+        overflow: hidden;
+        -o-text-overflow: ellipsis;
+           text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        margin-bottom: 12px;
+        font-size: 14px;
+        line-height: 1.5;
+        color: #333333;
+}
+.tips-card .card-content .summary .intro.block[data-v-f3bf5228] {
+          color: #999999;
+}
+.tips-card .card-content .summary .list .item[data-v-f3bf5228] {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 13px;
+        color: #999999;
+        cursor: pointer;
+        overflow: hidden;
+        -o-text-overflow: ellipsis;
+           text-overflow: ellipsis;
+        white-space: nowrap;
+}
+.tips-card .card-content .summary .list .item i[data-v-f3bf5228] {
+          margin-right: 2px;
+}
+.tips-card .card-footer[data-v-f3bf5228] {
+    border-top: 1px solid #F0F0F0;
+    padding: 15px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -webkit-flex-direction: row;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: justify;
+    -webkit-justify-content: space-between;
+        -ms-flex-pack: justify;
+            justify-content: space-between;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+        -ms-flex-align: center;
+            align-items: center;
+    overflow: hidden;
+    _zoom: 1;
+}
+.tips-card .card-footer .profile[data-v-f3bf5228] {
+      width: 198px;
+      overflow: hidden;
+      _zoom: 1;
+      float: left;
+}
+.tips-card .card-footer .profile div[data-v-f3bf5228] {
+        float: left;
+        width: 60px;
+        height: 44px;
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-orient: vertical;
+        -webkit-box-direction: normal;
+        -webkit-flex-direction: column;
+            -ms-flex-direction: column;
+                flex-direction: column;
+        -webkit-box-pack: center;
+        -webkit-justify-content: center;
+            -ms-flex-pack: center;
+                justify-content: center;
+        -webkit-box-align: center;
+        -webkit-align-items: center;
+            -ms-flex-align: center;
+                align-items: center;
+}
+.tips-card .card-footer .profile div span[data-v-f3bf5228] {
+          display: block;
+          width: 100%;
+          text-align: center;
+}
+.tips-card .card-footer .profile div .type[data-v-f3bf5228] {
+          font-size: 13px;
+          color: #999999;
+}
+.tips-card .card-footer .profile div .count[data-v-f3bf5228] {
+          font-size: 18px;
+          color: #333333;
+}
+.tips-card .card-footer .social[data-v-f3bf5228] {
+      display: -webkit-box;
+      display: -webkit-flex;
+      display: -ms-flexbox;
+      display: flex;
+      -webkit-box-orient: horizontal;
+      -webkit-box-direction: normal;
+      -webkit-flex-direction: row;
+          -ms-flex-direction: row;
+              flex-direction: row;
+      -webkit-box-pack: end;
+      -webkit-justify-content: flex-end;
+          -ms-flex-pack: end;
+              justify-content: flex-end;
+      -webkit-box-align: center;
+      -webkit-align-items: center;
+          -ms-flex-align: center;
+              align-items: center;
+      float: right;
+      overflow: hidden;
+      _zoom: 1;
+}
+.tips-card .card-footer .social .message[data-v-f3bf5228] {
+        border: 1px solid rgba(59, 194, 29, 0.7);
+        color: #42C02E;
+        margin: 0 10px 0 16px;
+        font-size: 15px;
+        padding: 8px 0;
+        width: 90px;
+        border-radius: 40px;
+        text-align: center;
+        cursor: pointer;
+        float: left;
+        -webkit-box-sizing: border-box;
+                box-sizing: border-box;
+}
+.tips-card .card-footer .social .message[data-v-f3bf5228]:hover {
+          border: 1px solid #42C02E;
+          color: #42C02E;
+          background-color: rgba(59, 194, 29, 0.05);
+}
+.tips-card .card-footer .social .user-follow-button[data-v-f3bf5228] {
+        font-size: 15px;
+        padding: 8px 0;
+        width: 100px;
+}
+.arrow[data-v-f3bf5228] {
+  position: absolute;
+  width: 100%;
+  height: 10px;
+  left: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+.arrow i[data-v-f3bf5228] {
+    position: absolute;
+    left: 50%;
+    margin: 0;
+    margin-left: -10px;
+    border-width: 10px;
+    border-color: transparent;
+    padding: 0;
+}
+.arrow em[data-v-f3bf5228] {
+    display: block;
+    position: absolute;
+    left: -9px;
+    border-width: 9px;
+    border-color: transparent;
+    margin: 0;
+    padding: 0;
+}
+.arrow-type-top[data-v-f3bf5228] {
+  bottom: 1px;
+}
+.arrow-type-top i[data-v-f3bf5228] {
+    border-top-color: #d9d9d9;
+    border-style: solid dashed dashed;
+    top: 0;
+}
+.arrow-type-top em[data-v-f3bf5228] {
+    border-style: solid dashed dashed;
+    border-top-color: #ffffff;
+    top: -10px;
+}
+.arrow-type-bottom[data-v-f3bf5228] {
+  top: 1px;
+}
+.arrow-type-bottom i[data-v-f3bf5228] {
+    border-bottom-color: #d9d9d9;
+    border-style: dashed dashed solid;
+    top: -10px;
+}
+.arrow-type-bottom em[data-v-f3bf5228] {
+    border-style: dashed dashed solid;
+    border-bottom-color: #ffffff;
+    top: -8px;
+}
+.reader-night-mode .tips-card-loading[data-v-f3bf5228] {
+  background-color: #3F3F3F;
+  border-color: #2F2F2F;
+}
+.reader-night-mode .tips-card-loading .avatar[data-v-f3bf5228], .reader-night-mode .tips-card-loading .name[data-v-f3bf5228], .reader-night-mode .tips-card-loading .text[data-v-f3bf5228], .reader-night-mode .tips-card-loading .text-delay[data-v-f3bf5228], .reader-night-mode .tips-card-loading .count[data-v-f3bf5228], .reader-night-mode .tips-card-loading .type[data-v-f3bf5228], .reader-night-mode .tips-card-loading .button[data-v-f3bf5228] {
+    background-color: #545454;
+}
+.reader-night-mode .tips-card[data-v-f3bf5228] {
+  background-color: #3F3F3F;
+  border-color: #2F2F2F;
+}
+.reader-night-mode .tips-card .card-content .summary .name .nickname[data-v-f3bf5228] {
+    color: #C8C8C8;
+}
+.reader-night-mode .tips-card .card-content .summary .name .nickname[data-v-f3bf5228]:hover {
+      color: #ffffff;
+}
+.reader-night-mode .tips-card .card-content .summary .intro[data-v-f3bf5228] {
+    color: #C8C8C8;
+}
+.reader-night-mode .tips-card .card-footer[data-v-f3bf5228] {
+    border-top-color: #2F2F2F;
+}
+.reader-night-mode .tips-card .card-footer .profile div .count[data-v-f3bf5228] {
+      color: #C8C8C8;
+}
+.reader-night-mode .arrow.arrow-type-top em[data-v-f3bf5228] {
+  border-top-color: #3F3F3F;
+}
+.reader-night-mode .arrow.arrow-type-top i[data-v-f3bf5228] {
+  border-top-color: #2F2F2F;
+}
+.reader-night-mode .arrow.arrow-type-bottom em[data-v-f3bf5228] {
+  border-bottom-color: #3F3F3F;
+}
+.reader-night-mode .arrow.arrow-type-bottom i[data-v-f3bf5228] {
+  border-bottom-color: #2F2F2F;
+}
+</style><style type="text/css">
+.v-tooltip-container,
+.v-tooltip-content {
+  display: inline-block;
+}
+.v-tooltip-container {
+  position: relative;
+}
+.v-tooltip-container .v-tooltip-content {
+    -webkit-user-select: none;
+       -moz-user-select: none;
+        -ms-user-select: none;
+            user-select: none;
+}
+.v-tooltip-container .v-tooltip-wrap {
+    position: absolute;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-top {
+      bottom: 100%;
+      left: 50%;
+      -webkit-transform: translateX(-50%);
+          -ms-transform: translateX(-50%);
+              transform: translateX(-50%);
+      padding-bottom: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-bottom {
+      top: 100%;
+      left: 50%;
+      -webkit-transform: translateX(-50%);
+          -ms-transform: translateX(-50%);
+              transform: translateX(-50%);
+      padding-top: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-left {
+      top: 50%;
+      right: 100%;
+      -webkit-transform: translateY(-50%);
+          -ms-transform: translateY(-50%);
+              transform: translateY(-50%);
+      padding-right: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-right {
+      top: 50%;
+      left: 100%;
+      -webkit-transform: translateY(-50%);
+          -ms-transform: translateY(-50%);
+              transform: translateY(-50%);
+      padding-left: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-top-start {
+      bottom: 100%;
+      left: 0;
+      padding-bottom: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-top-end {
+      bottom: 100%;
+      right: 0;
+      padding-bottom: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-bottom-start {
+      top: 100%;
+      left: 0;
+      padding-top: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-bottom-end {
+      top: 100%;
+      right: 0;
+      padding-top: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-left-start {
+      top: 0;
+      right: 100%;
+      padding-right: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-left-end {
+      bottom: 0;
+      right: 100%;
+      padding-right: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-right-start {
+      top: 0;
+      left: 100%;
+      padding-left: 10px;
+}
+.v-tooltip-container .v-tooltip-wrap.v-tooltip-wrap-right-end {
+      bottom: 0;
+      left: 100%;
+      padding-left: 10px;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.like-button[data-v-cdecbe24] {
+  position: relative;
+  padding-left: 23px;
+}
+.like-button[data-v-cdecbe24]:before {
+    content: '';
+    position: absolute;
+    left: -16px;
+    top: -16px;
+    width: 50px;
+    height: 50px;
+    background-image: url(//cdn2.jianshu.io/assets/web/zan_animation_steps-8d65a474b670eb6a022516f4e0b8e9a4.png);
+    background-position: left;
+    background-repeat: no-repeat;
+    background-size: 1050px 50px;
+}
+.like-button[data-v-cdecbe24]:hover:before {
+    background-position: -50px;
+}
+.like-button.zan-animation span[data-v-cdecbe24], .like-button.active span[data-v-cdecbe24] {
+    color: #333333;
+}
+body.reader-night-mode .like-button.zan-animation span[data-v-cdecbe24], body.reader-night-mode .like-button.active span[data-v-cdecbe24] {
+      color: #C8C8C8;
+}
+.like-button.zan-animation[data-v-cdecbe24]:before {
+    -webkit-animation: likeBlast-data-v-cdecbe24 0.6s 1 steps(19);
+            animation: likeBlast-data-v-cdecbe24 0.6s 1 steps(19);
+    background-position: right;
+}
+@-webkit-keyframes likeBlast {
+0% {
+    background-position: -50px;
+}
+100% {
+    background-position: right;
+}
+}
+@keyframes likeBlast-data-v-cdecbe24 {
+0% {
+    background-position: -50px;
+}
+100% {
+    background-position: right;
+}
+}
+.like-button.active[data-v-cdecbe24]:before {
+    background-position: right;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.recommend-note {
+  margin-bottom: 20px;
+}
+.recommend-note .meta, .recommend-note .list {
+    width: 620px;
+    margin: 0 auto;
+}
+.recommend-note .meta .title {
+    padding-left: 8px;
+    border-left: 3px solid #EA6F5A;
+    line-height: 1;
+    font-size: 15px;
+}
+.recommend-note .meta .title .more {
+      float: right;
+      font-size: 14px;
+      color: #A0A0A0;
+}
+.recommend-note .list {
+    margin-top: 20px;
+}
+.recommend-note .list .note {
+      display: block;
+      margin-bottom: 25px;
+      padding: 0 0 25px 0;
+      border-bottom: 1px solid #DDDDDD;
+}
+.recommend-note .list .note.have-img {
+        min-height: 136px;
+}
+.recommend-note .list .note.have-img.no-user .description {
+          -webkit-line-clamp: 3;
+}
+.recommend-note .list .note .cover {
+        float: right;
+        margin: -5px 0 0 15px;
+        width: 150px;
+        height: 120px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        border-radius: 6px;
+}
+.recommend-note .list .note .title {
+        display: inherit;
+        margin-bottom: 4px;
+        font-size: 18px;
+        line-height: 27px;
+        font-weight: bold;
+        color: #333333;
+        overflow: hidden;
+        -o-text-overflow: ellipsis;
+           text-overflow: ellipsis;
+        white-space: nowrap;
+}
+.recommend-note .list .note .title:hover {
+          text-decoration: underline;
+}
+.recommend-note .list .note .title:visited {
+          color: #999999;
+}
+.recommend-note .list .note .description {
+        margin-bottom: 12px;
+        font-size: 13px;
+        line-height: 23px;
+        color: #333333;
+        overflow: hidden;
+        -o-text-overflow: ellipsis;
+           text-overflow: ellipsis;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+}
+.recommend-note .list .note .author .avatar {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        margin-right: 3px;
+        border-radius: 50%;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        vertical-align: middle;
+}
+.recommend-note .list .note .author .name {
+        font-size: 13px;
+        color: #333333;
+        vertical-align: middle;
+}
+</style><style type="text/css">
+@charset "UTF-8";
+/*
+ * 变量
+*/
+.youdao-recommended-ad {
+  position: relative;
+  display: block;
+}
+.youdao-recommended-ad .img {
+    display: block;
+    float: right;
+    width: 150px;
+    height: 120px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-color: RGB(241, 243, 244);
+    border-radius: 6px;
+    margin: -5px 0 0 15px;
+}
+body.reader-night-mode .youdao-recommended-ad .img {
+      background-color: #4f4f4f;
+}
+.youdao-recommended-ad .info {
+    overflow: hidden;
+}
+.youdao-recommended-ad .info .title {
+      display: block;
+      color: #333;
+      line-height: 27px;
+      font-size: 18px;
+      font-weight: 700;
+      margin-top: -4px;
+      cursor: pointer;
+}
+body.reader-night-mode .youdao-recommended-ad .info .title {
+        color: #969696;
+}
+.youdao-recommended-ad .info .intro {
+      display: block;
+      font-size: 13px;
+      color: #999;
+      overflow: hidden;
+      -o-text-overflow: ellipsis;
+         text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 24px;
+      max-height: 48px;
+      -webkit-box-sizing: content-box;
+              box-sizing: content-box;
+      white-space: normal;
+}
+.youdao-recommended-ad .info .ad-badge {
+      position: absolute;
+      left: 0;
+      top: 95px;
+      display: block;
+      width: 38px;
+      height: 18px;
+      line-height: 16px;
+      text-align: center;
+      border-radius: 2px;
+      border: solid 1px #999999;
+      color: #999999;
+      font-size: 12px;
+}
+</style></head>
+
+  <!-- 只给10%的用户添加代码 -->
+  <!-- ###第四范式-智能推荐：代码直接复制 无需修改参数### -->
+  <!-- ###功能：上报内容并反馈用户行为### -->
+  <!--
+  -->
+  <body class="reader-black-font" lang="zh-CN">
+    <!-- 全局顶部导航栏 -->
+<nav class="navbar navbar-default navbar-fixed-top" role="navigation">
+  <div class="width-limit">
+    <!-- 左上方 Logo -->
+    <a class="logo" href="https://www.jianshu.com/"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/nav-logo-4c7bbafe27adc892f3046e6978459bac.png" alt="Nav logo"></a>
+
+    <!-- 右上角 -->
+      <!-- 未登录显示登录/注册/写文章 -->
+      <a class="btn write-btn" target="_blank" href="https://www.jianshu.com/writer#/">
+        <i class="iconfont ic-write"></i>写文章
+</a>      <a class="btn sign-up" id="sign_up" href="https://www.jianshu.com/sign_up">注册</a>
+      <a class="btn log-in" id="sign_in" href="https://www.jianshu.com/sign_in">登录</a>
+
+    <!-- 如果用户登录，显示下拉菜单 -->
+
+    <div class="nqzzJ71pC-jOnJKAfdtr6_0"><a class="_3tScN0zmSdGLaUAH4SxTbM_0"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/nav_jsds_beta-eeb44d165b8ba37680fdb7e65ae17ae4.png" class="_3f806byixOPpOPWnx8HiQP_0"></a> <!----></div>
+
+    <div class="style-mode"><a class="style-mode-btn"><i class="iconfont ic-navigation-mode"></i></a> <div class="popover-modal" style="left: 0px; display: none;"><div class="meta"><i class="iconfont ic-navigation-night"></i><span>夜间模式</span></div> <div class="switch day-night-group"><a class="switch-btn">开</a> <a class="switch-btn active">关</a></div> <hr> <div class="switch font-family-group"><a class="switch-btn font-song">宋体</a> <a class="switch-btn font-hei active">黑体</a></div> <div class="switch"><a class="switch-btn active">简</a> <a class="switch-btn">繁</a></div></div></div>
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#menu" aria-expanded="false">
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+      </div>
+      <div class="collapse navbar-collapse" id="menu">
+        <ul class="nav navbar-nav">
+            <li class="tab ">
+              <a href="https://www.jianshu.com/">
+                <span class="menu-text">首页</span><i class="iconfont ic-navigation-discover menu-icon"></i>
+</a>            </li>
+            <li class="tab ">
+              <a id="web-nav-app-download-btn" class="app-download-btn" href="https://www.jianshu.com/apps?utm_medium=desktop&amp;utm_source=navbar-apps"><span class="menu-text">下载App</span><i class="iconfont ic-navigation-download menu-icon"></i></a>
+            </li>
+          <li class="search">
+            <form target="_blank" action="/search" accept-charset="UTF-8" method="get"><input name="utf8" type="hidden" value="✓">
+              <input type="text" name="q" id="q" autocomplete="off" placeholder="搜索" class="search-input">
+              <a class="search-btn" href="javascript:void(null)"><i class="iconfont ic-search"></i></a>
+</form>          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</nav>
+
+    
+<div class="note">
+  <div id="note-fixed-ad-container">
+    <div id="fixed-ad-container">
+      <div style="display: block;"><a target="_blank" href="https://www.jianshu.com/apps/redirect?utm_source=side-banner-click" id="web-note-ad-fixed"><span class="close">×</span></a></div>
+      <div><!----> <!----></div>
+      <a href="http://e.cn.miaozhen.com/r/k=2110413&amp;p=7L9Gn&amp;dx=__IPDX__&amp;rt=2&amp;ns=__IP__&amp;ni=__IESID__&amp;v=__LOC__&amp;xa=__ADPLATFORM__&amp;tr=__REQUESTID__&amp;mo=__OS__&amp;m0=__OPENUDID__&amp;m0a=__DUID__&amp;m1=__ANDROIDID1__&amp;m1a=__ANDROIDID__&amp;m2=__IMEI__&amp;m4=__AAID__&amp;m5=__IDFA__&amp;m6=__MAC1__&amp;m6a=__MAC__&amp;vo=3f2e070eb&amp;vr=2&amp;o=https%3A%2F%2Fwww.jianshu.com%2Fp%2Fee05f7eff678" target="_blank" class="yuxi-fixed-ad" style="display: none;"><div class="img"></div> <span class="ad-badge">广告</span></a>
+      <div id="_so_pdsBy_0"></div>
+    </div>
+  </div>
+  <div class="post">
+    <div class="article">
+        <h1 class="title">李宏毅深度学习(六):Generative Adversarial Network (GAN)</h1>
+
+        <!-- 作者区域 -->
+        <div class="author">
+          <a class="avatar" href="https://www.jianshu.com/u/c5df9e229a67">
+            <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/0b79def0-fd6c-44d8-9410-1c13d3a2cf7e.jpeg" alt="96">
+</a>          <div class="info">
+            <span class="name"><a href="https://www.jianshu.com/u/c5df9e229a67">石晓文的学习日记</a></span>
+            <!-- 关注用户按钮 -->
+            <a class="btn btn-success follow"><i class="iconfont ic-follow"></i><span>关注</span></a>
+            <!-- 文章数据信息 -->
+            <div class="meta">
+              <!-- 简书钻 -->
+                <span class="jsd-meta">
+                  <i class="iconfont ic-paid1"></i> 0.6
+                </span>
+              <!-- 如果文章更新时间大于发布时间，那么使用 tooltip 显示更新时间 -->
+                <span class="publish-time">2017.12.03 21:10</span>
+              <span class="wordage">字数 2278</span>
+            <span class="views-count">阅读 31031</span><span class="comments-count">评论 3</span><span class="likes-count">喜欢 34</span></div>
+          </div>
+          <!-- 如果是当前作者，加入编辑按钮 -->
+        </div>
+
+
+        <!-- 文章内容 -->
+        <div data-note-content="" class="show-content">
+          <div class="show-content-free">
+            <p>最近看了李宏毅老师的深度学习视频课程，真的是讲得十分细致，从头到尾看下来一遍，对深度学习模型有了一个基本的认识，趁着脑子还能记着一些东西，赶紧把学到的东西记录下来，以备后用。<br>
+视频地址：<a href="https://link.jianshu.com/?t=https://www.bilibili.com/video/av9770302/from=search&amp;seid=905421046757750252" target="_blank" rel="nofollow">https://www.bilibili.com/video/av9770302/from=search&amp;seid=905421046757750252</a><br>
+ppt地址：<a href="https://link.jianshu.com/?t=http://speech.ee.ntu.edu.tw/~tlkagk/courses_MLDS17.html" target="_blank" rel="nofollow">http://speech.ee.ntu.edu.tw/~tlkagk/courses_MLDS17.html</a></p>
+<h2>1、什么是GAN</h2>
+<p>GAN 主要包括了两个部分，即生成器 generator 与判别器 
+discriminator。生成器主要用来学习真实图像分布从而让自身生成的图像更加真实，以骗过判别器。判别器则需要对接收的图片进行真假判别。在整
+个过程中，生成器努力地让生成的图像更加真实，而判别器则努力地去识别出图像的真假，这个过程相当于一个二人博弈，随着时间的推移，生成器和判别器在不断
+地进行对抗，最终两个网络达到了一个动态均衡：生成器生成的图像接近于真实图像分布，而判别器识别不出真假图像，对于给定图像的预测为真的概率基本接近 
+0.5（相当于随机猜测类别）。</p>
+<p>对于 GAN 
+更加直观的理解可以用一个例子来说明：造假币的团伙相当于生成器，他们想通过伪造金钱来骗过银行，使得假币能够正常交易，而银行相当于判别器，需要判断进
+来的钱是真钱还是假币。因此假币团伙的目的是要造出银行识别不出的假币而骗过银行，银行则是要想办法准确地识别出假币。<br>
+因此，我们可以将上面的内容进行一个总结。给定真 = 1，假 = 0，那么有：<br>
+对于给定的真实图片（real image），判别器要为其打上标签 1；<br>
+对于给定的生成图片（fake image），判别器要为其打上标签 0；<br>
+对于生成器传给辨别器的生成图片，生成器希望辨别器打上标签 1。</p>
+<p>好了，上面大家应该已经对GAN有了一个基本的认识，那么GAN是如何来做的呢？首先，我们又一个第一代的Generator，然后他产生一些图
+片，然后我们把这些图片和一些真实的图片丢到第一代的Discriminator里面去学习，让第一代的Discriminator能够真实的分辨生成的
+图片和真实的图片，然后我们又有了第二代的Generator，第二代的Generator产生的图片，能够骗过第一代的Discriminator，此
+时，我们在训练第二代的Discriminator，依次类推。</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 495px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 70.82000000000001%;"></div>
+<div class="image-view" data-width="1542" data-height="1092"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-e65d642a1bf2f622.png" data-original-width="1542" data-original-height="1092" data-original-format="image/png" data-original-filesize="197524" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-e65d642a1bf2f622.png"></div>
+</div>
+<div class="image-caption">image.png</div>
+</div>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 538px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 76.99000000000001%;"></div>
+<div class="image-view" data-width="1460" data-height="1124"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-800c51ace7edb885.png" data-original-width="1460" data-original-height="1124" data-original-format="image/png" data-original-filesize="178776" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-800c51ace7edb885.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>刚才的描述中，你可能不太明白如何训练新一代的Generator来骗过上一代的Discriminator，方法其实很简单，你可以把新一代的
+Generator和上一代的Discriminator连起来形成一个新的NN，我们希望最终的输出接近1，然后我们就可以拿中间的结果当作我们的新的
+图片的输出，下图很形象的显示了上面的过程：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 547px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 78.2%;"></div>
+<div class="image-view" data-width="1468" data-height="1148"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-045d805c96c6fdf6.png" data-original-width="1468" data-original-height="1148" data-original-format="image/png" data-original-filesize="193668" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-045d805c96c6fdf6.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<h2>2、GAN原理深入</h2>
+<p>先来回顾一下我们的极大似然估计，假设我们有一大堆data，他的分布是Pdata(x)，我们可以认为这里的data就是一大堆图片，但是，我们
+有了这一大堆东西，再想生成一个新的data是不容易的，因为我们不知道这个分布的具体参数，所以，我们就想估计这堆数据的所服从的参数。那么，我们可以
+从Pdata(x)产生一大堆sample，然后，我们就希望找一组参数，使得服从这组参数的分布产生这堆sample的可能性最大。</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 522px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 74.57000000000001%;"></div>
+<div class="image-view" data-width="1518" data-height="1132"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-3847417887ada462.png" data-original-width="1518" data-original-height="1132" data-original-format="image/png" data-original-filesize="237321" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-3847417887ada462.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>下面是极大似然估计的化简过程，因为这堆sample都是从Pdata(x)里面出来的，所以，我们可以进行下面的约等转换。然后我们把期望转换为积分，同时加上后面一项（后面一项是一个常数，只是为了更简单的表示KL散度）</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 532px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 76.07000000000001%;"></div>
+<div class="image-view" data-width="1538" data-height="1170"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-28e079eec85a5831.png" data-original-width="1538" data-original-height="1170" data-original-format="image/png" data-original-filesize="202823" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-28e079eec85a5831.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>KL散度又称相对熵。设P(x)和Q(x)是X取值的两个概率概率分布，则对的相对熵为:</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 190px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 23.11%;"></div>
+<div class="image-view" data-width="822" data-height="190"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-2be62c106f2bec6a.png" data-original-width="822" data-original-height="190" data-original-format="image/png" data-original-filesize="38025" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-2be62c106f2bec6a.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>在一定程度上，熵可以度量两个随机变量的距离。KL散度是两个概率分布P和Q差别的非对称性的度量。KL散度是用来度量使用基于Q的编码来编码来自P的样本平均所需的额外的位元数。 典型情况下，P表示数据的真实分布，Q表示数据的理论分布，模型分布，或P的近似分布。</p>
+<p>那么，在GAN中，我们用NN的参数表示PG的参数θ：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 502px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 71.8%;"></div>
+<div class="image-view" data-width="1532" data-height="1100"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-ff847294e0fc4f6d.png" data-original-width="1532" data-original-height="1100" data-original-format="image/png" data-original-filesize="261391" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-ff847294e0fc4f6d.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>那么 ，GAN的基本原理如下：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 501px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 71.59%;"></div>
+<div class="image-view" data-width="1394" data-height="998"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-1d9bb8b7bc69bff4.png" data-original-width="1394" data-original-height="998" data-original-format="image/png" data-original-filesize="175424" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-1d9bb8b7bc69bff4.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>所以，我们最终的求解目标是：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 110px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 15.07%;"></div>
+<div class="image-view" data-width="730" data-height="110"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-f8a44cdaa7a2460a.png" data-original-width="730" data-original-height="110" data-original-format="image/png" data-original-filesize="43584" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-f8a44cdaa7a2460a.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>我们可以用下面的图来形象的表示上面的求解问题，看下面的图，我们可以很清楚的知道，我们要找的G就是G3，而D则是最高点的D。</p>
+<br>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 550px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 78.60000000000001%;"></div>
+<div class="image-view" data-width="1458" data-height="1146"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-4f96d5209878c5e5.png" data-original-width="1458" data-original-height="1146" data-original-format="image/png" data-original-filesize="188781" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-4f96d5209878c5e5.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>那么 ，V是什么，V写作下面的式子，你不必管这个东西怎么来的，我只想说，能想到这个的人真的是太可怕了。当我们的V写成下面这样子的时候，我们取maxV(G,D)就饿能表示Pg和Pdata的差异。</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 420px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 31.3%;"></div>
+<div class="image-view" data-width="1342" data-height="420"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-9ea7b17148fab603.png" data-original-width="1342" data-original-height="420" data-original-format="image/png" data-original-filesize="241579" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-9ea7b17148fab603.png"></div>
+</div>
+<div class="image-caption">image.png</div>
+</div>
+<p>为什么V要写成这样能表示二者的差异呢？这个可以通过严格的数学证明推导出，这里，对于一个给定的G，我们来求解maxV(G,D)：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 457px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 65.35%;"></div>
+<div class="image-view" data-width="1466" data-height="958"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-fd867639da306355.png" data-original-width="1466" data-original-height="958" data-original-format="image/png" data-original-filesize="533301" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-fd867639da306355.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>对于任何一个常数，因为Pdata和G这里都是给定的，我们可以认为这里是常数，那么D取什么可以得到最大呢，很简单，导数为0的情况下。</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 516px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 73.77%;"></div>
+<div class="image-view" data-width="1510" data-height="1114"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-f1e33985bfdc0da0.png" data-original-width="1510" data-original-height="1114" data-original-format="image/png" data-original-filesize="189546" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-f1e33985bfdc0da0.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 492px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 70.3%;"></div>
+<div class="image-view" data-width="1522" data-height="1070"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-d74ec7ffcb019857.png" data-original-width="1522" data-original-height="1070" data-original-format="image/png" data-original-filesize="190148" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-d74ec7ffcb019857.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>在有了D的值之后，我们就可以带入原式中啦：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 534px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 76.29%;"></div>
+<div class="image-view" data-width="1510" data-height="1152"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-847b2b52b6cf8885.png" data-original-width="1510" data-original-height="1152" data-original-format="image/png" data-original-filesize="222108" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-847b2b52b6cf8885.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>继续化简，我们可以得到两个KL散度，进而得到JS散度：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 525px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 75.03%;"></div>
+<div class="image-view" data-width="1530" data-height="1148"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-59b2324ad22c5419.png" data-original-width="1530" data-original-height="1148" data-original-format="image/png" data-original-filesize="253854" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-59b2324ad22c5419.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>相信大家对于求解得到D的过程已经非常明白了，我自己再推到一下后面的式子吧，希望能够比PPT更加明白一些：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 1244px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 177.78%;"></div>
+<div class="image-view" data-width="1080" data-height="1920"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-e1f8313a633a124c.png" data-original-width="1080" data-original-height="1920" data-original-format="image/png" data-original-filesize="2319654" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-e1f8313a633a124c.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>所以，现在我们就明白了，按照上面的V的定义，我们就能得到二者的差距，当然我们可以定别的，就能产生别的散度度量。</p>
+<p>那么，给定了一个G，我们能够通过最大化V得到D，那么我们如何求解G呢，用梯度下降就好啦：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 501px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 71.63000000000001%;"></div>
+<div class="image-view" data-width="1530" data-height="1096"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-eb3d06c620f242ef.png" data-original-width="1530" data-original-height="1096" data-original-format="image/png" data-original-filesize="194078" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-eb3d06c620f242ef.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 515px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 73.67%;"></div>
+<div class="image-view" data-width="1542" data-height="1136"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-e6a8f07ba6d359c5.png" data-original-width="1542" data-original-height="1136" data-original-format="image/png" data-original-filesize="253994" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-e6a8f07ba6d359c5.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 516px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 73.85000000000001%;"></div>
+<div class="image-view" data-width="1560" data-height="1152"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-7642e31c8c46942e.png" data-original-width="1560" data-original-height="1152" data-original-format="image/png" data-original-filesize="271663" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-7642e31c8c46942e.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<h2>3、实际中的GAN</h2>
+<p>刚才我们讲的是理论部分的内容，但是在实际中，Pdata和Pg我们是不知道的，我们没办法穷举所有的x，所以，我们只能采用采样的方法，同时可以
+采用我们二分类的思路，我们把Pdata(x)中产生的样本当作正例，把Pg(x)产生的样本当作负例，那么，下面V可以看作是我们二分类的一个损失函数
+的相反数(少了负号嘛）：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 506px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 72.33000000000001%;"></div>
+<div class="image-view" data-width="1388" data-height="1004"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-c6a280f03070ac1c.png" data-original-width="1388" data-original-height="1004" data-original-format="image/png" data-original-filesize="723437" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-c6a280f03070ac1c.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 519px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 74.27%;"></div>
+<div class="image-view" data-width="1508" data-height="1120"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-19e81369babb74c8.png" data-original-width="1508" data-original-height="1120" data-original-format="image/png" data-original-filesize="216750" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-19e81369babb74c8.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>也就是说，最大化V的话，其实就是最小化我们二分类的损失，下面的Minimize少了一个负号，所以我们要找的D，就是能使二分类的损失最小的D，也就是能够正确分辨Pdata和Pg(x)的D，这也正符合我们想要找的discriminator的定义，是不是很神奇！</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 524px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 74.9%;"></div>
+<div class="image-view" data-width="1514" data-height="1134"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-417ddcda4b4c8d8b.png" data-original-width="1514" data-original-height="1134" data-original-format="image/png" data-original-filesize="214511" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-417ddcda4b4c8d8b.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>所以，总结一下，实践中我们的GAN基于如下的步骤：</p>
+<br>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 526px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 75.26%;"></div>
+<div class="image-view" data-width="1560" data-height="1174"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-2921d5c132597cb2.png" data-original-width="1560" data-original-height="1174" data-original-format="image/png" data-original-filesize="290905" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-2921d5c132597cb2.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+<p>上面的步骤很好的解释了我们刚才对于GAN的解释：首先，我们又一个第一代的Generator，然后他产生一些图片，然后我们把这些图片和一些真
+实的图片丢到第一代的Discriminator里面去学习，让第一代的Discriminator能够真实的分辨生成的图片和真实的图片，然后我们又有
+了第二代的Generator，第二代的Generator产生的图片，能够骗过第一代的Discriminator，此时，我们在训练第二代的
+Discriminator，依次类推。</p>
+<p>在实际中，我们有可能做下面的变换，可以加快我们的训练速度：</p>
+<div class="image-package">
+<div class="image-container" style="max-width: 700px; max-height: 532px; background-color: transparent;">
+<div class="image-container-fill" style="padding-bottom: 76.03%;"></div>
+<div class="image-view" data-width="1410" data-height="1072"><img data-original-src="//upload-images.jianshu.io/upload_images/4155986-12df1b16db1f2e89.png" data-original-width="1410" data-original-height="1072" data-original-format="image/png" data-original-filesize="594251" style="cursor: zoom-in;" class="" src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/4155986-12df1b16db1f2e89.png"></div>
+</div>
+<div class="image-caption"></div>
+</div>
+
+          </div>
+        </div>
+    </div>
+
+    <!-- 如果是付费文章，未购买，则显示购买按钮 -->
+
+    <!-- 连载目录项 -->
+
+    <!-- 如果是付费文章 -->
+      <!-- 如果是付费连载，已购买，且作者允许赞赏，则显示付费信息和赞赏 -->
+        <div id="free-reward-panel" class="support-author"><p>小礼物走一走，来简书关注我</p> <div class="btn btn-pay">赞赏支持</div> <div class="supporter"><ul class="support-list"></ul> <!----></div> <!----> <!----></div>
+
+      <div class="show-foot">
+        <a class="notebook" href="https://www.jianshu.com/nb/13240984">
+          <i class="iconfont ic-search-notebook"></i>
+          <span>机器学习&amp;深度学习</span>
+</a>        <div class="copyright" data-toggle="tooltip" data-html="true" data-original-title="转载请联系作者获得授权，并标注“简书作者”。">
+          © 著作权归作者所有
+        </div>
+        <div class="modal-wrap" data-report-note="">
+          <a id="report-modal">举报文章</a>
+        </div>
+      </div>
+
+      <!-- 文章底部作者信息 -->
+        <div class="follow-detail">
+          <div class="info">
+            <a class="avatar" href="https://www.jianshu.com/u/c5df9e229a67">
+              <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/0b79def0-fd6c-44d8-9410-1c13d3a2cf7e.jpeg" alt="96">
+</a>            <a class="btn btn-success follow"><i class="iconfont ic-follow"></i><span>关注</span></a>
+            <a class="title" href="https://www.jianshu.com/u/c5df9e229a67">石晓文的学习日记</a>
+              <i class="iconfont ic-man"></i>
+          <p>写了 596167 字，被 4570 人关注，获得了 3394 个喜欢</p></div>
+            <div class="signature">个人公众号：小小挖掘机，关注可获取加入交流群方式哟，目前微信群一群、二群、三群已满，四群坑位众多！我的微信即微信公众号二维码，欢迎大家关注</div>
+        </div>
+
+    <div class="meta-bottom">
+      <div data-v-6ddd02c6="" class="like"><div data-v-6ddd02c6="" class="btn like-group"><div data-v-6ddd02c6="" class="btn-like"><a data-v-6ddd02c6="">喜欢</a></div> <div data-v-6ddd02c6="" class="modal-wrap"><a data-v-6ddd02c6="">34</a></div></div> <!----></div>
+      <div class="share-group">
+        <a class="share-circle" data-action="weixin-share" data-toggle="tooltip" data-original-title="分享到微信">
+          <i class="iconfont ic-wechat"></i>
+        </a>
+        <a class="share-circle" data-action="weibo-share" data-toggle="tooltip" href="javascript:void((function(s,d,e,r,l,p,t,z,c){var%20f='http://v.t.sina.com.cn/share/share.php?appkey=1881139527',u=z||d.location,p=['&amp;url=',e(u),'&amp;title=',e(t||d.title),'&amp;source=',e(r),'&amp;sourceUrl=',e(l),'&amp;content=',c||'gb2312','&amp;pic=',e(p||'')].join('');function%20a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=440,height=430,left=',(s.width-440)/2,',top=',(s.height-430)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else%20a();})(screen,document,encodeURIComponent,'','','', '%E6%8E%A8%E8%8D%90 @%E7%BA%AF%E8%89%AF%E5%A4%AA%E5%AD%90%E5%B0%8F%E6%96%87 %E7%9A%84%E6%96%87%E7%AB%A0%E3%80%8A%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD):Generative Adversarial Network (GAN)%E3%80%8B%EF%BC%88 %E5%88%86%E4%BA%AB%E8%87%AA @%E7%AE%80%E4%B9%A6 %EF%BC%89','https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=weibo','%E9%A1%B5%E9%9D%A2%E7%BC%96%E7%A0%81gb2312|utf-8%E9%BB%98%E8%AE%A4gb2312'));" data-original-title="分享到微博">
+          <i class="iconfont ic-weibo"></i>
+        </a>
+        <a class="share-circle" data-toggle="tooltip" id="longshare" target="_blank" data-original-title="" title="">
+            <div class="qrcode" id="qrcode">
+             <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/download-index-side-qrcode-cb13fc9106a478795f8d10f9f632fccf.png" alt="Download index side qrcode">
+             <p>下载app生成长微博图片</p>
+             </div>
+          <i class="iconfont ic-picture"></i>
+        </a>
+        <a class="share-circle more-share" tabindex="0" data-toggle="popover" data-placement="top" data-html="true" data-trigger="focus" href="javascript:void(0);" data-content="
+          &lt;ul class=&quot;share-list&quot;&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=qzone')+'&amp;title='+e('推荐 石晓文的学习日记 的文章《李宏毅深度学习(六):Generative Adversarial Network (GAN)》'),x=function(){if(!window.open(r,'qzone','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-zone&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到QQ空间&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://twitter.com/share?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=twitter')+'&amp;text='+e('推荐 石晓文的学习日记 的文章《李宏毅深度学习(六):Generative Adversarial Network (GAN)》（ 分享自 @jianshucom ）')+'&amp;related='+e('jianshucom'),x=function(){if(!window.open(r,'twitter','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-twitter&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到Twitter&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://www.facebook.com/dialog/share?app_id=483126645039390&amp;display=popup&amp;href=https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=facebook',x=function(){if(!window.open(r,'facebook','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-facebook&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到Facebook&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://plus.google.com/share?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=google_plus'),x=function(){if(!window.open(r,'google_plus','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-google&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到Google+&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=douban')+'&amp;title='+e('李宏毅深度学习(六):Generative Adversarial Network (GAN)')+'&amp;sel='+e(s)+'&amp;v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&amp;r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-douban&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到豆瓣&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+          &lt;/ul&gt;
+        " data-original-title="" title="">更多分享</a>
+      </div>
+    </div>
+
+      <a id="web-note-ad-1" target="_blank" href="https://www.jianshu.com/apps/redirect?utm_source=note-bottom-click"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/web-note-ad-1-c2e1746859dbf03abe49248893c9bea4.png" alt="Web note ad 1"></a>
+
+    <!--
+    <div id="note-comment-above-ad-container">
+      <span id="youdao-comment-ad" class="ad-badge">广告</span>
+    </div>
+    -->
+    <div><div id="comment-list" class="comment-list"><div><form class="new-comment"><a class="avatar"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/avatar_default-78d4d1f68984cd6d4379508dd94b4210.png"></a> <div class="sign-container"><a href="https://www.jianshu.com/sign_in?utm_source=desktop&amp;utm_medium=not-signed-in-comment-form" class="btn btn-sign">登录</a> <span>后发表评论</span></div></form> <!----></div> <!----> <div class="comments-placeholder" style="display: none;"><div class="author"><div class="avatar"></div> <div class="info"><div class="name"></div> <div class="meta"></div></div></div> <div class="text"></div> <div class="text animation-delay"></div> <div class="tool-group"><i class="iconfont ic-zan-active"></i><div class="zan"></div> <i class="iconfont ic-list-comments"></i><div class="zan"></div></div></div> <div id="normal-comment-list" class="normal-comment-list"><div><div><div class="top-title"><span>3条评论</span> <a class="author-only">只看作者</a> <a class="close-btn" style="display: none;">关闭评论</a> <div class="pull-right"><a class="active">按时间倒序</a><a class="">按时间正序</a></div></div></div> <!----> <!----> <div class="comments-placeholder" style="display: none;"><div class="author"><div class="avatar"></div> <div class="info"><div class="name"></div> <div class="meta"></div></div></div> <div class="text"></div> <div class="text animation-delay"></div> <div class="tool-group"><i class="iconfont ic-zan-active"></i><div class="zan"></div> <i class="iconfont ic-list-comments"></i><div class="zan"></div></div></div> <div id="comment-40882079" class="comment"><div><div class="author"><div data-v-f3bf5228="" class="v-tooltip-container" style="z-index: 0;"><div class="v-tooltip-content"><a href="https://www.jianshu.com/u/3fd5f5f6e348" target="_blank" class="avatar"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/fe3b0ec4-0ccc-4d4a-8d67-95d1efe76ead.jpeg"></a>  </div> <!----></div> <div class="info"><a href="https://www.jianshu.com/u/3fd5f5f6e348" target="_blank" class="name">xxxxxX_d28e</a> <!----> <!----> <div class="meta"><span>4楼 · 2019.05.17 11:43</span></div></div></div> <div class="comment-wrap"><p>请问有没有跟解决GAN模式崩溃问题的相关介绍？</p> <!----> <div class="tool-group"><a data-v-cdecbe24="" id="like-button-40882079" class="like-button"><span data-v-cdecbe24="">赞</span></a> <a class=""><i class="iconfont ic-comment"></i> <span>回复</span></a> <!----> <!----></div></div></div> <div class="sub-comment-list hide"><!----> <!----></div></div><div id="comment-36751971" class="comment"><div><div class="author"><div data-v-f3bf5228="" class="v-tooltip-container" style="z-index: 0;"><div class="v-tooltip-content"><a href="https://www.jianshu.com/u/8c855d67a8b7" target="_blank" class="avatar"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/6df5bbea-b807-4493-b532-fe033586c23b.jpeg"></a>  </div> <!----></div> <div class="info"><a href="https://www.jianshu.com/u/8c855d67a8b7" target="_blank" class="name">loveevol</a> <!----> <!----> <div class="meta"><span>3楼 · 2019.03.06 03:04</span></div></div></div> <div class="comment-wrap"><p>谢谢分享，这样交代了来龙去脉很好。</p> <!----> <div class="tool-group"><a data-v-cdecbe24="" id="like-button-36751971" class="like-button"><span data-v-cdecbe24="">赞</span></a> <a class=""><i class="iconfont ic-comment"></i> <span>回复</span></a> <!----> <!----></div></div></div> <div class="sub-comment-list hide"><!----> <!----></div></div><div id="comment-26632379" class="comment"><div><div class="author"><div data-v-f3bf5228="" class="v-tooltip-container" style="z-index: 0;"><div class="v-tooltip-content"><a href="https://www.jianshu.com/u/32c6e01d7e5e" target="_blank" class="avatar"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/8638575b-f437-4fb6-b486-52b6f67097c2.jpeg"></a>  </div> <!----></div> <div class="info"><a href="https://www.jianshu.com/u/32c6e01d7e5e" target="_blank" class="name">小歪与大白兔</a> <!----> <!----> <div class="meta"><span>2楼 · 2018.07.23 22:55</span></div></div></div> <div class="comment-wrap"><p>感谢分享，边看李老师的视频边看你的博客~</p> <!----> <div class="tool-group"><a data-v-cdecbe24="" id="like-button-26632379" class="like-button"><span data-v-cdecbe24="">赞</span></a> <a class=""><i class="iconfont ic-comment"></i> <span>回复</span></a> <!----> <!----></div></div></div> <div class="sub-comment-list hide"><!----> <!----></div></div></div></div> <!----> <div><!----></div></div></div>
+  </div>
+
+  <div class="side-tool"><ul><li data-placement="left" data-toggle="tooltip" data-container="body" data-original-title="回到顶部" style=""><a class="function-button"><i class="iconfont ic-backtop"></i></a></li> <!----> <!----> <!----> <!----> <li data-placement="left" data-toggle="tooltip" data-container="body" data-original-title="分享文章" id="share"><a tabindex="0" role="button" data-toggle="popover" data-placement="left" data-html="true" data-trigger="focus" href="javascript:void(0);" data-content="&lt;ul class='share-list' style=&quot;width:220px&quot;&gt;
+                  &lt;li&gt;&lt;a class=&quot;weixin-share&quot;&gt;&lt;i class=&quot;social-icon-sprite social-icon-weixin&quot;&gt;&lt;/i&gt;&lt;span&gt;分享到微信&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void((function(s,d,e,r,l,p,t,z,c){var%20f='http://v.t.sina.com.cn/share/share.php?appkey=1881139527',u=z||d.location,p=['&amp;url=',e(u),'&amp;title=',e(t||d.title),'&amp;source=',e(r),'&amp;sourceUrl=',e(l),'&amp;content=',c||'gb2312','&amp;pic=',e(p||'')].join('');function%20a(){if(!window.open([f,p].join(''),'mb',['toolbar=0,status=0,resizable=1,width=440,height=430,left=',(s.width-440)/2,',top=',(s.height-430)/2].join('')))u.href=[f,p].join('');};if(/Firefox/.test(navigator.userAgent))setTimeout(a,0);else%20a();})(screen,document,encodeURIComponent,'','','', '推荐 @纯良太子小文 的文章《李宏毅深度学习(六):Generative Adversarial Network (GAN)》（ 分享自 @简书 ）','https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=weibo','页面编码gb2312|utf-8默认gb2312'));&quot;&gt;&lt;i class='social-icon-sprite social-icon-weibo'&gt;&lt;/i&gt;&lt;span&gt;分享到微博&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='http://sns.qzone.qq.com/cgi-bin/qzshare/cgi_qzshare_onekey?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=qzone')+'&amp;title='+e('推荐 石晓文的学习日记 的文章《李宏毅深度学习(六):Generative Adversarial Network (GAN)》'),x=function(){if(!window.open(r,'qzone','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-zone'&gt;&lt;/i&gt;&lt;span&gt;分享到QQ空间&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://twitter.com/share?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=twitter')+'&amp;text='+e('推荐 石晓文的学习日记 的文章《李宏毅深度学习(六):Generative Adversarial Network (GAN)》（ 分享自 @jianshucom ）')+'&amp;related='+e('jianshucom'),x=function(){if(!window.open(r,'twitter','toolbar=0,resizable=1,scrollbars=yes,status=1,width=600,height=600'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-twitter'&gt;&lt;/i&gt;&lt;span&gt;分享到Twitter&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://www.facebook.com/dialog/share?app_id=483126645039390&amp;display=popup&amp;href=https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=facebook',x=function(){if(!window.open(r,'facebook','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-facebook'&gt;&lt;/i&gt;&lt;span&gt;分享到Facebook&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,r='https://plus.google.com/share?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=google_plus'),x=function(){if(!window.open(r,'google_plus','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})();&quot;&gt;&lt;i class='social-icon-sprite social-icon-google'&gt;&lt;/i&gt;&lt;span&gt;分享到Google+&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                  &lt;li&gt;&lt;a href=&quot;javascript:void(function(){var d=document,e=encodeURIComponent,s1=window.getSelection,s2=d.getSelection,s3=d.selection,s=s1?s1():s2?s2():s3?s3.createRange().text:'',r='http://www.douban.com/recommend/?url='+e('https://www.jianshu.com/p/40feb1aa642a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=reader_share&amp;utm_source=douban')+'&amp;title='+e('李宏毅深度学习(六):Generative Adversarial Network (GAN)')+'&amp;sel='+e(s)+'&amp;v=1',x=function(){if(!window.open(r,'douban','toolbar=0,resizable=1,scrollbars=yes,status=1,width=450,height=330'))location.href=r+'&amp;r=1'};if(/Firefox/.test(navigator.userAgent)){setTimeout(x,0)}else{x()}})()&quot;&gt;&lt;i class='social-icon-sprite social-icon-douban'&gt;&lt;/i&gt;&lt;span&gt;分享到豆瓣&lt;/span&gt;&lt;/a&gt;&lt;/li&gt;
+                &lt;/ul&gt;" data-original-title="" title="" class="function-button"><i class="iconfont ic-share"></i></a> <!----></li> <!----></ul></div>
+</div>
+<div class="note-bottom">
+  <div><div class="main"><div class="title">被以下专题收入，发现更多相似内容</div> <!----> <div class="include-collection"><!----> <a href="https://www.jianshu.com/c/NEt52a?utm_source=desktop&amp;utm_medium=notes-included-collection" target="_blank" class="item"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/computer_guy.jpeg"><div class="name">程序员</div></a><a href="https://www.jianshu.com/c/38d96caffb2f?utm_source=desktop&amp;utm_medium=notes-included-collection" target="_blank" class="item"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/android.jpeg"><div class="name">技术干货</div></a><a href="https://www.jianshu.com/c/7847442e0728?utm_source=desktop&amp;utm_medium=notes-included-collection" target="_blank" class="item"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/CodeHeader-1920x1200.jpeg"><div class="name">我爱编程</div></a><a href="https://www.jianshu.com/c/c4f42bdfb372?utm_source=desktop&amp;utm_medium=notes-included-collection" target="_blank" class="item"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/IMG_4589-02-01-01.jpeg"><div class="name">Android...</div></a><a href="https://www.jianshu.com/c/fd203d2ab188?utm_source=desktop&amp;utm_medium=notes-included-collection" target="_blank" class="item"><img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/NRSDwnb.jpeg"><div class="name">学习笔记</div></a> <!----></div></div> <!----> <!----></div>
+  <div><div class="recommend-note"><div class="meta"><div class="title">
+        推荐阅读
+        <a target="_blank" href="https://www.jianshu.com/" class="more">
+           更多精彩内容<i class="iconfont ic-link"></i></a></div></div> <div class="list"><div class="note"><!----></div></div></div></div>
+
+  <!-- 相关文章 -->
+      <!-- 未登录用户 -->
+      <div class="seo-recommended-notes">
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/80bd4d4c2992?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/145616-b9524b5450df8685.PNG" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/80bd4d4c2992?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">深度学习新星：GAN的基本原理、应用和走向</a>
+              <p class="description">(本文转自雷锋网，转载已获取授权，未经允许禁止转载)原文链
+接：http://www.leiphone.com/news/201701/Kq6FvnjgbKK8Lh8N.html  作者：亚萌 相关参考：
+ 【OpenAI】 Generative Models 【搜狐科技】GA...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/38cd2a8c425e?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/28071c108c7c.jpeg" alt="48">
+                </div>
+                <span class="name">zhwhong</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/05608799c3e1?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/7644599-f89bb7f0bc268024.jpeg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/05608799c3e1?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">VAE、GAN、Info-GAN：全解深度学习三大生成模型</a>
+              <p class="description">摘要：在深度学习之前已经有很多生成模型，但苦于生成模型难以描述难以建
+模，科研人员遇到了很多挑战，而深度学习的出现帮助他们解决了不少问题。本章介绍基于深度学习思想的生成模型——VAE和GAN，以及GAN的变种模型。
+ 在深度学习之前已经有很多生成模型，但苦于生成模型难以描述难以...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/9c38c7ddde43?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/cf5357fd-57fa-41a5-98ae-ef2c335678de.jpeg" alt="48">
+                </div>
+                <span class="name">肆虐的悲傷</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/edbcf96ca3c9?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/5756726-48b5c326ac97a7d5.jpeg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/edbcf96ca3c9?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">扩展：GAN模型及其在2016年度的进展 </a>
+              <p class="description">GAN，全称为Generative Adversarial 
+Nets，直译为生成式对抗网络。它一方面将产生式模型拉回到了一直由判别式模型称霸的AI竞技场，引起了学者甚至大众对产生式模型的研究兴趣，同时也将
+对抗训练从常规的游戏竞技领域引到了更一般领域，引起了从学术界到工业界的...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/ccb15ad47c2a?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/3b5db104-1b83-4ffa-bab5-3fa5d28c2f98.jpeg" alt="48">
+                </div>
+                <span class="name">MiracleJQ</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/338eed7e3d8e?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/5756726-e900e03951e9e17f.jpeg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/338eed7e3d8e?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">扩展：GAN在自然语言处理中的应用以及论文</a>
+              <p class="description">“深度解读：GAN模型及其在2016年度的进展”［1］一文对过去一年
+GAN的进展做了详细介绍，十分推荐学习GAN的新手们读读。这篇文章主要介绍GAN在NLP里的应用（可以算是论文解读或者论文笔记），并未涉及GAN
+的基本知识 （没有GAN基础知识的小伙伴推荐先看[1]，由于本...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/ccb15ad47c2a?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/3b5db104-1b83-4ffa-bab5-3fa5d28c2f98.jpeg" alt="48">
+                </div>
+                <span class="name">MiracleJQ</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/7c6dd68fc252?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/5756726-763cb415a2ac5dc0.jpeg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/7c6dd68fc252?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">Wasserstein GAN</a>
+              <p class="description">在GAN的相关研究如火如荼甚至可以说是泛滥的今天，一篇新鲜出炉的
+arXiv论文《Wasserstein GAN》却在Reddit的Machine 
+Learning频道火了，连Goodfellow都在帖子里和大家热烈讨论，这篇论文究竟有什么了不得的地方呢？ 要知道自从2014...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/ccb15ad47c2a?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/3b5db104-1b83-4ffa-bab5-3fa5d28c2f98.jpeg" alt="48">
+                </div>
+                <span class="name">MiracleJQ</span>
+</a>            </div>
+
+            <div class="note ">
+                            <a class="title" target="_blank" href="https://www.jianshu.com/p/4c214667be27?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">致自己‖那年今日。</a>
+              <p class="description">四年前的今天，我早早地来到了人防大厦的武装部，在很高的楼层，我是最早来
+的人，因为我很紧张。虽然通知的时候没指明说什么事情，但我已经隐隐有了一些直觉。我忐忑而激动，看着窗外，脑子一片空白。 
+陆陆续续的，大厅里的人渐渐多了起来，大都是家长带着孩子，仅少的几个是像我一样自己来的。...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/2c3c1147ce8a?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/b52cac33-1a73-437e-96dc-0c516a6eaa27.jpeg" alt="48">
+                </div>
+                <span class="name">一个像南方一个像北方</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/be2d6eb4689a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/5570280-128bb56eafd4923a.jpeg" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/be2d6eb4689a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">十月我在家， 你在哪里？</a>
+              <p class="description">01 
+早就有回家的计划，自从今年找工作后，一直忙于各种事情，好在八天长假能让我回家走走。 
+二号下午急匆匆的上了火车，火车便吭哧吭哧的开动起来。车上人很多，但看得出人们都很开心，大概是都能回家和家人团圆吧。我座位的对面是一对青年夫妇，领
+着几岁的小女孩，听他们聊天中知道，是要赶...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/18c5d666754b?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/78be401d-1856-44b8-b7f2-543d8b555cc1.jpeg" alt="48">
+                </div>
+                <span class="name">我喜欢小王老师</span>
+</a>            </div>
+
+            <div class="note ">
+                            <a class="title" target="_blank" href="https://www.jianshu.com/p/e2e77af6bd9a?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">距离</a>
+              <p class="description">距离分时间性和空间性。 距离分物质性和思想性。 距离分阶级性和梦想性。
+ 起笔之前，我也不知道，距离是一个概念的词。提笔之后，我对于那一个小时的车程不再耿耿于怀。我想这对于很多离家工作的人可能会产生一些微微的共鸣。 
+以往，总是觉得一别千里。家便藏在心底深处，不到归期，不敢触碰...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/a2d6dd36e61d?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/1a3770b2-d16e-4a3c-91fc-2f61bb026795.jpeg" alt="48">
+                </div>
+                <span class="name">流云小斋</span>
+</a>            </div>
+
+            <div class="note ">
+                            <a class="title" target="_blank" href="https://www.jianshu.com/p/4068b193836c?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">还好</a>
+              <p class="description">冷空气迎面扑来，瑟瑟发抖的我，看着玻璃上的雨滴，简直不能相信，几个小时
+前，我还在阳光明媚的蓝天下一个机场里，反复确认着飞机延迟起飞的消息。 
+大风，风速6-7级，伴有雨夹雪。另一个城市的天气如此的丧心病狂。我讲得非常咬牙切齿。我的心还在跳，可是已经凉得冰冰邦邦。 今天是走不了...</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/21788e52617d?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/15c10709a91a.jpeg" alt="48">
+                </div>
+                <span class="name">路小fei</span>
+</a>            </div>
+
+            <div class="note have-img">
+              <a class="cover" target="_blank" href="https://www.jianshu.com/p/6e69704041ce?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/3645288-aaa38ff737fe9354.webp" alt="240">
+</a>              <a class="title" target="_blank" href="https://www.jianshu.com/p/6e69704041ce?utm_campaign=maleskine&amp;utm_content=note&amp;utm_medium=seo_notes&amp;utm_source=recommendation">七绝·过雷峰塔</a>
+              <p class="description">或许当年怨未除，香烟竟比客稀疏。 人间自是痴情好，佛有慈悲总不如。</p>
+              <a class="author" target="_blank" href="https://www.jianshu.com/u/5dc82e0fd7df?utm_campaign=maleskine&amp;utm_content=user&amp;utm_medium=seo_notes&amp;utm_source=recommendation">
+                <div class="avatar">
+                  <img src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/27f313ac83bc.jpeg" alt="48">
+                </div>
+                <span class="name">尘埃落定1</span>
+</a>            </div>
+      </div>
+</div>
+
+    <script type="application/json" data-name="page-data">{"user_signed_in":false,"locale":"zh-CN","os":"windows","read_mode":"day","read_font":"font2","note_show":{"is_author":false,"is_following_author":false,"is_liked_note":false,"follow_state":0,"uuid":"a1534aa7-961d-4f80-9c99-edf6531a3a46"},"note":{"id":20549186,"slug":"40feb1aa642a","user_id":4155986,"notebook_id":13240984,"commentable":true,"likes_count":34,"views_count":31031,"public_wordage":2278,"comments_count":3,"featured_comments_count":0,"total_rewards_count":0,"is_author":false,"paid_type":"free","paid":false,"paid_content_accessible":false,"author":{"nickname":"石晓文的学习日记","total_wordage":596167,"followers_count":4570,"total_likes_count":3394}}}</script>
+    
+    <script src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/babel-polyfill-d171e3dec4b6c15634dd.js" crossorigin="anonymous"></script>
+    <script src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/web-base-2ccd7934dcb0dfe0bf00.js" crossorigin="anonymous"></script>
+<script src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/web-d276f9523ec2f0c17bed.js" crossorigin="anonymous"></script>
+    
+    <script src="%E6%9D%8E%E5%AE%8F%E6%AF%85%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0(%E5%85%AD)%20Generative%20Adversarial%20Network%20(GAN)%20-%20%E7%AE%80%E4%B9%A6_files/entry-79f25afb8c7cae826fef.js" crossorigin="anonymous"></script>
+    <script>
+  (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      if (curProtocol === 'https') {
+          bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+      }
+      else {
+          bp.src = 'http://push.zhanzhang.baidu.com/push.js';
+      }
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+  })();
+</script>
+
+  
+
+<!----><!----></body></html>

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="never">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <title>生成对抗式网络 GAN的理解 - 白婷 - 博客园</title>
+    <meta property="og:description" content="转自：https://zhuanlan.zhihu.com/p/24767059，感谢分享 生成式对抗网络（GAN）是近年来大热的深度学习模型。最近正好有空看了这方面的一些论文，跑了一个GAN的代码，">
+    <link type="text/css" rel="stylesheet" href="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+<link id="MainCss" type="text/css" rel="stylesheet" href="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-CodingLife.css">
+<link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-CodingLife-mobile.css">
+    <link title="RSS" type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/baiting/rss">
+    <link title="RSD" type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/baiting/rsd.xml">
+<link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/baiting/wlwmanifest.xml">
+    <script src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/osd.js"></script><script src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_rendering_2019060301.js"></script><script async="" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script>var currentBlogId=132031;var currentBlogApp='baiting',cb_enable_mathjax=false;var isLogined=false;</script>
+    <script src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/default.css"><link rel="preload" href="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script><script src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2019060301.js" async=""></script></head>
+<body>
+<a name="top"></a>
+
+
+<!--done-->
+<div id="home">
+<div id="header">
+	<div id="blogTitle">
+	<a id="lnkBlogLogo" href="https://www.cnblogs.com/baiting/"><img id="blogLogo" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>			
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle" href="https://www.cnblogs.com/baiting/">白婷的博客</a></h1>
+<h2></h2>
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">博客园</a></li>
+<li><a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/baiting/">首页</a></li>
+<li><a id="blog_nav_newpost" class="menu" rel="nofollow" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">新随笔</a></li>
+<li><a id="blog_nav_contact" class="menu" rel="nofollow" href="https://msg.cnblogs.com/send/%E7%99%BD%E5%A9%B7">联系</a></li>
+<li><a id="blog_nav_rss" class="menu" href="https://www.cnblogs.com/baiting/rss">订阅</a>
+<!--<a id="blog_nav_rss_image" class="aHeaderXML" href="https://www.cnblogs.com/baiting/rss"><img src="//www.cnblogs.com/images/xml.gif" alt="订阅" /></a>--></li>
+<li><a id="blog_nav_admin" class="menu" rel="nofollow" href="https://i.cnblogs.com/">管理</a></li>
+</ul>
+		<div class="blogStats">
+			
+			<div id="blog_stats">
+<span id="stats_post_count">随笔 - 181&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 15</span>
+</div>
+			
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		
+        <div id="post_detail">
+<!--done-->
+<div id="topics">
+	<div class="post">
+		<h1 class="postTitle">
+			<a id="cb_post_title_url" class="postTitle2" href="https://www.cnblogs.com/baiting/p/8314936.html">生成对抗式网络 GAN的理解</a>
+		</h1>
+		<div class="clear"></div>
+		<div class="postBody">
+			<div id="cnblogs_post_body" class="blogpost-body"><p>转自：https://zhuanlan.zhihu.com/p/24767059，感谢分享</p>
+<p>生成式对抗网络（GAN）是近年来大热的深度学习模型。最近正好有空看了这方面的一些论文，跑了一个GAN的代码，于是写了这篇文章来介绍一下GAN。<br><br>本文主要分为三个部分：</p>
+<ol>
+<li>介绍原始的GAN的原理&nbsp;</li>
+<li>同样非常重要的DCGAN的原理&nbsp;</li>
+<li>如何在Tensorflow跑DCGAN的代码，生成如题图所示的动漫头像，附送数据集哦 :-)</li>
+
+</ol>
+<h2>一、GAN原理介绍</h2>
+<p>说到GAN第一篇要看的paper当然是Ian Goodfellow大牛的Generative Adversarial Networks（arxiv：<a class=" external" href="http://link.zhihu.com/?target=https%3A//arxiv.org/abs/1406.2661" rel="nofollow noreferrer" target="_blank"><span class="invisible">https://<span class="visible">arxiv.org/abs/1406.2661</span></span></a>），这篇paper算是这个领域的开山之作。</p>
+<p>GAN的基本原理其实非常简单，这里以生成图片为例进行说明。假设我们有两个网络，G（Generator）和D（Discriminator）。正如它的名字所暗示的那样，它们的功能分别是：</p>
+<ul>
+<li>G是一个生成图片的网络，它接收一个随机的噪声z，通过这个噪声生成图片，记做G(z)。</li>
+<li>D是一个判别网络，判别一张图片是不是“真实的”。它的输入参数是x，x代表一张图片，输出D（x）代表x为真实图片的概率，如果为1，就代表100%是真实的图片，而输出为0，就代表不可能是真实的图片。</li>
+
+</ul>
+<p>在训练过程中，生成网络G的目标就是尽量生成真实的图片去欺骗判别网络D。而D的目标就是尽量把G生成的图片和真实的图片分别开来。这样，G和D构成了一个动态的“博弈过程”。</p>
+<p>最后博弈的结果是什么？在最理想的状态下，G可以生成足以“以假乱真”的图片G(z)。对于D来说，它难以判定G生成的图片究竟是不是真实的，因此D(G(z)) = 0.5。</p>
+<p>这样我们的目的就达成了：我们得到了一个生成式的模型G，它可以用来生成图片。</p>
+<p>以上只是大致说了一下GAN的核心原理，如何用数学语言描述呢？这里直接摘录论文里的公式：</p>
+<p>&nbsp;</p>
+<p>
+<img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-f98f1d3caabbca9b6baa4235c40150b4_hd.jpeg" alt="" data-rawwidth="765" data-rawheight="74" data-original="https://pic2.zhimg.com/v2-f98f1d3caabbca9b6baa4235c40150b4_r.jpg" data-actualsrc="https://pic2.zhimg.com/v2-f98f1d3caabbca9b6baa4235c40150b4_b.jpg" width="765">简单分析一下这个公式：</p>
+<p>&nbsp;</p>
+<ul>
+<li>整个式子由两项构成。x表示真实图片，z表示输入G网络的噪声，而G(z)表示G网络生成的图片。</li>
+<li>D(x)表示D网络判断真实图片是否真实的概率（因为x就是真实的，所以对于D来说，这个值越接近1越好）。而D(G(z))是D网络判断G生成的图片的是否真实的概率。</li>
+<li>G的目的：上面提到过，D(G(z))是D网络判断G生成的图片是否真实的概率，G应该希望自己生成的图片“越接近真实越好”。也就是说，G希望D(G(z))尽可能得大，这时V(D, G)会变小。因此我们看到式子的最前面的记号是min_G。</li>
+<li>D的目的：D的能力越强，D(x)应该越大，D(G(x))应该越小。这时V(D,G)会变大。因此式子对于D来说是求最大(max_D)</li>
+
+</ul>
+<p>下面这幅图片很好地描述了这个过程：</p>
+<p>
+<img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-95c709a87749e0778248fc8fdd289b83_hd.jpeg" alt="" data-rawwidth="600" data-rawheight="413" data-original="https://pic4.zhimg.com/v2-95c709a87749e0778248fc8fdd289b83_r.jpg" data-actualsrc="https://pic4.zhimg.com/v2-95c709a87749e0778248fc8fdd289b83_b.jpg" width="600"></p>
+<p>那么如何用随机梯度下降法训练D和G？论文中也给出了算法：</p>
+<p>&nbsp;</p>
+<p>
+<img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-78851777a659db4821695242cd39b42e_hd.jpeg" alt="" data-rawwidth="1139" data-rawheight="700" data-original="https://pic2.zhimg.com/v2-78851777a659db4821695242cd39b42e_r.jpg" data-actualsrc="https://pic2.zhimg.com/v2-78851777a659db4821695242cd39b42e_b.jpg" width="1139">这里红框圈出的部分是我们要额外注意的。第一步我们训练D，D是希望V(G, D)越大越好，所以是加上梯度(ascending)。第二步训练G时，V(G, D)越小越好，所以是减去梯度(descending)。整个训练过程交替进行。</p>
+<p>&nbsp;</p>
+<h2>二、DCGAN原理介绍</h2>
+<p>我们知道深度学习中对图像处理应用最好的模型是CNN，那么如何把CNN与GAN结合？DCGAN是这方面最好的尝试之一（论文地址：<a class=" wrap external" href="http://link.zhihu.com/?target=https%3A//arxiv.org/abs/1511.06434" rel="nofollow noreferrer" target="_blank">[1511.06434] Unsupervised Representation Learning with Deep Convolutional Generative Adversarial Networks</a>）</p>
+<p>DCGAN的原理和GAN是一样的，这里就不在赘述。它只是把上述的G和D换成了两个卷积神经网络（CNN）。但不是直接换就可以了，DCGAN对卷积神经网络的结构做了一些改变，以提高样本的质量和收敛的速度，这些改变有：</p>
+<ul>
+<li>取消所有pooling层。G网络中使用转置卷积（transposed convolutional layer）进行上采样，D网络中用加入stride的卷积代替pooling。</li>
+<li>在D和G中均使用batch normalization</li>
+<li>去掉FC层，使网络变为全卷积网络</li>
+<li>G网络中使用ReLU作为激活函数，最后一层使用tanh</li>
+<li>D网络中使用LeakyReLU作为激活函数</li>
+
+</ul>
+<p>DCGAN中的G网络示意：</p>
+<p>
+<img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-1c06594f38b896e8d15154592bae0309_hd.jpeg" alt="" data-rawwidth="601" data-rawheight="218" data-original="https://pic2.zhimg.com/v2-1c06594f38b896e8d15154592bae0309_r.jpg" data-actualsrc="https://pic2.zhimg.com/v2-1c06594f38b896e8d15154592bae0309_b.jpg" width="601"></p>
+<h2>三、DCGAN in Tensorflow</h2>
+<p>好了，上面说了一通原理，下面说点有意思的实践部分的内容。</p>
+<p>DCGAN的原作者用DCGAN生成LSUN的卧室图片，这并不是特别有意思。之前在网上看到一篇文章&nbsp;<a class=" wrap external" href="http://link.zhihu.com/?target=http%3A//qiita.com/mattya/items/e5bfe5e04b9d2f0bbd47" rel="nofollow noreferrer" target="_blank">Chainerで顔イラストの自動生成 - Qiita</a>&nbsp;，是用DCGAN生成动漫人物头像的，效果如下：</p>
+<p>
+<img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-439508515eabca9b11b277a2f9d668fb_hd.jpeg" alt="" data-rawwidth="1332" data-rawheight="450" data-original="https://pic3.zhimg.com/v2-439508515eabca9b11b277a2f9d668fb_r.jpg" data-actualsrc="https://pic3.zhimg.com/v2-439508515eabca9b11b277a2f9d668fb_b.jpg" width="1332"></p>
+<p>这是个很有趣的实践内容。可惜原文是用Chainer做的，这个框架使用的人不多。下面我们就在Tensorflow中复现这个结果。</p>
+<p>1. 原始数据集的搜集</p>
+<p>首先我们需要用爬虫爬取大量的动漫图片，原文是在这个网站：<a class=" external" href="http://link.zhihu.com/?target=http%3A//safebooru.donmai.us/" rel="nofollow noreferrer" target="_blank"><span class="invisible">http://<span class="visible">safebooru.donmai.us/</span></span></a>中爬取的。我尝试的时候，发现在我的网络环境下无法访问这个网站，于是我就写了一个简单的爬虫爬了另外一个著名的动漫图库网站：<a class=" wrap external" href="http://link.zhihu.com/?target=http%3A//konachan.net/" rel="nofollow noreferrer" target="_blank">konachan.net - Konachan.com Anime Wallpapers</a>。</p>
+<p>爬虫代码如下：</p>
+<div class="highlight">
+<pre><code class="language-python hljs"><span class="kn"><span class="hljs-keyword">import</span> <span class="nn">requests
+<span class="kn"><span class="hljs-keyword">from</span> <span class="nn">bs4 <span class="kn"><span class="hljs-keyword">import</span> <span class="n">BeautifulSoup
+<span class="kn"><span class="hljs-keyword">import</span> <span class="nn">os
+<span class="kn"><span class="hljs-keyword">import</span> <span class="nn">traceback
+
+<span class="k"><span class="hljs-function"><span class="hljs-keyword">def</span> </span><span class="nf"><span class="hljs-function"><span class="hljs-title">download</span></span><span class="p"><span class="hljs-function"><span class="hljs-params">(</span></span><span class="n"><span class="hljs-function"><span class="hljs-params">url</span></span><span class="p"><span class="hljs-function"><span class="hljs-params">, </span></span><span class="n"><span class="hljs-function"><span class="hljs-params">filename</span></span><span class="p"><span class="hljs-function"><span class="hljs-params">)</span>:</span>
+    <span class="k"><span class="hljs-keyword">if</span> <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">exists<span class="p">(<span class="n">filename<span class="p">):
+        <span class="k">print<span class="p">(<span class="s1"><span class="hljs-string">'file exists!'</span><span class="p">)
+        <span class="k"><span class="hljs-keyword">return</span>
+    <span class="k"><span class="hljs-keyword">try</span><span class="p">:
+        <span class="n">r <span class="o">= <span class="n">requests<span class="o">.<span class="n">get<span class="p">(<span class="n">url<span class="p">, <span class="n">stream<span class="o">=<span class="bp"><span class="hljs-keyword">True</span><span class="p">, <span class="n">timeout<span class="o">=<span class="mi"><span class="hljs-number">60</span><span class="p">)
+        <span class="n">r<span class="o">.<span class="n">raise_for_status<span class="p">()
+        <span class="k"><span class="hljs-keyword">with</span> <span class="nb">open<span class="p">(<span class="n">filename<span class="p">, <span class="s1"><span class="hljs-string">'wb'</span><span class="p">) <span class="k"><span class="hljs-keyword">as</span> <span class="n">f<span class="p">:
+            <span class="k"><span class="hljs-keyword">for</span> <span class="n">chunk <span class="ow"><span class="hljs-keyword">in</span> <span class="n">r<span class="o">.<span class="n">iter_content<span class="p">(<span class="n">chunk_size<span class="o">=<span class="mi"><span class="hljs-number">1024</span><span class="p">):
+                <span class="k"><span class="hljs-keyword">if</span> <span class="n">chunk<span class="p">:  <span class="c1"><span class="hljs-comment"># filter out keep-alive new chunks</span>
+                    <span class="n">f<span class="o">.<span class="n">write<span class="p">(<span class="n">chunk<span class="p">)
+                    <span class="n">f<span class="o">.<span class="n">flush<span class="p">()
+        <span class="k"><span class="hljs-keyword">return</span> <span class="n">filename
+    <span class="k"><span class="hljs-keyword">except</span> <span class="ne">KeyboardInterrupt<span class="p">:
+        <span class="k"><span class="hljs-keyword">if</span> <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">exists<span class="p">(<span class="n">filename<span class="p">):
+            <span class="n">os<span class="o">.<span class="n">remove<span class="p">(<span class="n">filename<span class="p">)
+        <span class="k"><span class="hljs-keyword">raise</span> <span class="ne">KeyboardInterrupt
+    <span class="k"><span class="hljs-keyword">except</span> <span class="ne">Exception<span class="p">:
+        <span class="n">traceback<span class="o">.<span class="n">print_exc<span class="p">()
+        <span class="k"><span class="hljs-keyword">if</span> <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">exists<span class="p">(<span class="n">filename<span class="p">):
+            <span class="n">os<span class="o">.<span class="n">remove<span class="p">(<span class="n">filename<span class="p">)
+
+
+<span class="k"><span class="hljs-keyword">if</span> <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">exists<span class="p">(<span class="s1"><span class="hljs-string">'imgs'</span><span class="p">) <span class="ow"><span class="hljs-keyword">is</span> <span class="bp"><span class="hljs-keyword">False</span><span class="p">:
+    <span class="n">os<span class="o">.<span class="n">makedirs<span class="p">(<span class="s1"><span class="hljs-string">'imgs'</span><span class="p">)
+
+<span class="n">start <span class="o">= <span class="mi"><span class="hljs-number">1</span>
+<span class="n">end <span class="o">= <span class="mi"><span class="hljs-number">8000</span>
+<span class="k"><span class="hljs-keyword">for</span> <span class="n">i <span class="ow"><span class="hljs-keyword">in</span> <span class="nb">range<span class="p">(<span class="n">start<span class="p">, <span class="n">end <span class="o">+ <span class="mi"><span class="hljs-number">1</span><span class="p">):
+    <span class="n">url <span class="o">= <span class="s1"><span class="hljs-string">'http://konachan.net/post?page=</span><span class="si"><span class="hljs-string">%d</span><span class="s1"><span class="hljs-string">&amp;tags='</span> <span class="o">% <span class="n">i
+    <span class="n">html <span class="o">= <span class="n">requests<span class="o">.<span class="n">get<span class="p">(<span class="n">url<span class="p">)<span class="o">.<span class="n">text
+    <span class="n">soup <span class="o">= <span class="n">BeautifulSoup<span class="p">(<span class="n">html<span class="p">, <span class="s1"><span class="hljs-string">'html.parser'</span><span class="p">)
+    <span class="k"><span class="hljs-keyword">for</span> <span class="n">img <span class="ow"><span class="hljs-keyword">in</span> <span class="n">soup<span class="o">.<span class="n">find_all<span class="p">(<span class="s1"><span class="hljs-string">'img'</span><span class="p">, <span class="n">class_<span class="o">=<span class="s2"><span class="hljs-string">"preview"</span><span class="p">):
+        <span class="n">target_url <span class="o">= <span class="s1"><span class="hljs-string">'http:'</span> <span class="o">+ <span class="n">img<span class="p">[<span class="s1"><span class="hljs-string">'src'</span><span class="p">]
+        <span class="n">filename <span class="o">= <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">join<span class="p">(<span class="s1"><span class="hljs-string">'imgs'</span><span class="p">, <span class="n">target_url<span class="o">.<span class="n">split<span class="p">(<span class="s1"><span class="hljs-string">'/'</span><span class="p">)[<span class="o"><span class="hljs-number">-</span><span class="mi"><span class="hljs-number">1</span><span class="p">])
+        <span class="n">download<span class="p">(<span class="n">target_url<span class="p">, <span class="n">filename<span class="p">)
+    <span class="k">print<span class="p">(<span class="s1"><span class="hljs-string">'</span><span class="si"><span class="hljs-string">%d</span><span class="s1"><span class="hljs-string"> / </span><span class="si"><span class="hljs-string">%d</span><span class="s1"><span class="hljs-string">'</span> <span class="o">% <span class="p">(<span class="n">i<span class="p">, <span class="n">end<span class="p">))
+</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></code></pre>
+</div>
+<p>这个爬虫大概跑了一天，爬下来12万张图片，大概是这样的：</p>
+<p><img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-ed30387a7296511c960b4cbef85fd7c1_hd.jpeg" alt="" data-rawwidth="561" data-rawheight="585" data-original="https://pic4.zhimg.com/v2-ed30387a7296511c960b4cbef85fd7c1_r.jpg" data-actualsrc="https://pic4.zhimg.com/v2-ed30387a7296511c960b4cbef85fd7c1_b.jpg" width="561"></p>
+<p>可以看到这里面的图片大多数比较杂乱，还不能直接作为数据训练，我们需要用合适的工具，截取人物的头像进行训练。</p>
+<p>2. 头像截取</p>
+<p>截取头像和原文一样，直接使用github上一个基于opencv的工具：<a class=" wrap external" href="http://link.zhihu.com/?target=https%3A//github.com/nagadomi/lbpcascade_animeface" rel="nofollow noreferrer" target="_blank">nagadomi/lbpcascade_animeface</a>。</p>
+<p>简单包装下代码：</p>
+<div class="highlight">
+<pre><code class="language-python hljs"><span class="kn"><span class="hljs-keyword">import</span> <span class="nn">cv2
+<span class="kn"><span class="hljs-keyword">import</span> <span class="nn">sys
+<span class="kn"><span class="hljs-keyword">import</span> <span class="nn">os.path
+<span class="kn"><span class="hljs-keyword">from</span> <span class="nn">glob <span class="kn"><span class="hljs-keyword">import</span> <span class="n">glob
+
+<span class="k"><span class="hljs-function"><span class="hljs-keyword">def</span> </span><span class="nf"><span class="hljs-function"><span class="hljs-title">detect</span></span><span class="p"><span class="hljs-function"><span class="hljs-params">(</span></span><span class="n"><span class="hljs-function"><span class="hljs-params">filename</span></span><span class="p"><span class="hljs-function"><span class="hljs-params">, </span></span><span class="n"><span class="hljs-function"><span class="hljs-params">cascade_file</span></span><span class="o"><span class="hljs-function"><span class="hljs-params">=</span></span><span class="s2"><span class="hljs-function"><span class="hljs-params"><span class="hljs-string">"lbpcascade_animeface.xml"</span></span></span><span class="p"><span class="hljs-function"><span class="hljs-params">)</span>:</span>
+    <span class="k"><span class="hljs-keyword">if</span> <span class="ow"><span class="hljs-keyword">not</span> <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">isfile<span class="p">(<span class="n">cascade_file<span class="p">):
+        <span class="k"><span class="hljs-keyword">raise</span> <span class="ne">RuntimeError<span class="p">(<span class="s2"><span class="hljs-string">"</span><span class="si"><span class="hljs-string">%s</span><span class="s2"><span class="hljs-string">: not found"</span> <span class="o">% <span class="n">cascade_file<span class="p">)
+
+    <span class="n">cascade <span class="o">= <span class="n">cv2<span class="o">.<span class="n">CascadeClassifier<span class="p">(<span class="n">cascade_file<span class="p">)
+    <span class="n">image <span class="o">= <span class="n">cv2<span class="o">.<span class="n">imread<span class="p">(<span class="n">filename<span class="p">)
+    <span class="n">gray <span class="o">= <span class="n">cv2<span class="o">.<span class="n">cvtColor<span class="p">(<span class="n">image<span class="p">, <span class="n">cv2<span class="o">.<span class="n">COLOR_BGR2GRAY<span class="p">)
+    <span class="n">gray <span class="o">= <span class="n">cv2<span class="o">.<span class="n">equalizeHist<span class="p">(<span class="n">gray<span class="p">)
+
+    <span class="n">faces <span class="o">= <span class="n">cascade<span class="o">.<span class="n">detectMultiScale<span class="p">(<span class="n">gray<span class="p">,
+                                     <span class="c1"><span class="hljs-comment"># detector options</span>
+                                     <span class="n">scaleFactor<span class="o">=<span class="mf"><span class="hljs-number">1.1</span><span class="p">,
+                                     <span class="n">minNeighbors<span class="o">=<span class="mi"><span class="hljs-number">5</span><span class="p">,
+                                     <span class="n">minSize<span class="o">=<span class="p">(<span class="mi"><span class="hljs-number">48</span><span class="p">, <span class="mi"><span class="hljs-number">48</span><span class="p">))
+    <span class="k"><span class="hljs-keyword">for</span> <span class="n">i<span class="p">, <span class="p">(<span class="n">x<span class="p">, <span class="n">y<span class="p">, <span class="n">w<span class="p">, <span class="n">h<span class="p">) <span class="ow"><span class="hljs-keyword">in</span> <span class="nb">enumerate<span class="p">(<span class="n">faces<span class="p">):
+        <span class="n">face <span class="o">= <span class="n">image<span class="p">[<span class="n">y<span class="p">: <span class="n">y <span class="o">+ <span class="n">h<span class="p">, <span class="n">x<span class="p">:<span class="n">x <span class="o">+ <span class="n">w<span class="p">, <span class="p">:]
+        <span class="n">face <span class="o">= <span class="n">cv2<span class="o">.<span class="n">resize<span class="p">(<span class="n">face<span class="p">, <span class="p">(<span class="mi"><span class="hljs-number">96</span><span class="p">, <span class="mi"><span class="hljs-number">96</span><span class="p">))
+        <span class="n">save_filename <span class="o">= <span class="s1"><span class="hljs-string">'</span><span class="si"><span class="hljs-string">%s</span><span class="s1"><span class="hljs-string">-</span><span class="si"><span class="hljs-string">%d</span><span class="s1"><span class="hljs-string">.jpg'</span> <span class="o">% <span class="p">(<span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">basename<span class="p">(<span class="n">filename<span class="p">)<span class="o">.<span class="n">split<span class="p">(<span class="s1"><span class="hljs-string">'.'</span><span class="p">)[<span class="mi"><span class="hljs-number">0</span><span class="p">], <span class="n">i<span class="p">)
+        <span class="n">cv2<span class="o">.<span class="n">imwrite<span class="p">(<span class="s2"><span class="hljs-string">"faces/"</span> <span class="o">+ <span class="n">save_filename<span class="p">, <span class="n">face<span class="p">)
+
+
+<span class="k"><span class="hljs-keyword">if</span> <span class="n">__name__ <span class="o">== <span class="s1"><span class="hljs-string">'__main__'</span><span class="p">:
+    <span class="k"><span class="hljs-keyword">if</span> <span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">exists<span class="p">(<span class="s1"><span class="hljs-string">'faces'</span><span class="p">) <span class="ow"><span class="hljs-keyword">is</span> <span class="bp"><span class="hljs-keyword">False</span><span class="p">:
+        <span class="n">os<span class="o">.<span class="n">makedirs<span class="p">(<span class="s1"><span class="hljs-string">'faces'</span><span class="p">)
+    <span class="n">file_list <span class="o">= <span class="n">glob<span class="p">(<span class="s1"><span class="hljs-string">'imgs/*.jpg'</span><span class="p">)
+    <span class="k"><span class="hljs-keyword">for</span> <span class="n">filename <span class="ow"><span class="hljs-keyword">in</span> <span class="n">file_list<span class="p">:
+        <span class="n">detect<span class="p">(<span class="n">filename<span class="p">)
+</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></code></pre>
+</div>
+<p>截取头像后的人物数据：</p>
+<p>&nbsp;</p>
+<p><img class="origin_image zh-lightbox-thumb lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-5afb1d6b37ef12d227577a25e06ad83f_hd.jpeg" alt="" data-rawwidth="617" data-rawheight="669" data-original="https://pic1.zhimg.com/v2-5afb1d6b37ef12d227577a25e06ad83f_r.jpg" data-actualsrc="https://pic1.zhimg.com/v2-5afb1d6b37ef12d227577a25e06ad83f_b.jpg" width="617">这样就可以用来训练了！</p>
+<p>&nbsp;</p>
+<p>如果你不想从头开始爬图片，可以直接使用我爬好的头像数据（275M，约5万多张图片）：<a class=" external" href="http://link.zhihu.com/?target=https%3A//pan.baidu.com/s/1eSifHcA" rel="nofollow noreferrer" target="_blank"><span class="invisible">https://<span class="visible">pan.baidu.com/s/1eSifHc<span class="invisible">A</span></span></span></a>&nbsp;提取码：g5qa</p>
+<p>3. 训练</p>
+<p>DCGAN在Tensorflow中已经有人造好了轮子：<a class=" wrap external" href="http://link.zhihu.com/?target=https%3A//github.com/carpedm20/DCGAN-tensorflow" rel="nofollow noreferrer" target="_blank">carpedm20/DCGAN-tensorflow</a>，我们直接使用这个代码就可以了。</p>
+<p>不过原始代码中只提供了有限的几个数据库，如何训练自己的数据？在model.py中我们找到读数据的几行代码：</p>
+<div class="highlight">
+<pre><code class="language-python hljs"> <span class="k"><span class="hljs-keyword">if</span> <span class="n">config<span class="o">.<span class="n">dataset <span class="o">== <span class="s1"><span class="hljs-string">'mnist'</span><span class="p">:
+            <span class="n">data_X<span class="p">, <span class="n">data_y <span class="o">= <span class="bp">self<span class="o">.<span class="n">load_mnist<span class="p">()
+        <span class="k"><span class="hljs-keyword">else</span><span class="p">:
+            <span class="n">data <span class="o">= <span class="n">glob<span class="p">(<span class="n">os<span class="o">.<span class="n">path<span class="o">.<span class="n">join<span class="p">(<span class="s2"><span class="hljs-string">"./data"</span><span class="p">, <span class="n">config<span class="o">.<span class="n">dataset<span class="p">, <span class="s2"><span class="hljs-string">"*.jpg"</span><span class="p">))
+</span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></code></pre>
+</div>
+<p>这样读数据的逻辑就很清楚了，我们在data文件夹中再新建一个anime文件夹，把图片直接放到这个文件夹里，运行时指定--dataset anime即可。</p>
+<p>运行指令（参数含义：指定生成的图片的尺寸为48x48，我们图片的大小是96x96，跑300个epoch）：</p>
+<div class="highlight">
+<pre><code class="language-bash hljs">python main.py --image_size <span class="m">96 --output_size <span class="m">48 --dataset anime --is_crop True --is_train True --epoch <span class="m">300 --input_fname_pattern <span class="s2"><span class="hljs-string">"*.jpg"</span>
+</span></span></span></span></code></pre>
+</div>
+<p>4. 结果</p>
+<p>第1个epoch跑完（只有一点点轮廓）：</p>
+<p>&nbsp;</p>
+<p><img class="content_image lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-d33147797622fe72542f0f280d6fb568_hd.jpeg" alt="" data-rawwidth="384" data-rawheight="384" data-actualsrc="https://pic3.zhimg.com/v2-d33147797622fe72542f0f280d6fb568_b.jpg" width="384">第5个epoch之后的结果：<img class="content_image lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-f9ba758a0bc702cc1c3b6b5d047cb679_hd.jpeg" alt="" data-rawwidth="384" data-rawheight="384" data-actualsrc="https://pic1.zhimg.com/v2-f9ba758a0bc702cc1c3b6b5d047cb679_b.jpg" width="384">第10个epoch：</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><img class="content_image lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-71c21635b53c663bc15e662f8463e3f7_hd.jpeg" alt="" data-rawwidth="384" data-rawheight="384" data-actualsrc="https://pic3.zhimg.com/v2-71c21635b53c663bc15e662f8463e3f7_b.jpg" width="384">200个epoch，仔细看有些图片确实是足以以假乱真的：</p>
+<p>&nbsp;</p>
+<p><img class="content_image lazy" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/v2-a485dfbc82c63c7dba32627d65004ef3_hd.jpeg" alt="" data-rawwidth="384" data-rawheight="384" data-actualsrc="https://pic1.zhimg.com/v2-a485dfbc82c63c7dba32627d65004ef3_b.jpg" width="384"></p>
+<p>题图是我从第300个epoch生成的。</p>
+<h2>四、总结和后续</h2>
+<p>简单介绍了一下GAN和DCGAN的原理。以及如何使用Tensorflow做一个简单的生成图片的demo。</p>
+<p>一些后续阅读：</p>
+<ul>
+<li>Ian Goodfellow对GAN一系列工作总结的ppt，确实精彩，推荐：<a class=" wrap external" href="http://link.zhihu.com/?target=http%3A//it.sohu.com/20161210/n475485860.shtml" rel="nofollow noreferrer" target="_blank">独家 | GAN之父NIPS 2016演讲现场直击：全方位解读生成对抗网络的原理及未来（附PPT）</a></li>
+<li>GAN论文汇总，包含code：<a class=" wrap external" href="http://link.zhihu.com/?target=https%3A//github.com/zhangqianhui/AdversarialNetsPapers" rel="nofollow noreferrer" target="_blank">zhangqianhui/AdversarialNetsPapers</a></li>
+</ul></div><div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block">
+<div id="BlogPostCategory"></div>
+<div id="EntryTag">标签: <a href="https://www.cnblogs.com/baiting/tag/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a></div>
+<div id="blog_post_info"><div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(8314936,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+            <a id="green_channel_follow" onclick="follow('c2b9861a-6e84-e111-aa3f-842b2b196315');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/baiting/" target="_blank"><img src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20140709203235.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/baiting/">白婷</a><br>
+            <a href="https://home.cnblogs.com/u/baiting/followees">关注 - 4</a><br>
+            <a href="https://home.cnblogs.com/u/baiting/followers">粉丝 - 50</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('c2b9861a-6e84-e111-aa3f-842b2b196315');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(8314936,'Digg')">
+        <span class="diggnum" id="digg_count">2</span>
+    </div>
+    <div class="buryit" onclick="votePost(8314936,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+<div class="clear"></div>
+<div id="post_next_prev"><a href="https://www.cnblogs.com/baiting/p/8148656.html" class="p_n_p_prefix">« </a> 上一篇：<a href="https://www.cnblogs.com/baiting/p/8148656.html" title="发布于2017-12-30 05:53">CNN 和RNN 中input 长度不一致问题</a><br><a href="https://www.cnblogs.com/baiting/p/8319321.html" class="p_n_p_prefix">» </a> 下一篇：<a href="https://www.cnblogs.com/baiting/p/8319321.html" title="发布于2018-01-19 23:47">保存及读取keras模型参数</a><br></div>
+</div>
+
+
+		</div>
+		<div class="postDesc">posted @ <span id="post-date">2018-01-19 02:28</span> <a href="https://www.cnblogs.com/baiting/">白婷</a> 阅读(<span id="post_view_count">31777</span>) 评论(<span id="post_comment_count">1</span>)  <a href="https://i.cnblogs.com/EditPosts.aspx?postid=8314936" rel="nofollow">编辑</a> <a href="#" onclick="AddToWz(8314936);return false;">收藏</a></div>
+	</div>
+	<script type="text/javascript">var allowComments=true,cb_blogId=132031,cb_entryId=8314936,cb_blogApp=currentBlogApp,cb_blogUserGuid='c2b9861a-6e84-e111-aa3f-842b2b196315',cb_entryCreatedDate='2018/1/19 2:28:00';loadViewCount(cb_entryId);var cb_postType=1;var isMarkdown=false;</script>
+	
+</div><!--end: topics 文章、评论容器-->
+</div><a name="!comments"></a><div id="blog-comments-placeholder"><div id="comments_pager_top"></div>
+<br>
+<div class="feedback_area_title">评论列表</div>
+<div class="feedbackNoItems"></div>	
+
+		<div class="feedbackItem">
+			<div class="feedbackListSubtitle">
+				<div class="feedbackManage">
+					&nbsp;&nbsp;<span class="comment_actions"></span>
+				</div>
+				<a href="#4215949" class="layer">#1楼</a><a name="4215949" id="comment_anchor_4215949"></a><span id="comment-maxId" style="display:none;">4215949</span><span id="comment-maxDate" style="display:none;">2019/3/28 16:18:08</span>  <span class="comment_date">2019-03-28 16:18</span> <a id="a_comment_author_4215949" href="http://home.cnblogs.com/u/1533523/" target="_blank">NeyoShinado</a> <a href="http://msg.cnblogs.com/send/NeyoShinado" title="发送站内短消息" class="sendMsg2This">&nbsp;</a>
+			</div>
+			<div class="feedbackCon">
+				<div id="comment_body_4215949" class="blog_comment_body">爬虫代码那里， target_url 多加了 'http:'</div><div class="comment_vote"><a href="javascript:void(0);" class="comment_digg" onclick="return voteComment(4215949,'Digg',this)">支持(0)</a><a href="javascript:void(0);" class="comment_bury" onclick="return voteComment(4215949,'Bury',this)">反对(0)</a></div>
+			</div>
+		</div>
+	<div id="comments_pager_bottom"></div></div><script type="text/javascript">var commentManager = new blogCommentManager();commentManager.renderComments(0);</script>
+<div id="comment_form" class="commentform">
+<a name="commentform"></a>
+<div id="divCommentShow"></div>
+<div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+<div id="comment_form_container"><div class="login_tips">注册用户登录后才能发表评论，请 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return login('commentform');">登录</a> 或 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return register();">注册</a>，<a href="http://www.cnblogs.com/">访问</a>网站首页。</div></div>
+<div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+<div id="ad_t2"><a href="http://www.ucancode.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-工控')">【推荐】超50万C++/C#源码: 大型实时仿真组态图形源码</a><br><a href="https://www.grapecity.com.cn/developer/spreadjs?utm_source=cnblogs&amp;utm_medium=blogpage&amp;utm_term=bottom&amp;utm_content=SpreadJS&amp;utm_campaign=community" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-SpreadJS')">【前端】SpreadJS表格控件，可嵌入系统开发的在线Excel</a><br><a href="https://q.cnblogs.com/" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-博问')">【推荐】程序员问答平台，解决您开发中遇到的技术难题</a><br></div>
+<div id="opt_under_post"></div>
+<script async="async" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/gpt.js"></script>
+<script>
+  var googletag = googletag || {};
+  googletag.cmd = googletag.cmd || [];
+</script>
+<script>
+  googletag.cmd.push(function() {
+        googletag.defineSlot('/1090369/C1', [300, 250], 'div-gpt-ad-1546353474406-0').addService(googletag.pubads());
+        googletag.defineSlot('/1090369/C2', [468, 60], 'div-gpt-ad-1539008685004-0').addService(googletag.pubads());
+        googletag.pubads().enableSingleRequest();
+        googletag.enableServices();
+  });
+</script>
+<div id="cnblogs_c1" class="c_ad_block">
+    <div id="div-gpt-ad-1546353474406-0" style="height:250px; width:300px;" data-google-query-id="CLmUguip4uICFUYehwod858LGw"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_news"><div class="recomm-block"><b>相关博文：</b><br>·  <a href="https://www.cnblogs.com/neverguveip/p/9457237.html" target="_blank" onclick="clickRecomItmem(9457237)">GAN学习指南：从原理入门到制作生成Demo</a><br>·  <a href="https://www.cnblogs.com/Anita9002/p/9109642.html" target="_blank" onclick="clickRecomItmem(9109642)">DCGANinTensorflow生成动漫人物</a><br>·  <a href="https://www.cnblogs.com/lantingg/p/9216940.html" target="_blank" onclick="clickRecomItmem(9216940)">GAN学习指南：从原理入门到制作生成Demo，总共分几步？</a><br>·  <a href="https://www.cnblogs.com/jiangxinyang/p/10156138.html" target="_blank" onclick="clickRecomItmem(10156138)">生成对抗网络（GAN）</a><br>·  <a href="https://www.cnblogs.com/wuxiangli/p/7062016.html" target="_blank" onclick="clickRecomItmem(7062016)">gan对抗式网络</a><br></div></div>
+<div id="cnblogs_c2" class="c_ad_block">
+    <div id="div-gpt-ad-1539008685004-0" style="height:60px; width:468px;" data-google-query-id="CPD9hOip4uICFUYehwod858LGw"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none; display: inline-block; width: 320px; height: 50px;"><iframe style="border: 0px none; vertical-align: bottom;" src="%E7%94%9F%E6%88%90%E5%AF%B9%E6%8A%97%E5%BC%8F%E7%BD%91%E7%BB%9C%20GAN%E7%9A%84%E7%90%86%E8%A7%A3%20-%20%E7%99%BD%E5%A9%B7%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/container.html" id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="" scrolling="no" marginwidth="0" marginheight="0" data-is-safeframe="true" data-google-container-id="2" data-load-complete="true" width="320" height="50" frameborder="0"></iframe></div></div>
+</div>
+<div id="under_post_kb"><div class="itnews c_ad_block"><b>最新新闻</b>：<br> ·  <a href="https://news.cnblogs.com/n/626705/" target="_blank">西部数据中断与华为战略合作：刚牵手两个月</a><br> ·  <a href="https://news.cnblogs.com/n/626704/" target="_blank">来自外太空的“时间胶囊”</a><br> ·  <a href="https://news.cnblogs.com/n/626703/" target="_blank">富士康：如有需要，有足够产能向苹果供应美国境内销售的iPhone</a><br> ·  <a href="https://news.cnblogs.com/n/626702/" target="_blank">全球最先进3nm晶圆厂尘埃落定 4000亿投资</a><br> ·  <a href="https://news.cnblogs.com/n/626701/" target="_blank">高通旗舰手机处理器转回三星代工 骁龙865用上7nm EUV</a><br>» <a href="http://news.cnblogs.com/" title="IT新闻" target="_blank">更多新闻...</a></div></div>
+<div id="HistoryToday" class="c_ad_block"><b>历史上的今天:</b><br>2016-01-19 <a href="https://www.cnblogs.com/baiting/p/5142324.html">libsvm使用详细说明</a><br></div>
+<script type="text/javascript">
+ if(enablePostBottom()) {
+    codeHighlight();
+    fixPostBody();
+    setTimeout(function () { incrementViewCount(cb_entryId); }, 50);
+    deliverT2();
+    deliverC1();
+    deliverC2();    
+    loadNewsAndKb();
+    loadBlogSignature();
+    LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+    GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+    loadOptUnderPost();
+    GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);  
+}
+</script>
+</div>
+
+    
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+
+	<div id="sideBar">
+		<div id="sideBarMain">
+			
+<!--done-->
+<div class="newsItem">
+<h3 class="catListTitle">公告</h3>
+	<div id="blog-news"><div id="profile_block">昵称：<a href="https://home.cnblogs.com/u/baiting/">白婷</a><br>园龄：<a href="https://home.cnblogs.com/u/baiting/" title="入园时间：2012-04-12">7年2个月</a><br>粉丝：<a href="https://home.cnblogs.com/u/baiting/followers/">50</a><br>关注：<a href="https://home.cnblogs.com/u/baiting/followees/">4</a><div id="p_b_follow"><a href="javascript:void(0);" onclick="follow('c2b9861a-6e84-e111-aa3f-842b2b196315')">+加关注</a></div><script>getFollowStatus('c2b9861a-6e84-e111-aa3f-842b2b196315')</script></div></div><script type="text/javascript">loadBlogNews();</script>
+</div>
+
+			<div id="blog-calendar" style=""><table id="blogCalendar" class="Cal" title="Calendar" cellspacing="0" cellpadding="0">
+	<tbody><tr><td colspan="7"><table class="CalTitle" cellspacing="0">
+		<tbody><tr><td class="CalNextPrev"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/05/01');return false;">&lt;</a></td><td align="center">2019年6月</td><td class="CalNextPrev" align="right"><a href="javascript:void(0);" onclick="loadBlogCalendar('2019/07/01');return false;">&gt;</a></td></tr>
+	</tbody></table></td></tr><tr><th class="CalDayHeader" abbr="日" scope="col" align="center">日</th><th class="CalDayHeader" abbr="一" scope="col" align="center">一</th><th class="CalDayHeader" abbr="二" scope="col" align="center">二</th><th class="CalDayHeader" abbr="三" scope="col" align="center">三</th><th class="CalDayHeader" abbr="四" scope="col" align="center">四</th><th class="CalDayHeader" abbr="五" scope="col" align="center">五</th><th class="CalDayHeader" abbr="六" scope="col" align="center">六</th></tr><tr><td class="CalOtherMonthDay" align="center">26</td><td class="CalOtherMonthDay" align="center">27</td><td class="CalOtherMonthDay" align="center">28</td><td class="CalOtherMonthDay" align="center">29</td><td class="CalOtherMonthDay" align="center">30</td><td class="CalOtherMonthDay" align="center">31</td><td class="CalWeekendDay" align="center">1</td></tr><tr><td class="CalWeekendDay" align="center">2</td><td align="center">3</td><td align="center">4</td><td align="center">5</td><td align="center">6</td><td align="center">7</td><td class="CalWeekendDay" align="center">8</td></tr><tr><td class="CalWeekendDay" align="center">9</td><td align="center">10</td><td align="center"><a href="https://www.cnblogs.com/baiting/archive/2019/06/11.html"><u>11</u></a></td><td class="CalTodayDay" align="center">12</td><td align="center">13</td><td align="center">14</td><td class="CalWeekendDay" align="center">15</td></tr><tr><td class="CalWeekendDay" align="center">16</td><td align="center">17</td><td align="center">18</td><td align="center">19</td><td align="center">20</td><td align="center">21</td><td class="CalWeekendDay" align="center">22</td></tr><tr><td class="CalWeekendDay" align="center">23</td><td align="center">24</td><td align="center">25</td><td align="center">26</td><td align="center">27</td><td align="center">28</td><td class="CalWeekendDay" align="center">29</td></tr><tr><td class="CalWeekendDay" align="center">30</td><td class="CalOtherMonthDay" align="center">1</td><td class="CalOtherMonthDay" align="center">2</td><td class="CalOtherMonthDay" align="center">3</td><td class="CalOtherMonthDay" align="center">4</td><td class="CalOtherMonthDay" align="center">5</td><td class="CalOtherMonthDay" align="center">6</td></tr>
+</tbody></table></div><script type="text/javascript">loadBlogDefaultCalendar();</script>
+			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><div id="sidebar_search" class="sidebar-block">
+<div id="sidebar_search" class="mySearch">
+<h3 class="catListTitle">搜索</h3>
+<div id="sidebar_search_box">
+<div id="widget_my_zzk" class="div_my_zzk"><input type="text" id="q" onkeydown="return zzk_go_enter(event);" class="input_my_zzk">&nbsp;<input onclick="zzk_go()" type="button" value="找找看" id="btnZzk" class="btn_my_zzk"></div>
+<div id="widget_my_google" class="div_my_zzk"><input type="text" name="google_q" id="google_q" onkeydown="return google_go_enter(event)" class="input_my_zzk">&nbsp;<input onclick="google_go()" type="button" value="谷歌搜索" class="btn_my_zzk"></div>
+</div>
+</div>
+
+</div><div id="sidebar_shortcut" class="sidebar-block">
+<div class="catListLink">
+<h3 class="catListTitle">常用链接</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/baiting/p/" title="我的博客的随笔列表">我的随笔</a></li><li><a href="https://www.cnblogs.com/baiting/MyComments.html" title="我发表过的评论列表">我的评论</a></li><li><a href="https://www.cnblogs.com/baiting/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li><li><a href="https://www.cnblogs.com/baiting/RecentComments.html" title="我的博客的评论列表">最新评论</a></li><li><a href="https://www.cnblogs.com/baiting/tag/" title="我的博客的标签列表">我的标签</a></li>
+</ul>
+<div id="itemListLin_con" style="display:none;">
+<ul>
+
+</ul>
+</div>
+</div></div><div id="sidebar_toptags" class="sidebar-block">
+<div class="catListTag">
+<h3 class="catListTitle">我的标签</h3>
+<ul>
+<li><a href="https://www.cnblogs.com/baiting/tag/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/">机器学习</a>(22)</li><li><a href="https://www.cnblogs.com/baiting/tag/%E8%AE%BA%E6%96%87%E7%AC%94%E8%AE%B0/">论文笔记</a>(17)</li><li><a href="https://www.cnblogs.com/baiting/tag/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0/">深度学习</a>(16)</li><li><a href="https://www.cnblogs.com/baiting/tag/%E5%AE%9E%E7%94%A8%E6%8A%80%E5%B7%A7/">实用技巧</a>(7)</li><li><a href="https://www.cnblogs.com/baiting/tag/NLP%E5%B7%A5%E5%85%B7%E5%8C%85/">NLP工具包</a>(6)</li><li><a href="https://www.cnblogs.com/baiting/tag/Python/">Python</a>(6)</li><li><a href="https://www.cnblogs.com/baiting/tag/%E6%8E%A8%E8%8D%90%E7%AE%97%E6%B3%95/">推荐算法</a>(5)</li><li><a href="https://www.cnblogs.com/baiting/tag/%E7%A4%BE%E4%BC%9A%E6%83%85%E6%84%9F%E8%AE%A1%E7%AE%97/">社会情感计算</a>(4)</li><li><a href="https://www.cnblogs.com/baiting/tag/java%20%E8%AF%AD%E8%A8%80/">java 语言</a>(4)</li><li><a href="https://www.cnblogs.com/baiting/tag/latex/">latex</a>(4)</li><li><a href="https://www.cnblogs.com/baiting/tag/">更多</a></li>
+</ul>
+</div></div><div id="sidebar_categories">
+<div id="sidebar_postarchive" class="catListPostArchive sidebar-block">
+<h3 class="catListTitle">随笔档案</h3>
+
+<ul>
+
+<li><a id="CatList_LinkList_0_Link_0" href="https://www.cnblogs.com/baiting/archive/2019/06.html">2019年6月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_1" href="https://www.cnblogs.com/baiting/archive/2019/05.html">2019年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_2" href="https://www.cnblogs.com/baiting/archive/2019/04.html">2019年4月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_3" href="https://www.cnblogs.com/baiting/archive/2019/01.html">2019年1月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_4" href="https://www.cnblogs.com/baiting/archive/2018/12.html">2018年12月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_5" href="https://www.cnblogs.com/baiting/archive/2018/08.html">2018年8月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_6" href="https://www.cnblogs.com/baiting/archive/2018/07.html">2018年7月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_7" href="https://www.cnblogs.com/baiting/archive/2018/06.html">2018年6月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_8" href="https://www.cnblogs.com/baiting/archive/2018/05.html">2018年5月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_9" href="https://www.cnblogs.com/baiting/archive/2018/04.html">2018年4月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_10" href="https://www.cnblogs.com/baiting/archive/2018/03.html">2018年3月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_11" href="https://www.cnblogs.com/baiting/archive/2018/02.html">2018年2月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_12" href="https://www.cnblogs.com/baiting/archive/2018/01.html">2018年1月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_13" href="https://www.cnblogs.com/baiting/archive/2017/12.html">2017年12月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_14" href="https://www.cnblogs.com/baiting/archive/2017/10.html">2017年10月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_15" href="https://www.cnblogs.com/baiting/archive/2017/09.html">2017年9月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_16" href="https://www.cnblogs.com/baiting/archive/2017/08.html">2017年8月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_17" href="https://www.cnblogs.com/baiting/archive/2017/07.html">2017年7月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_18" href="https://www.cnblogs.com/baiting/archive/2017/04.html">2017年4月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_19" href="https://www.cnblogs.com/baiting/archive/2017/03.html">2017年3月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_20" href="https://www.cnblogs.com/baiting/archive/2017/02.html">2017年2月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_21" href="https://www.cnblogs.com/baiting/archive/2017/01.html">2017年1月 (11)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_22" href="https://www.cnblogs.com/baiting/archive/2016/12.html">2016年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_23" href="https://www.cnblogs.com/baiting/archive/2016/11.html">2016年11月 (7)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_24" href="https://www.cnblogs.com/baiting/archive/2016/09.html">2016年9月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_25" href="https://www.cnblogs.com/baiting/archive/2016/08.html">2016年8月 (9)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_26" href="https://www.cnblogs.com/baiting/archive/2016/07.html">2016年7月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_27" href="https://www.cnblogs.com/baiting/archive/2016/06.html">2016年6月 (5)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_28" href="https://www.cnblogs.com/baiting/archive/2016/05.html">2016年5月 (12)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_29" href="https://www.cnblogs.com/baiting/archive/2016/04.html">2016年4月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_30" href="https://www.cnblogs.com/baiting/archive/2016/03.html">2016年3月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_31" href="https://www.cnblogs.com/baiting/archive/2016/02.html">2016年2月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_32" href="https://www.cnblogs.com/baiting/archive/2016/01.html">2016年1月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_33" href="https://www.cnblogs.com/baiting/archive/2015/12.html">2015年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_34" href="https://www.cnblogs.com/baiting/archive/2015/08.html">2015年8月 (6)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_35" href="https://www.cnblogs.com/baiting/archive/2015/07.html">2015年7月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_36" href="https://www.cnblogs.com/baiting/archive/2015/05.html">2015年5月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_37" href="https://www.cnblogs.com/baiting/archive/2014/12.html">2014年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_38" href="https://www.cnblogs.com/baiting/archive/2014/11.html">2014年11月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_39" href="https://www.cnblogs.com/baiting/archive/2014/07.html">2014年7月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_40" href="https://www.cnblogs.com/baiting/archive/2013/06.html">2013年6月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_41" href="https://www.cnblogs.com/baiting/archive/2013/03.html">2013年3月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_42" href="https://www.cnblogs.com/baiting/archive/2012/12.html">2012年12月 (1)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_43" href="https://www.cnblogs.com/baiting/archive/2012/11.html">2012年11月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_44" href="https://www.cnblogs.com/baiting/archive/2012/10.html">2012年10月 (4)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_45" href="https://www.cnblogs.com/baiting/archive/2012/09.html">2012年9月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_46" href="https://www.cnblogs.com/baiting/archive/2012/01.html">2012年1月 (2)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_47" href="https://www.cnblogs.com/baiting/archive/2011/12.html">2011年12月 (8)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_48" href="https://www.cnblogs.com/baiting/archive/2011/11.html">2011年11月 (3)</a> </li>
+
+<li><a id="CatList_LinkList_0_Link_49" href="https://www.cnblogs.com/baiting/archive/2011/05.html">2011年5月 (2)</a> </li>
+
+</ul>
+
+</div>
+
+</div><div id="sidebar_recentcomments" class="sidebar-block"><div id="recent_comments_wrap">
+<div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div id="RecentCommentsBlock"><ul>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/baiting/p/8314936.html#4215949">1. Re:生成对抗式网络 GAN的理解</a></li>
+        <li class="recent_comment_body">爬虫代码那里， target_url 多加了 'http:'</li>
+        <li class="recent_comment_author">--NeyoShinado</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/baiting/p/5224089.html#4214553">2. Re:NLPIR分词工具的使用（java环境下）</a></li>
+        <li class="recent_comment_body">博主，您好，我在下载NLPIR工具包时，网址是404，请问您下载的可以共享一份吗，谢谢啦</li>
+        <li class="recent_comment_author">--马永东</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/baiting/p/5138757.html#4164099">3. Re:IR的评价指标-MAP,NDCG和MRR</a></li>
+        <li class="recent_comment_body">写的太棒了 MRR 的例子很直观</li>
+        <li class="recent_comment_author">--yichudu</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/baiting/p/7195998.html#4034531">4. Re:深度语义匹配模型-DSSM 及其变种</a></li>
+        <li class="recent_comment_body">@stonell你好，DSSM的代码你可以从这里下载：...</li>
+        <li class="recent_comment_author">--白婷</li>
+        <li class="recent_comment_title"><a href="https://www.cnblogs.com/baiting/p/7195998.html#4034187">5. Re:深度语义匹配模型-DSSM 及其变种</a></li>
+        <li class="recent_comment_body">博主，您有DSSM的完整代码嘛，可不可以借鉴学习一下呀，谢谢啦</li>
+        <li class="recent_comment_author">--stonell</li>
+</ul>
+</div>
+</div>
+</div></div><div id="sidebar_topviewedposts" class="sidebar-block"><div id="topview_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock"><ul><li><a href="https://www.cnblogs.com/baiting/p/8314936.html">1. 生成对抗式网络 GAN的理解(31777)</a></li><li><a href="https://www.cnblogs.com/baiting/p/7195998.html">2. 深度语义匹配模型-DSSM 及其变种(15335)</a></li><li><a href="https://www.cnblogs.com/baiting/p/6395193.html">3. Latex 中cite的使用(13544)</a></li><li><a href="https://www.cnblogs.com/baiting/p/5874994.html">4. doc2vec使用说明（二）gensim工具包 LabeledSentence(11853)</a></li><li><a href="https://www.cnblogs.com/baiting/p/6101981.html">5. 如何理解 卷积 和pooling(10841)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topcommentedposts" class="sidebar-block"><div id="topfeedback_posts_wrap">
+<div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock"><ul><li><a href="https://www.cnblogs.com/baiting/p/5874994.html">1. doc2vec使用说明（二）gensim工具包 LabeledSentence(6)</a></li><li><a href="https://www.cnblogs.com/baiting/p/5417865.html">2. BPR: Bayesian Personalized Ranking from Implicit Feedback-CoRR 2012——20160421(2)</a></li><li><a href="https://www.cnblogs.com/baiting/p/7195998.html">3. 深度语义匹配模型-DSSM 及其变种(2)</a></li><li><a href="https://www.cnblogs.com/baiting/p/7355546.html">4. Network Embedding 论文小览(2)</a></li><li><a href="https://www.cnblogs.com/baiting/p/8314936.html">5. 生成对抗式网络 GAN的理解(1)</a></li></ul></div>
+</div>
+</div></div><div id="sidebar_topdiggedposts" class="sidebar-block"><div id="topdigg_posts_wrap">
+<div class="catListView">
+<h3 class="catListTitle">推荐排行榜</h3>
+<div id="TopDiggPostsBlock"><ul><li><a href="https://www.cnblogs.com/baiting/p/8314936.html">1. 生成对抗式网络 GAN的理解(2)</a></li><li><a href="https://www.cnblogs.com/baiting/p/7199749.html">2. DLRS(深度学习应用于推荐系统论文汇总--2017年8月整理)(1)</a></li><li><a href="https://www.cnblogs.com/baiting/p/7195998.html">3. 深度语义匹配模型-DSSM 及其变种(1)</a></li><li><a href="https://www.cnblogs.com/baiting/p/6623223.html">4. 周报(2017.3.19-3.16)(1)</a></li><li><a href="https://www.cnblogs.com/baiting/p/6101981.html">5. 如何理解 卷积 和pooling(1)</a></li></ul></div>
+</div></div></div></div><script type="text/javascript">loadBlogSideColumn();</script>
+			</div>
+			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer">
+		
+<!--done-->
+Copyright ©2019 白婷
+	</div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+
+<iframe id="google_osd_static_frame_9041974380116" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe></body></html>

@@ -1,0 +1,118 @@
+﻿/* fixes for new nice.bootstrap.updated.css*/
+
+@media (min-width: 768px) {
+    .text-lowercase-unless-phone {
+      text-transform: lowercase;
+    }
+    /* fix for tab pages with only one or two sections, e.g. /guidance/ta425/informationforpublic */
+    #guidance-tabs-container .sections.span3.toresponsive {
+        min-height: 86px;
+    }
+}
+
+/* topic summary fixes to deal with no more orchard zone-flipping in the html*/
+.newupdmessage {
+    margin: 1em 1em 0 0;
+}
+.content-primary.fullwidth {
+    width: 100%;
+}
+
+/* hide date filter on proposed guidance list */
+.filter-title.dropdown-heading.hidden {
+    display: none;
+}
+
+/* Link button is used in place of .btn-link in bootstrap. Because btn-link isn't styled properly. */
+.link-button {
+    background: none;
+    border: 0;
+    padding: 0;
+    color: #005ea5;
+    text-decoration: underline;
+}
+
+    .link-button:hover {
+        color: #2e8aca;
+    }
+
+    .link-button:focus {
+        outline: 3px solid #0092a6;
+    }
+
+/* Loader/spinner, used for loading async e.g. rationale and impact expanding sections */
+.loader {
+    text-align: center;
+}
+.loader .icon-spinner {
+    font-size: 30px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+.loader[aria-hidden='true'] {
+    display: none;
+}
+
+/* An exandable is a expand/collapse container */
+.expandable.well > .section:first-child {
+    margin-top: 0;
+}
+.expandable.well > .section:first-child > .section:first-child {
+    margin-top: 0;
+}
+
+.expandable[aria-hidden='true'] {
+    display: none;
+}
+
+
+/* Hide visually, but keep for screenreaders */
+.visually-hidden { /* https://snook.ca/archives/html_and_css/hiding-content-for-accessibility */
+    position: absolute !important;
+    height: 1px;
+    width: 1px;
+    overflow: hidden;
+    clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
+    clip: rect(1px, 1px, 1px, 1px);
+}
+
+.topic-browse-h2 {
+    font-size: 24px !important;
+    line-height: 1.25 !important;
+    font-weight: 400 !important;
+    padding-left: 24px !important;
+}
+
+
+.subtitle-withlinks h2.h4 {
+    display:inline;
+}
+
+.filter-title {
+    color: #0e0e0e;
+    font-weight: bold;
+    margin-bottom: 0;
+}
+
+.filter-title, .dropdown-heading {
+    border: none;
+}
+
+.mobile-dropdown .dropdown-heading {
+    font-size: 16px;
+    margin-left: 0;
+    line-height: 26px;
+}
+
+.type-filter-container .filter-title {
+    margin-left: 24px;
+}
+
+/* Bit of a hack to cater for the fact that NICE.bootstrap has a body > .layout rule,
+    which is broken in Guidance Web, because we introduce an extra main tag */
+body > main > .layout {
+    width: 95.74468085%;
+    max-width: 1170px;
+    margin-left: auto;
+    margin-right: auto;
+}

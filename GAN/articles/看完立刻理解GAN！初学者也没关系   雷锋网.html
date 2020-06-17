@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<meta charset="UTF-8">
+	<title>看完立刻理解GAN！初学者也没关系 | 雷锋网</title>
+    <meta itemprop="image" content="https://www.leiphone.com/resWeb/images/common/metaLogo.jpg">
+            <link rel="dns-prefetch" href="https://www.leiphone.com/">
+        <link rel="dns-prefetch" href="https://home.leiphone.com/">
+        <link rel="dns-prefetch" href="https://m.leiphone.com/">
+        <link rel="dns-prefetch" href="https://leiphone.com/">
+        <meta name="baidu-site-verification" content="qBnDqyynv4">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2017-07-25T16:05:22+08:00">
+    <meta property="article:author" content="AI研习社">
+    <meta property="article:published_first" content="雷锋网, https://www.leiphone.com/news/201707/xSM8Q3Xx0JTmV0WY.html">
+    	<meta name="google-site-verification" content="4c2S0LRoSpcyGiNmASqakMSa7yVC9C8Jnu-IRNyq5oU">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=1">
+    <meta property="qc:admins" content="10002525706451007656375">
+    <link rel="alternate" media="only screen and(max-width: 640px)" href="https://m.leiphone.com/">
+            	<meta name="keywords" content="GAN">
+	<meta name="description" content="以经典的MNIST手写数据集来作为实例。">
+    <meta name="sogou_site_verification" content="ilkqV8FehD">
+    <meta name="renderer" content="webkit">
+	<link rel="cannoical" href="https://www.leiphone.com/news/201707/xSM8Q3Xx0JTmV0WY.html">    <link rel="stylesheet" type="text/css" href="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/common.css" media="all">
+    <script type="text/javascript" async="" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/cmp.api"></script><script src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/push.js"></script><script async="" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/gtm.js"></script><script src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/hm.txt"></script><script type="text/javascript">
+        window.mobilecheck = function() {
+
+            // var ua=window.navigator.userAgent;
+            // if(ua.indexOf('iPhone')>=0||ua.indexOf('iPod')>=0||ua.indexOf('ndroid')>=0){
+            //     return true;
+            // }
+
+            var check = false;
+            (function(a,b){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4)))check = true})(navigator.userAgent||navigator.vendor||window.opera);
+            return check;
+        }
+        var check = mobilecheck();
+        if(check && (window.location.host == 'www.leiphone.com')){
+            window.location.href="//m.leiphone.com" + window.location.pathname + window.location.search;
+        }else if(!check && (window.location.host == 'm.leiphone.com')){
+            window.location.href="//www.leiphone.com" + window.location.pathname + window.location.search;
+        }
+    </script>
+    <!--
+	<script type='text/javascript'>window.BWEUM||(BWEUM={});BWEUM.info = {"stand":true,"agentType":"browser","agent":"bi-collector.oneapm.com/static/js/bw-send-411.4.5.js","beaconUrl":"bi-collector.oneapm.com/beacon","licenseKey":"fqiyF~7R36YyFnEB","applicationID":2284957};</script><script type="text/javascript" src="//bi-collector.oneapm.com/static/js/bw-loader-411.4.5.js"></script>
+	-->
+    <script>
+                    //百度统计开始
+            var _hmt = _hmt || [];
+            (function() {
+                var hm = document.createElement("script");
+                hm.src = "//hm.baidu.com/hm.js?0f7e8686c8fcc36f05ce11b84012d5ee";
+                var s = document.getElementsByTagName("script")[0];
+                s.parentNode.insertBefore(hm, s);
+            })();
+            //百度统计结束
+        
+        var SCRIPT_URL 	= "https://www.leiphone.com/";
+		var BASE_URL 	= "https://www.leiphone.com/";
+		var HOME_URL 	= "https://home.leiphone.com/";
+		var IS_LOGIN 	= "1";
+        var LEIPHONE_HOME_URL = USER_CENTER  = "https://home.leiphone.com/";
+        var HAITAO_URL  = "https://haitao.leiphone.com";
+        var TRYOUT_URL  = "https://tryout.igao7.com/";
+        var PRODUCT_URL = "https://product.igao7.com/";
+	</script>
+
+	<!--[if IE]>
+    <script>
+       (function(){var e="abbr, article, aside, audio, canvas, datalist, details, dialog, eventsource, figure, footer, header, hgroup, mark, menu, meter, nav, output, progress, section, time, video".split(', ');var i=e.length;while(i--){document.createElement(e[i])}})()
+    </script>
+    <![endif]-->
+
+    <!--<script src="/resWeb/js/libs/sea.js"></script>-->
+    <script src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/jquery-sea.js"></script>
+    <script src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/tips.js"></script><link rel="stylesheet" href="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/tips.css">
+    <script>
+        seajs.config({
+            map:[
+                ['.js','.js?20181128']
+            ]
+        });
+        seajs.use('https://www.leiphone.com/resWeb/js/common/global',function(){
+                    });
+        document.domain = "leiphone.com";
+         // 英鹏账号登录回调
+        function yingpengIslogin_callback(){
+            seajs.use('https://www.leiphone.com/resWeb/js/common/com_login',function(user) {
+              user.init();
+            });
+        }
+    </script>
+
+<script src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/share.js"></script><link rel="stylesheet" href="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/share_style0_24.css"><script src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/share_002.js"></script></head>
+<body>
+<!-- 顶栏广告位 -->
+<div class="top-banner" style="display: block;">
+    <a href="https://www.leiphone.com/banner/updateClickNum/id/1427" target="_blank" title="全球人工智能与机器人峰会 CCF-GAIR 2019">
+        <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5ceb7e4959a31.jpeg" alt="全球人工智能与机器人峰会 CCF-GAIR 2019">
+    </a>
+    <em class="closeBanner"></em>
+</div>
+
+<div class="explorer" id="low-explorer">
+    <div class="inner">
+        <em class="warn ico"></em>
+        <span>您正在使用IE低版浏览器，为了您的雷锋网账号安全和更好的产品体验，强烈建议使用更快更安全的浏览器</span>
+        <span class="ico exp-ico1"></span>
+        <span class="ico exp-ico2"></span>
+        <span class="ico exp-ico3"></span>
+        <span class="ico exp-ico4"></span>
+        <span class="ico exp-ico5"></span>
+    </div>
+</div>
+<!--[if lte IE 8]>
+    <script>
+       (function(){var e=['abbr', 'article', 'aside', 'audio', 'canvas', 'datalist', 'details', 'dialog', 'eventsource', 'figure', 'footer', 'header', 'hgroup', 'mark', 'menu', 'meter', 'nav', 'output', 'progress', 'section', 'time', 'video'];for(var i = e.length; i--;) document.createElement(e[i])})()
+
+       //低版本浏览器
+        document.getElementById("low-explorer").style.display = 'block';
+
+    </script>
+<![endif]-->
+
+
+
+<!-- header start-->
+<header class="yp-header">
+    <div class="yp-header-top clr">
+        <a class="yp-header-logo" href="https://www.leiphone.com/">
+            <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/logo-v2.png" alt="雷锋网">
+                        <span></span>
+        </a>
+        <!-- navi -->
+
+        <div class="yp-header-menu">
+            <ul>
+                <!-- <li class="first">
+                    <a href="https://www.leiphone.com" class="sub_a">首页</a>
+                </li> -->
+                <li>
+                    <a href="http://ai.yanxishe.com/" target="_blank" class="sub_a">AI研习社</a>
+                </li>
+                <li>
+                    <a href="http://www.leiphone.com/special/custom/AItyb.html" target="_blank" class="sub_a">AI投研邦</a>
+                </li>
+                <li>
+                    <a href="https://www.leiphone.com/events" class="sub_a">活动</a>
+                </li>
+                <li>
+                    <a href="https://www.leiphone.com/specials" class="sub_a">专题</a>
+                </li>
+                <!-- <li>
+                    <a href="https://www.leiphone.com/specialEdition/list"  target="_blank" class="sub_a">精选</a>
+                </li> -->
+                <li class="borleft aiB" style="">
+                <div class="line"></div>
+                    <!-- <a href="http://www.mooc.ai/?f=leiphone"  target="_blank" class="sub_a">AI慕课学院</a> -->
+                </li>
+                <li class="ej borleft ig">
+                    <a href="http://www.igao7.com/" target="_blank" class="sub_a">爱搞机</a>
+                                    </li>
+                <!-- <li  class="ej borleft ig">
+                    <a href="https://haitao.leiphone.com" class="sub_a">极客购</a>
+                </li> -->
+            </ul>
+
+        </div>
+        <!-- 用户登录 -->
+        <div class="yp-header-user-box">
+            <div class="yp-header-user"><input type="hidden" id="is_login_tag_status" value="0"><div class="user-main"><div class="avatar"><a href="https://home.leiphone.com/login/wechatLogin"><img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/noLogin.png" alt="" width="36" height="36"></a></div></div></div>
+        </div>
+        <!-- 用户消息 -->
+        <!-- <div class="yp-header-message">
+            <a href="https://home.leiphone.com/notices" class="bell">
+                 <i class="ico"></i>
+                 <em class="count"></em>
+            </a>
+        </div> -->
+        <div class="yp-header-search">
+           <form method="GET" name="allSearchForm" action="https://www.leiphone.com/search" style="height: 100%;">
+                <input type="hidden" name="site" value="">
+                <input class="text" type="text" name="s" autocomplete="off">
+                <input class="submit" type="submit" value="">
+                <input class="submit2" type="submit" value="">
+            </form>
+        </div>
+        <a href="https://www.leiphone.com/search" class="miniSearch"></a>
+
+    </div>
+</header>
+<!-- header end-->
+<nav class="yp-secNav">
+    <div class="wrapper">
+                <ul>
+        <li><a href="https://www.leiphone.com/category/sponsor" class=" ">业界</a></li>
+        <li>
+            <a href="https://www.leiphone.com/category/ai" class=" ">人工智能<em class="arrow"></em> </a>
+            <div class="subNav">
+                <i></i>
+                <a href="https://www.leiphone.com/category/academic">学术</a>
+                <a href="https://www.leiphone.com/category/yanxishe">开发者</a>
+            </div>
+        </li>
+        <li><a href="https://www.leiphone.com/category/transportation" class=" ">智能驾驶<em class="arrow"></em> </a>
+            <div class="subNav">
+                <i></i>
+                <a href="https://www.leiphone.com/special/391/201901/5c32f0bca9173.html">新智驾TV</a>
+            </div></li>
+        <li><a href="https://www.leiphone.com/category/aijuejinzhi" class=" ">AI+</a></li>
+        <li><a href="https://www.leiphone.com/category/fintech" class=" ">金融科技</a></li>
+        <li><a href="https://www.leiphone.com/category/aihealth" class=" ">未来医疗</a></li>
+        <li><a href="https://www.leiphone.com/category/letshome" class=" ">网络安全</a></li>
+        <li>
+            <a href="https://www.leiphone.com/category/smartcity" class=" ">智慧城市<em></em></a>
+            <div class="subNav">
+                <i></i>
+                <a href="https://www.leiphone.com/category/smartsecurity">智慧安防</a>
+                <a href="https://www.leiphone.com/category/smarteducation">智慧教育</a>
+                <a href="https://www.leiphone.com/category/smarttransportation">智慧交通</a>
+                <a href="https://www.leiphone.com/category/smartcommunity">智慧社区</a>
+                <a href="https://www.leiphone.com/category/smartretailing">智慧零售</a>
+                <a href="https://www.leiphone.com/category/smartgovernment">智慧政务</a>
+            </div>
+        </li>
+        <li><a href="https://www.leiphone.com/category/robot" class=" ">机器人</a></li>
+        <li><a href="https://www.leiphone.com/category/industrycloud" class=" ">行业云</a></li>
+        <li><a href="https://www.leiphone.com/category/weiwu" class=" ">智能硬件</a></li>
+        <li><a href="https://www.leiphone.com/category/iot" class=" ">物联网</a></li>
+        <li><a href="https://gair.leiphone.com/?from=leifengwang2018" target="_blank" class="">GAIR</a></li>
+        </ul>
+    </div>
+</nav>
+
+<link rel="stylesheet" type="text/css" href="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/artCont_web_admin.css">
+<link rel="stylesheet" type="text/css" href="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/main.css" media="all">
+<script type="text/javascript">
+    var ARTICLE_CATEGORY = '137';
+    var ADMIN_URL = 'https://yingpeng.leiphone.com/';
+    
+</script>
+
+<div class="lph-Nowsite clr">
+    <div class="wrapper">
+        <a href="https://www.leiphone.com/"><em class="ico"></em></a>
+        <em class="arro"></em>
+        <a href="https://www.leiphone.com/category/yanxishe">人工智能开发者</a>
+        <em class="arro"></em>
+        <a href="#">正文</a>
+    </div>
+</div>
+
+<!-- 发送私信 -->
+<div class="sendMsg-pop">
+    <a href="javascript:;" class="closePop"><em></em></a>
+    <div class="title">发私信给<span>AI研习社</span></div>
+    <div class="main">
+        <textarea placeholder="私信内容"></textarea>
+    </div>
+    <div class="btns">
+        <a href="javascript:;" class="send-button">发送</a>
+    </div>
+</div>
+<!-- 评论数 -->
+<a href="#lph-comment-167262" class="cmtNums">
+    <em></em>
+    <p>0</p>
+</a>
+<div class="lph-overlay"></div>
+<!-- 当载入markdown的时候加载 -->
+<script type="text/javascript">
+    var link = "xSM8Q3Xx0JTmV0WY";
+</script>
+<!-- 文章详情页 -->
+
+
+<div class="lphArticle-detail" data-article_url="https://www.leiphone.com/news/201707/xSM8Q3Xx0JTmV0WY.html" data-article_id="167262" data-article_unique="xSM8Q3Xx0JTmV0WY" data-article_seo_title="看完立刻理解GAN！初学者也没关系 | 雷锋网" data-article_seo_keywords="GAN" data-article_seo_description="以经典的MNIST手写数据集来作为实例。" data-comment_type="2" data-collect_type="2" data-author_id="23787" data-author_name="AI研习社" data-article_cmtnum="0">
+    <div class="article-template">
+        <div class="article-title">
+            <div class="inner">
+                <h1 class="headTit">
+                    看完立刻理解GAN！初学者也没关系                </h1>
+                <div class="msg">
+                    <table>
+                        <tbody><tr>
+                            <td class="aut">
+                                本文作者：<a href="https://www.leiphone.com/author/AI%E7%A0%94%E4%B9%A0%E7%A4%BE394" target="_blank" rel="nofollow">AI研习社</a>
+                            </td>
+                                                        <td class="td-edit">
+                                编辑：<a href="javascript:void(0)" rel="nofollow">贾智龙</a>
+                            </td>
+                                                        <td class="time">
+                                2017-07-25 16:05                            </td>
+                                                                                    <!-- <td class="tags">
+                                <em></em> -->
+                                                                                                                            <!-- </td> -->
+                                                    <!--   <td class='cmtNum'>
+                                <a href="https://www.leiphone.com/news/201707/xSM8Q3Xx0JTmV0WY.html#lph-comment-167262">0条评论</a>
+                            </td> -->
+                        </tr>
+                    </tbody></table>
+                </div>
+                <div class="article-lead">
+                    <em></em>导语：以经典的MNIST手写数据集来作为实例。                </div>
+            </div>
+        </div>
+        <div class="info">
+            <div class="wrapper clr">
+                <div class="article-left">
+                    <div class="lph-article-comView">
+                                                
+                        <!-- AI影响因子 -->
+                        <!-- xhBPeYDbNuuRZkwy -->
+                                                <!-- AI影响因子 -->
+                        <!-- 正文内容 -->
+                        <h2><span style="font-size: 16px;">雷锋网<span style="color:#FD5D3C;">(公众号：雷锋网)</span>按：本文原作者</span><a href="https://www.zhihu.com/people/zhao-xie-yu-30/pins/posts" target="_blank" rel="nofollow"><span style="font-size: 16px;">天雨粟</span></a><span style="font-size: 16px;">，原文载于作者的知乎专栏——</span><a href="https://zhuanlan.zhihu.com/p/28057434" target="_blank" rel="nofollow"><span style="font-size: 16px;">机器不学习</span></a><span style="font-size: 16px;">，雷锋网经授权发布。</span></h2><h2><span style="color: rgb(247, 150, 70); font-size: 20px;">前言</span></h2><p>GAN
+ 从 2014 年诞生以来发展的是相当火热，比较著名的 GAN 的应用有 Pix2Pix、CycleGAN 
+等。本篇文章主要是让初学者通过代码了解 GAN 的结构和运作机制，对理论细节不做过多介绍。我们还是采用 MNIST 
+手写数据集（不得不说这个数据集对于新手来说非常好用）来作为我们的训练数据，我们将构建一个简单的 GAN 来进行手写数字图像的生成。</p><h2><span style="color: rgb(247, 150, 70); font-size: 20px;">认识 GAN</span></h2><p>GAN
+ 主要包括了两个部分，即生成器 generator 与判别器 
+discriminator。生成器主要用来学习真实图像分布从而让自身生成的图像更加真实，以骗过判别器。判别器则需要对接收的图片进行真假判别。在整
+个过程中，生成器努力地让生成的图像更加真实，而判别器则努力地去识别出图像的真假，这个过程相当于一个二人博弈，随着时间的推移，生成器和判别器在不断
+地进行对抗，最终两个网络达到了一个动态均衡：生成器生成的图像接近于真实图像分布，而判别器识别不出真假图像，对于给定图像的预测为真的概率基本接近 
+0.5（相当于随机猜测类别）。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/470eeb25c5f7ce8bb780fc8137031239.png&amp;quot; data-rawwidth=&amp;quot;2520&amp;quot; data-rawheight=&amp;quot;1142&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;2520&amp;quot; data-original=&amp;quot;https://pic2.zhimg.com/v2-bea410c4a9ac2ac5f86ac4ac4fc827cd_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/470eeb25c5f7ce8bb780fc8137031239.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f79126fe3.jpeg"></p><p>对
+于 GAN 
+更加直观的理解可以用一个例子来说明：造假币的团伙相当于生成器，他们想通过伪造金钱来骗过银行，使得假币能够正常交易，而银行相当于判别器，需要判断进
+来的钱是真钱还是假币。因此假币团伙的目的是要造出银行识别不出的假币而骗过银行，银行则是要想办法准确地识别出假币。</p><p>因此，我们可以将上面的内容进行一个总结。给定真 = 1，假 = 0，那么有：</p><ul style="list-style-type: disc;" class=" list-paddingleft-2"><li><p>对于给定的真实图片（real image），判别器要为其打上标签 1；</p></li><li><p>对于给定的生成图片（fake image），判别器要为其打上标签 0；</p></li><li><p>对于生成器传给辨别器的生成图片，生成器希望辨别器打上标签 1。</p></li></ul><p>有了上面的直观理解，下面就让我们来实现一个 GAN 来生成手写数据吧！还有一些细节会在代码部分进行介绍。</p><h2><span style="color: rgb(247, 150, 70); font-size: 20px;">说明</span></h2><ul style="list-style-type: disc;" class=" list-paddingleft-2"><li><p>TensorFlow 1.0</p></li><li><p>Python 3</p></li><li><p>Jupyter Notebook</p></li><li><p>GitHub 地址：<a href="http://link.zhihu.com/?target=https%3A//github.com/NELSONZHAO/zhihu/tree/master/mnist_gan" target="_blank" rel="nofollow">NELSONZHAO/zhihu</a></p></li></ul><blockquote>建议将代码 pull 下来，有部分代码实现没有写在文章中。</blockquote><h2><span style="color: rgb(247, 150, 70); font-size: 20px;">代码部分</span></h2><p><strong>数据加载与查看</strong></p><p>数据我们使用 TensorFlow 中给定的 MNIST 数据接口。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/8f74c5dca5fb79cb239f6c674d32e7ff.png&amp;quot; data-rawwidth=&amp;quot;2054&amp;quot; data-rawheight=&amp;quot;960&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;2054&amp;quot; data-original=&amp;quot;https://pic1.zhimg.com/v2-2559f5ad3ea16c4648d48665eba1fd50_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/8f74c5dca5fb79cb239f6c674d32e7ff.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f7bdeea12.jpeg"></p><p>在构建模型之前，我们首先来看一下我们需要完成的任务：</p><ul style="list-style-type: disc;" class=" list-paddingleft-2"><li><p>Inputs</p></li><li><p>generator</p></li><li><p>discriminator</p></li><li><p>定义参数</p></li><li><p>loss &nbsp;&amp; optimizer</p></li><li><p>训练模型</p></li><li><p>显示结果</p></li></ul><p><strong>输入 inputs</strong></p><p>输入函数主要来定义真实图片与生成图片两个 tensor。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/c856a3b5b4b0894e93edc95888233e5a.png&amp;quot; data-rawwidth=&amp;quot;1522&amp;quot; data-rawheight=&amp;quot;330&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1522&amp;quot; data-original=&amp;quot;https://pic2.zhimg.com/v2-89760fdc1c3201fb6a7536b7cd6847e1_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/c856a3b5b4b0894e93edc95888233e5a.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f7d563e87.jpeg"></p><p><strong>定义生成器</strong></p><p>我们的生成器结构如下：</p><p><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/4b73d5230f59a585207d05b5d598a67f.png&amp;quot; data-rawwidth=&amp;quot;1366&amp;quot; data-rawheight=&amp;quot;1286&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1366&amp;quot; data-original=&amp;quot;https://pic4.zhimg.com/v2-cc92aafbeafed55a98ccd9453d98e397_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/4b73d5230f59a585207d05b5d598a67f.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/4b73d5230f59a585207d05b5d598a67f.png" data-rawwidth="1366" data-rawheight="1286" data-original="https://pic4.zhimg.com/v2-cc92aafbeafed55a98ccd9453d98e397_r.png" data-actual="" style="font-size:16px;font-style:normal;font-weight:normal;color:rgb(51, 51, 51);" width="1366"></p><p>我们使用了一个采用 Leaky ReLU 作为激活函数的隐层，并在输出层加入 tanh 激活函数。</p><p>下面是生成器的代码。注意在定义生成器和判别器时，我们要指定变量的 scope，这是因为 GAN 中实际上包含生成器与辨别器两个网络，在后面进行训练时是分开训练的，因此我们要把 scope 定义好，方便训练时候指定变量。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/f056d06ea565c4529b9620c506554d05.png&amp;quot; data-rawwidth=&amp;quot;1282&amp;quot; data-rawheight=&amp;quot;798&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1282&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-1f41bb3189a3316eaf6a675cc857c06e_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/f056d06ea565c4529b9620c506554d05.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f822c7d4e.jpeg"></p><p>在这个网络中，我们使用了一个隐层，并加入 dropout 防止过拟合。通过输入噪声图片，generator 输出一个与真实图片一样大小的图像。</p><p>在这里我们的隐层激活函数采用的是 Leaky ReLU（中文不知道咋翻译），这个函数在 ReLU 函数基础上改变了左半边的定义。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/8b9b7144ff764f597b03fe44e32379e1.png&amp;quot; data-rawwidth=&amp;quot;2034&amp;quot; data-rawheight=&amp;quot;576&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;2034&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-7b556b137a1a8e9115bd338d24d3bdb2_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/8b9b7144ff764f597b03fe44e32379e1.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f83841fc9.jpeg"></p><blockquote>图片来自维基百科。Andrej Karpathy 在 CS231n 中也提到有模型通过这个函数取得了不错的效果。</blockquote><p>由于 TensorFlow 中没有这个函数的实现，在这里我们通过函数定义实现了 Leaky ReLU，其中 alpha 是一个很小的数。在输出层我们使用 tanh 函数，这是因为 tanh 在这里相比 sigmoid 的结果会更好一点<strong>（在这里要注意，由于生成器的生成图片像素限制在了 (-1, 1) 的取值之间，而 MNIST 数据集的像素区间为 [0, 1]，所以在训练时要对 MNIST 的输入做处理，具体见训练部分的代码）</strong>。到此，我们构建好了生成器，它通过接收一个噪声图片输出一个与真实图片一样 size 的图像。</p><p><strong>定义判别器</strong></p><p>判别器的结构如下：</p><p><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/6cd371f69ce00ccb78100ab4c3509aea.png&amp;quot; data-rawwidth=&amp;quot;1202&amp;quot; data-rawheight=&amp;quot;1184&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1202&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-cab82713a90ab308b18941bde607e352_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/6cd371f69ce00ccb78100ab4c3509aea.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/6cd371f69ce00ccb78100ab4c3509aea.png" data-rawwidth="1202" data-rawheight="1184" data-original="https://pic3.zhimg.com/v2-cab82713a90ab308b18941bde607e352_r.png" data-actual="" style="font-size:16px;font-style:normal;font-weight:normal;color:rgb(51, 51, 51);" width="1202"></p><p>判别器接收一张图片，并判断它的真假，同样隐层使用了 Leaky ReLU，输出层为 1 个结点，输出为 1 的概率。代码如下：</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/890d6271a9bb0b0faa4b19336350bff6.png&amp;quot; data-rawwidth=&amp;quot;1164&amp;quot; data-rawheight=&amp;quot;664&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1164&amp;quot; data-original=&amp;quot;https://pic4.zhimg.com/v2-b7238f5ddd5711a8d3a544810d3ca053_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/890d6271a9bb0b0faa4b19336350bff6.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f8a42c9c3.jpeg"></p><p>在这里，我们需要注意真实图片与生成图片是共享判别器的参数的，因此在这里我们留了 reuse 接口来方便我们后面调用。</p><p><strong>定义参数</strong></p><p>img_size 是我们真实图片的 size=32*32=784。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/4847194c337e1ff2ca4606afb9801618.png&amp;quot; data-rawwidth=&amp;quot;904&amp;quot; data-rawheight=&amp;quot;560&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;904&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-ab972524d8027f976261c63467a7a512_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/4847194c337e1ff2ca4606afb9801618.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f8b8e4b92.jpeg"></p><blockquote>smooth 是进行 Label Smoothing Regularization 的参数，在后面会介绍。</blockquote><p><strong>构建网络</strong></p><p>接下来我们来构建我们的网络，并获得生成器与判别器返回的变量。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/754c4d0e14cc56fdd4c7b8b3c9aae6f0.png&amp;quot; data-rawwidth=&amp;quot;1448&amp;quot; data-rawheight=&amp;quot;398&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1448&amp;quot; data-original=&amp;quot;https://pic1.zhimg.com/v2-70e5cb23e9eb00bab74edd45f6b5c7d8_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/754c4d0e14cc56fdd4c7b8b3c9aae6f0.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f8d84b3bf.jpeg"></p><p>我们分别获得了生成器与判别器的 logits 和 outputs。注意真实图片与生成图片是共享参数的，因此在判别器输入生成图片时，需要 reuse 参数。</p><p><strong>定义 Loss 和 Optimizer</strong></p><p>有了上面的 logits，我们就可以定义我们的 loss 和 Optimizer。在这之前，我们再来回顾一下生成器和判别器各自的目的是什么：</p><ul style="list-style-type: disc;" class=" list-paddingleft-2"><li><p>对于给定的真实图片，辨别器要为其打上标签 1；</p></li><li><p>对于给定的生成图片，辨别器要为其打上标签 0；</p></li><li><p>对于生成器传给辨别器的生成图片，生成器希望辨别器打上标签 1。</p></li></ul><p>我们来把上面这三句话转换成代码：</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/5d463e523ceeab07f3fb2f03fa1033f5.png&amp;quot; data-rawwidth=&amp;quot;2056&amp;quot; data-rawheight=&amp;quot;504&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;2056&amp;quot; data-original=&amp;quot;https://pic2.zhimg.com/v2-910e968a6d5d3acaf3b1670d2d4b92a9_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/5d463e523ceeab07f3fb2f03fa1033f5.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f93553b60.jpeg"></p><p>d_loss_real
+ 对应着真实图片的 loss，它尽可能让判别器的输出接近于 1。在这里，我们使用了单边的 Label Smoothing 
+Regularization，它是一种防止过拟合的方式，在传统的分类中，我们的目标非 0 即 1，从直觉上来理解的话，这样的目标不够 
+soft，会导致训练出的模型对于自己的预测结果过于自信。因此我们加入一个平滑值来让判别器的泛化效果更好。</p><p>d_loss_fake 对应着生成图片的 loss，它尽可能地让判别器输出为 0。</p><p>d_loss_real 与 d_loss_fake 加起来就是整个判别器的损失。</p><p>而在生成器端，它希望让判别器对自己生成的图片尽可能输出为 1，相当于它在于判别器进行对抗。</p><p>下面我们定义了优化函数，由于 GAN 中包含了生成器和判别器两个网络，因此需要分开进行优化，这也是我们在之前定义 variable_scope 的原因。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/d84e7cbd0d1c174092e7cfaa70e6c456.png&amp;quot; data-rawwidth=&amp;quot;1482&amp;quot; data-rawheight=&amp;quot;392&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1482&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-f5befa264fa631be5696ce85dbde3a6e_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/d84e7cbd0d1c174092e7cfaa70e6c456.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f994a942d.jpeg"></p><p><strong>训练模型</strong></p><p>由于训练部分代码太长，我在这里就不贴出来了，请前往我的 GitHub 下载代码。在训练部分，我们记录了部分图像的生成过程，并记录了训练数据的 loss 变化。</p><p>我们将整个训练过程的 loss 变化绘制出来：</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/7a717f4f0e143c2887481b3e021b7631.png&amp;quot; data-rawwidth=&amp;quot;1990&amp;quot; data-rawheight=&amp;quot;738&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1990&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-804e10e73615c14906fa567c6ef66166_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/7a717f4f0e143c2887481b3e021b7631.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976f9aac5ffb.jpeg"></p><p>从图中可以看出来，最终的判别器总体 loss 在 1 左右波动，而 real loss 和 fake loss 几乎在一条水平线上波动，这说明判别器最终对于真假图像已经没有判别能力，而是进行随机判断。</p><p><strong>查看过程结果</strong></p><p>我
+们在整个训练过程中记录了 25 个样本在不同阶段的 samples 图像，以序列化的方式进行了保存，我们的将 samples 
+加载进来。samples 的 size=epochs x 2 x n_samples x 784，我们的迭代次数为 300 轮，25 
+个样本，因此，samples 的 size=300 x 2 x 25 x 784。我们将最后一轮的生成结果打印出来：</p><p><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/18d7a377373add1fbbba5a098133e18d.png&amp;quot; data-rawwidth=&amp;quot;822&amp;quot; data-rawheight=&amp;quot;794&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;822&amp;quot; data-original=&amp;quot;https://pic4.zhimg.com/v2-7ea77283fed8c649972f629b083c86cf_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/18d7a377373add1fbbba5a098133e18d.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/18d7a377373add1fbbba5a098133e18d.png" data-rawwidth="822" data-rawheight="794" data-original="https://pic4.zhimg.com/v2-7ea77283fed8c649972f629b083c86cf_r.png" data-actual="" style="font-size:16px;font-style:normal;font-weight:normal;color:rgb(51, 51, 51);" width="822"></p><p>这就是我们的 GAN 通过学习真实图片的分布后生成的图像结果。</p><p>那么有同学可能会问了，我们如果想要看这 300 轮中生成图像的变化是什么样该怎么办呢？因为我们已经有了 samples，存储了每一轮迭代的结果，我们可以挑选几次迭代，把对应的图像打出来：</p><p><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/6be01cba5bacfd2ae52e1fcdeb3452b6.png&amp;quot; data-rawwidth=&amp;quot;1982&amp;quot; data-rawheight=&amp;quot;792&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1982&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-63d322a93048370ef9e7593fa4633bee_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/6be01cba5bacfd2ae52e1fcdeb3452b6.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/6be01cba5bacfd2ae52e1fcdeb3452b6.png" data-rawwidth="1982" data-rawheight="792" data-original="https://pic3.zhimg.com/v2-63d322a93048370ef9e7593fa4633bee_r.png" data-actual="" style="font-size:16px;font-style:normal;font-weight:normal;color:rgb(51, 51, 51);" width="1982"></p><p>这
+里我挑选了第 0, 5, 10, 20, 40, 60, 80, 100, 150, 250 
+轮的迭代效果图，在这个图中，我们可以看到最开始的时候只有中间是白色，背景黑色块中存在着很多噪声。随着迭代次数的不断增加，生成器制造 “假图” 
+的能力也越来越强，它逐渐学得了真实图片的分布，最明显的一点就是图片区分出了黑色背景和白色字符的界限。</p><p><strong>生成新的图片</strong></p><p>如果我们想重新生成新的图片呢？此时我们只需要将我们之前保存好的模型文件加载进来就可以啦。</p><p style="text-align: center;"><noscript>&amp;lt;img src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/afa32b414c683d2229d667b26cbe1fed.png&amp;quot; data-rawwidth=&amp;quot;1478&amp;quot; data-rawheight=&amp;quot;1212&amp;quot; class=&amp;quot;origin_image zh-lightbox-thumb&amp;quot; width=&amp;quot;1478&amp;quot; data-original=&amp;quot;https://pic3.zhimg.com/v2-66cf48d6bb5f1ab86544f833d0652746_r.png&amp;quot; _src=&amp;quot;https://static.leiphone.com/uploads/new/article/pic/201707/afa32b414c683d2229d667b26cbe1fed.png&amp;quot;/&amp;gt;</noscript><img alt="看完立刻理解GAN！初学者也没关系" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976fa1f1f19d.jpeg"></p><h2><span style="font-size: 20px; color: rgb(247, 150, 70);">总结</span></h2><p>整篇文章基于 MNIST 数据集构造了一个简单的 GAN 模型，相信小伙伴看完代码会对 GAN 有一个初步的了解。从最终的模型结果来看，生成的图像能够将背景与数字区分开，黑色块噪声逐渐消失，但从显示结果来看还是有很多模糊区域的。</p><p>对于这里的图片处理，相信很多小伙伴会想到卷积神经网络，那么后面我们还会将生成器和判别器改为卷积神经网络来构造深度卷积 GAN，它对于图片的生成会取得更好的效果。</p><p>如果觉得不错，请给 GitHub 点个 Star 吧~</p>
+                                                <p>雷锋网版权文章，未经授权禁止转载。详情见<a href="http://dwz.cn/4ErMxZ" rel="nofollow" target="_blank">转载须知</a>。</p>
+                                            
+                                            <!-- 正文内容结束 -->
+                    </div>
+
+                    <!-- 分享 -->
+                    <div class="pageActive clr">
+                        <div class="mark-like-btn ">
+                            <a class="collect collect-no" href="javascript:;"><i></i><span>17</span>人收藏</a>
+                        </div>
+                        <!-- Baidu Button BEGIN -->
+                        <div class="bdsharebuttonbox bdshare-button-style0-24" data-tag="share_167262" data-bd-bind="1560287081096">
+                            <span class="s-txt">分享：</span>
+                            <a href="javascript:void()" onclick="openYNote('https://www.leiphone.com/news/201707/xSM8Q3Xx0JTmV0WY.html','看完立刻理解GAN！初学者也没关系', 'https://static.leiphone.com/uploads/new/article/pic/201707/5976fbc20af97.png','leiphone','看完立刻理解GAN！初学者也没关系')" class="youdao " title="收藏此篇文章到有道云笔记"><i></i></a>
+                            <a class="bds_tsina weibo-btn  " data-cmd="tsina" title="分享到新浪微博"></a>
+                            <a class="weixin-btn bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                            <a class="bds_more more-btn" data-cmd="more"></a>
+                        </div>
+                        <script type="text/javascript">
+                            //在这里定义bds_config
+                            // var bds_config = {'snsKey':{'tsina':'2475906690'}};
+                            // var qcode = {
+                            //     api : "http://qr.liantu.com/api.php?text=",
+                            //     url :  window.location.href,
+                            //     exist : false,
+                            //     create : function(){
+                            //         if(!this.exist){
+                            //             var image = document.createElement('img');
+                            //             image.src = this.api + this.url;
+                            //             image.width = 120;
+                            //             this.exist = true;
+                            //             return image;
+                            //         }
+                            //     }
+                            // };
+                        </script>
+
+                    </div>
+                    <!-- 相关文章 -->
+                    <!-- 相关文章 start -->
+<div class="realted-article clr">
+    <div class="title clr">
+        <span class="fl">相关文章</span>
+    </div>
+    <div class="related-link clr">
+                         <a href="https://www.leiphone.com/tag/GAN" target="_blank" title="GAN">GAN</a>
+                     </div>
+    <div class="list">
+        <ul>
+                        <li class="first">
+                <a href="https://www.leiphone.com/news/201906/ht6dC7vHVQ0K8q98.html" target="_blank" class="pic">
+                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5cf89160d2166.jpeg" alt="" width="170" height="100">
+                </a>
+                <div class="txt">
+                    <a href="https://www.leiphone.com/news/201906/ht6dC7vHVQ0K8q98.html" target="_blank">赚了20亿美元GandCrab的兴衰史</a>
+                </div>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201906/RxZB220OH5qRKrNo.html" target="_blank" class="pic">
+                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5cf387ca7991c.jpeg" alt="" width="170" height="100">
+                </a>
+                <div class="txt">
+                    <a href="https://www.leiphone.com/news/201906/RxZB220OH5qRKrNo.html" target="_blank">赚20亿美元，GandCrab勒索软件厂商决定“跑路”</a>
+                </div>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201904/F6u6VOcphzYegwYf.html" target="_blank" class="pic">
+                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5cac617dc0584.jpeg" alt="" width="170" height="100">
+                </a>
+                <div class="txt">
+                    <a href="https://www.leiphone.com/news/201904/F6u6VOcphzYegwYf.html" target="_blank">万字长文解读GAN：从基本概念、原理到实际应用</a>
+                </div>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201904/RproK0hql5Np3DXU.html" target="_blank" class="pic">
+                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5ca6c9ef2c229.jpeg" alt="" width="170" height="100">
+                </a>
+                <div class="txt">
+                    <a href="https://www.leiphone.com/news/201904/RproK0hql5Np3DXU.html" target="_blank">蓄谋已久？「GANs 之父」 Ian Goodfellow 跳槽苹果</a>
+                </div>
+            </li>
+                    </ul>
+    </div>
+</div>
+
+<!-- 相关文章 end -->
+
+
+                    <!-- 推荐文章 -->
+                    <div class="realted-article clr recmdArticle" data-article_id="167262">
+                        <div class="list">
+                            <ul>
+                            </ul>
+                        </div>
+                    </div>
+                    <!-- 广告 -->
+                    
+                    <!-- 文章 评论  -->
+                    <!-- 评论 -->
+<div class="article-comment lp-comment" id="lph-comment-167262">
+    <div class="useComJs">
+        <!-- <input id="lp_item_id" type="hidden" name="item_id" value="167262">
+        <input id="lp_item_type" type="hidden" name="type" value="2"> -->
+
+        <div class="h2 clr">
+            <h2>文章点评：</h2>
+            <!-- <strong class="h2-tip">
+                （您需要<a class="c-log" href="javascript:openPop('#lp-login-pop');">登录</a>后才能评论 <a href="https://home.leiphone.com/main/register" class="c-reg">没有账号</a> ？）</strong>
+            -->        
+        </div>
+        <div class="submit clr commentForm" id="">
+            <div class="text">
+                <textarea name="Comment[content]" placeholder="我有话要说……"></textarea>
+            </div>
+            <div class="sub clr publishtosina">
+                <span class="emotionc emotion0" data-emotion="0">表情</span>
+                <label><input id="" type="checkbox" name="pushForWeibo"> 同步到新浪微博</label>
+                <div class="qqFace" style="position:absolute; display:none; z-index:10"></div>
+                <button type="submit" title="提交">提交</button>
+            </div>
+        </div>
+        <!-- <div class="jcWords">
+            <h3><strong>精彩评论</strong></h3>
+            <ul class="comment-say">
+                
+            </ul>
+        </div>
+        <div class="words">
+            <h3><strong>最新评论</strong><span></span>条评论<i></i></h3>
+            <ul class="comment-say">
+                
+            </ul>
+            <div id="comment-say-more" class="comment-say-more">
+
+                <span>加载更多</span>
+                <em>没有更多了</em>
+
+            </div>
+        </div> -->
+    </div>
+				<div class="article-comment-container" data-item-id="-1" data-type-id="2">														</div>		</div>
+<!-- 评论 -->
+
+
+
+                </div>
+
+                <script>
+    var codeAuthor_id   = "AI研习社394";
+    var author_id       = "23787";
+</script>
+<div class="article-right" style="height: 12307px; box-sizing: border-box; position: relative;">
+        <div class="aboutAur-main">
+        <div class="aboutAur-msg">
+            <a href="https://www.leiphone.com/author/AI%E7%A0%94%E4%B9%A0%E7%A4%BE394" class="avater" target="_blank" rel="nofollow">
+                <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/33_avatar_pic_100_100.jpeg" alt="" width="80" height="80">
+            </a>
+            <div class="name">
+                <a href="https://www.leiphone.com/author/AI%E7%A0%94%E4%B9%A0%E7%A4%BE394" target="_blank" rel="nofollow"><span>AI研习社</span><em class="gold"></em></a>
+            </div>
+            <p class="profession">编辑</p>
+            <div class="saying">
+                <em class="l-quote"></em>
+                <span>聚焦数据科学，连接AI开发者。</span>
+                <em class="r-quote"></em>
+            </div>
+            <div class="operate-btn">
+                <table>
+                    <tbody><tr>
+                                                                                            </tr>
+                </tbody></table>
+            </div>
+            <div class="btns">
+                <a href="javascript:;">发私信</a>
+            </div>
+        </div>
+
+
+        <!-- 作者的文章 -->
+        
+<div class="mouthHot-article">
+    <div class="title">当月热门文章</div>
+        <div class="list">
+            <ul>
+                        <li>
+                <a href="https://www.leiphone.com/news/201905/vNo5QKZrCclSkU0U.html" title="人人都是女装大佬？？Snapchat的性别交换滤镜分分钟会被玩坏！" target="_blank">人人都是女装大佬？？Snapchat的性别交换滤镜分分钟会被玩坏！</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+       <!-- 作者文章结束 -->
+    </div>
+
+            
+        
+<div style="width: 255px; position: fixed; top: 0px;"><div class="weekly-choice hotNew-article">
+        <div class="rComTitle">
+            最新文章
+        </div>
+        <div class="list">
+            <ul class="justTxt">
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/uuKnZzgZNv8xOx1u.html" target="_blank">
+                            <em></em>AI 教育走进美国高中课堂：距离全民 AI 学习还有多远？ </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/XyCj4F976mYLZvIW.html" target="_blank">
+                            <em></em>美图影像实验室（MTlab）10000 点人脸关键点技术全解读 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/k7Y8V6XlAW5fkvCZ.html" target="_blank">
+                            <em></em>TensorFlow 2.0 Beta发布，现在就开始体验吧 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/oyjqNvDnRudnAPt5.html" target="_blank">
+                            <em></em>git 版本控制初学者指南 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/PupawmkbwSD2ugl0.html" target="_blank">
+                            <em></em>专访地平线联合创始人 &amp; 副总裁黄畅：AI 芯片的开发周期要能「踩上点」 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/yXtZ4HKIQQS50pc8.html" target="_blank">
+                            <em></em>论道AI安全与伦理：我们能达到电影里的智能吗？最可能实现的AI场景是什么？如何看待AI自主性？ </a>
+                    </li>
+                            </ul>
+        </div>
+    </div><div class="serKesy-list">
+    <div class="rComTitle">
+        热门搜索
+    </div>
+    <div class="list clr">
+                <a href="https://www.leiphone.com/tag/%E6%97%A5%E6%8A%A5" target="_blank">日报</a>
+                <a href="https://www.leiphone.com/tag/%E5%A4%A7%E7%96%86" target="_blank">大疆</a>
+                <a href="https://www.leiphone.com/tag/HTML5" target="_blank">HTML5</a>
+                <a href="https://www.leiphone.com/tag/wifi" target="_blank">wifi</a>
+                <a href="https://www.leiphone.com/tag/%E5%BE%90%E5%B0%8F%E5%B9%B3" target="_blank">徐小平</a>
+                <a href="https://www.leiphone.com/tag/%E9%80%9A%E7%94%A8" target="_blank">通用</a>
+                <a href="https://www.leiphone.com/tag/%E8%85%BE%E8%AE%AF%E4%BA%91" target="_blank">腾讯云</a>
+                <a href="https://www.leiphone.com/tag/%E6%89%8B%E6%9C%BA%E6%B8%B8%E6%88%8F" target="_blank">手机游戏</a>
+                <a href="https://www.leiphone.com/tag/Lyft" target="_blank">Lyft</a>
+                <a href="https://www.leiphone.com/tag/%E6%95%99%E8%82%B2" target="_blank">教育</a>
+                <a href="https://www.leiphone.com/tag/%E5%A4%AA%E9%98%B3%E8%83%BD" target="_blank">太阳能</a>
+            </div>
+</div></div></div>
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="lineBg"></div>
+    <!-- 百度分享 -->
+    <script>
+
+        window._bd_share_config = {
+            common:{
+                bdMiniList:['tsina','weixin','more']
+            },
+            share : [
+                {
+                    bdText : '看完立刻理解GAN！初学者也没关系',
+                    bdDesc : '看完立刻理解GAN！初学者也没关系',
+                    bdUrl : 'https://www.leiphone.com/news/201707/xSM8Q3Xx0JTmV0WY.html',
+                    bdPic : 'https://static.leiphone.com/uploads/new/article/pic/201707/5976fbc20af97.png',
+                    "tag" : "share_167262",
+                    "bdSize" : 24
+                },
+            ],
+        }
+        with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='https://www.leiphone.com/static/api/js/share.js?cdnversion='+~(-new Date()/36e5)];
+
+    </script>
+</div><!-- 当载入markdown的时候加载 -->
+
+<!-- 文章详情页 -->
+
+
+<div class="lphArticle-detail" data-article_url="https://www.leiphone.com/news/201707/ofT6u38hYK0Tempn.html?uniqueCode=xSM8Q3Xx0JTmV0WY" data-article_id="167263" data-article_unique="ofT6u38hYK0Tempn" data-article_seo_title="华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化 | 雷锋网" data-article_seo_keywords="" data-article_seo_description="近日美国夏威夷刮起了“阿里旋风”。继淘宝的“拍立淘”让外国工程师大呼好用之后，又传来阿里巴巴人工智能实验室共有三篇论文入选 CVPR 2017 的好消息。" data-comment_type="2" data-collect_type="2" data-author_id="23848" data-author_name="木子" data-article_cmtnum="0">
+    <div class="article-template">
+        <div class="article-title">
+            <div class="inner">
+                <h1 class="headTit">
+                    华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化                </h1>
+                <div class="msg">
+                    <table>
+                        <tbody><tr>
+                            <td class="aut">
+                                本文作者：<a href="https://www.leiphone.com/author/muzi713" target="_blank" rel="nofollow">木子</a>
+                            </td>
+                                                        <td class="time">
+                                2017-07-25 16:04                            </td>
+                                                        <td class="topicName"><a href="https://www.leiphone.com/special/293/201707/596f56733bd57.html" target="_blank">专题：CVPR 2017</a></td>
+                                                                                <!--   <td class='cmtNum'>
+                                <a href="https://www.leiphone.com/news/201707/ofT6u38hYK0Tempn.html#lph-comment-167263">0条评论</a>
+                            </td> -->
+                        </tr>
+                    </tbody></table>
+                </div>
+                <div class="article-lead">
+                    <em></em>导语：近日美国夏威夷刮起了“阿里旋风”。继淘宝的“拍立淘”让外国工程师大呼好用之后，又传来阿里巴巴人工智能实验室共有三篇论文入选 CVPR 2017 的好消息。                </div>
+            </div>
+        </div>
+        <div class="info">
+            <div class="wrapper clr">
+                <div class="article-left">
+                    <div class="lph-article-comView">
+                                                
+                        <!-- AI影响因子 -->
+                        <!-- xhBPeYDbNuuRZkwy -->
+                                                <!-- AI影响因子 -->
+                        <!-- 正文内容 -->
+                        <p>近日美国夏威夷刮起了“阿里旋风”。继淘宝的“拍立淘”让外国工程师大呼好用之后，又传来阿里巴巴人工智能实验室共有三篇论文入选 CVPR 2017 的好消息。</p><p>CVPR
+被誉为科技界中的“春晚”，是近十年来计算机视觉领域全球最有影响力、内容最全面的顶级学术会议，由全球最大的非营利性专业技术学会IEEE（电气和电子
+工程师协会）主办。2017谷歌学术指标（Google Scholar）按论文引用率排名， 
+CVPR位列计算机视觉领域榜首。据CVPR评委会披露，今年CVPR审核了2620篇文章，最终收录783篇，录取率为29%。</p><p>阿里巴巴
+人工智能实验室此次入选的三篇论文均有杰出科学家王刚的深度参与，分别针对深度学习和计算机视觉所涉及的上下文模拟、场景分割、行为理解等问题提出了解决
+办法。 王刚向记者表示，“这三篇论文都来自于深度学习中的应用场景，未来或将通过人工智能实验室进行落地，例如运用到家庭安全监测场景中”。</p><p>王
+刚于2017年3月加入阿里巴巴人工智能实验室，担任杰出科学家，负责机器学习、计算机视觉和自然语言理解的研发工作。他此前曾是南洋理工大学的终身教
+授，同时也是人工智能领域最顶尖杂志IEEE Transactions on Pattern Analysis and Machine 
+Intelligence的编委 (Associate Editor)，曾多次受邀成为人工智能顶级学术会议如International 
+Conference on Computer 
+Vision的领域主席，在深度学习算法领域具有深厚的研究积累和国际权威。2016年，他还因在深度神经网络设计上的卓越贡献，成为当年《麻省理工技术
+评论杂志》评选出的10名亚洲区35岁以下青年创新奖得主之一。</p><p>以下是对三篇论文的解读</p><p><strong>1. Deep Level Sets for Salient Object Detection</strong></p><p>结合深度网络的水平集方法在显著性目标检测中的应用</p><p>简介：</p><p style="text-align: center;"><img alt="华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976fa784d17c.jpeg"></p><p></p><p>如图，a是输入图像，b是对应saliency区域的ground truth，c、d对应使用BCE loss训练的深度网络和使用水平集方法的效果，e对应论文的方法；可以看到e在分割细节方面和ground truth最为接近，效果更好，在细节方面提升明显。</p><p>显
+著性目标检测能够帮助计算机发现图片中最吸引人注意的区域，有效的图像分割和图像的语意属性对显著性目标检测非常重要。由南洋理工大学和阿里巴巴人工智能
+实验室合作，共同提出了一种结合深度网络的水平集方法，将分割信息和语意信息进行结合，获得了很好的效果。水平集方法是处理封闭运动界面随时间演化过程中
+几何拓扑变化的有效的计算工具，后来被用到图像分割算法当中。深度学习能够很好的建模显著性目标的语意属性，进而进行显著性目标检测，但更多的语意属性信
+息导致分割边界的低层信息不准确。论文巧妙的结合了深度网络和水平集方法（Deep Level 
+Sets），同时利用图片低层的边界信息以及高层的语意信息，在显著性目标检测领域获得了state-of-art的效果。</p><p><strong>2. Global Context-Aware Attention LSTM Networks for 3D Action Recognition</strong></p><p>将全局上下文注意力机制引入长短时记忆网络的3D动作识别</p><p>简介：<span style="text-align: center;">&nbsp;</span><img alt="华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976fa88909c6.jpeg" style="text-align: center;"><span style="text-align: center;"></span></p><p></p><p>如图，3D动作识别能够帮助计算及更好的理解人体动作（最左侧的文字），未来可以作为人机交互的一种补充。</p><p>3D
+动作识别能够帮助计算机更好的分析人的动作以及为多样化的人机交互提供更多的选择。一个好的3D动作识别系统需要很好的处理动作在时间（动作需要一定时
+延）、空间（结构）上的信息。LSTM（长短时记忆网络）能够很好的建模动态的、相互依赖的时间序列数据（如人的3D动作序列），注意力机制能够更有效的
+获取数据中的结构信息，并排除掉噪声的干扰。由南洋理工大学、北京大学、阿里巴巴人工智能实验室合作，论文结合LSTM和上下文注意力机制，提出了一种新
+的LSTM网络：GCA-LSTM（Global Context-Aware Attention 
+LSTM）；用来建模动作序列中有效的全局上下文信息（时间信息+空间信息），进而进行3D动作识别。同时，论文为GCA-LSTM网络提出了一种循环注
+意力机制来迭代提升注意力模型的效果。论文方法在3个主流的3D动作识别数据集上都达到了state-of-art的效果。</p><p><strong>3. Episodic CAMN: Contextual Attention-based Memory Networks With Iterative Feedback For Scene Labeling</strong></p><p>引入迭代反馈的上下文注意力机制记忆网络在场景分割中的应用</p><p>简介：</p><p style="text-align: center;"><img alt="华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5976faa62ef97.jpeg"></p><p></p><p>如图，这是场景分隔在自动驾驶中的应用，通过对路面场景进行分割，可以帮助无人车分析那部分区域是可行驶区域（如图粉红色部分）。</p><p>场
+景分割有着广阔的应用前景，比如自动驾驶汽车通过场景分割获取可行驶区域，比如室内机器人通过场景分割获知室内物体的分布。场景分割对待分割区域周围的区
+域以及全局信息有较强的依赖关系，但这种依赖关系是动态变化的（即使同一区域在不同的场景中对周围信息的依赖是不同的），因此动态的获知不同区域的依赖关
+系以及图像全局上下文特征的使用至关重要。由南洋理工大学，伊利诺伊大学厄巴纳-香槟分校，阿里巴巴人工智能实验室合作，论文通过一个可学习的注意力机制
+网络来刻画不同区域之间的依赖关系，并获取包含上下文信息的特征。进一步，论文通过引入迭代反馈的方式对注意力机制网络的输出进行调节，以获得更好的包含
+上下文的特征。上述方法在场景分隔任务中获得了和当前state-of-art算法相当的效果。</p>
+                                                <p>雷锋网原创文章，未经授权禁止转载。详情见<a href="http://dwz.cn/4ErMxZ" rel="nofollow" target="_blank">转载须知</a>。</p>
+                                                                <a href="https://www.leiphone.com/special/custom/aigrowup2019.html" target="_blank">
+                            <img alt="华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化" src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5ced0c4b34d97.jpeg">
+                    </a>
+                                            
+                                            <!-- 正文内容结束 -->
+                    </div>
+
+                    <!-- 分享 -->
+                    <div class="pageActive clr">
+                        <div class="mark-like-btn ">
+                            <a class="collect collect-no" href="javascript:;"><i></i><span>3</span>人收藏</a>
+                        </div>
+                        <!-- Baidu Button BEGIN -->
+                        <div class="bdsharebuttonbox bdshare-button-style0-24" data-tag="share_167263" data-bd-bind="1560359839542">
+                            <span class="s-txt">分享：</span>
+                            <a href="javascript:void()" onclick="openYNote('https://www.leiphone.com/news/201707/ofT6u38hYK0Tempn.html','华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化', 'https://static.leiphone.com/uploads/new/article/pic/201707/5976fb8dc71ab.png','leiphone','华人科学家一人斩获三篇CVPR论文！曾主持天猫精灵开发，技术成果或将产品化')" class="youdao " title="收藏此篇文章到有道云笔记"><i></i></a>
+                            <a class="bds_tsina weibo-btn  " data-cmd="tsina" title="分享到新浪微博"></a>
+                            <a class="weixin-btn bds_weixin" data-cmd="weixin" title="分享到微信"></a>
+                            <a class="bds_more more-btn" data-cmd="more"></a>
+                        </div>
+                        
+
+                    </div>
+                    <!-- 相关文章 -->
+                                        <!-- 推荐文章 -->
+                    <div class="realted-article clr recmdArticle" data-article_id="167263">
+                        <div class="list">
+                            <ul><li data-id="182456" data-parameter="0_5021df_rfill_0_6221ff1b28e24f40986e8632b163584c">                                                            <a href="https://www.leiphone.com/news/201903/AJFXEGcFWO3z2hy9.html?ulu-rcmd=0_5021df_rfill_0_6221ff1b28e24f40986e8632b163584c" class="pic" target="_blank">                                                                <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5c7f0dbc64432.png" alt="iPhone XS系列降价一千元；Intel雷电接口将融合USB4；蔚来汽车收入、亏损均增长百分百 | 雷锋早报" width="170" height="100">                                                            </a>                                                            <div class="txt">                                                                <a href="https://www.leiphone.com/news/201903/AJFXEGcFWO3z2hy9.html?ulu-rcmd=0_5021df_rfill_0_6221ff1b28e24f40986e8632b163584c" target="_blank">iPhone XS系列降价一千元；Intel雷电接口将融合USB4；蔚来汽车收入、亏损均增长百分百 | 雷锋早报</a>                                                            </div>                                                        </li><li data-id="182455" data-parameter="0_5021df_rfill_1_6221ff1b28e24f40986e8632b163584c">                                                            <a href="https://www.leiphone.com/news/201903/c409gNvlzLMBLPpt.html?ulu-rcmd=0_5021df_rfill_1_6221ff1b28e24f40986e8632b163584c" class="pic" target="_blank">                                                                <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5c7f09a73a845.jpeg" alt="蔚来2018年总营收达49亿元 持续亏损至95亿元" width="170" height="100">                                                            </a>                                                            <div class="txt">                                                                <a href="https://www.leiphone.com/news/201903/c409gNvlzLMBLPpt.html?ulu-rcmd=0_5021df_rfill_1_6221ff1b28e24f40986e8632b163584c" target="_blank">蔚来2018年总营收达49亿元 持续亏损至95亿元</a>                                                            </div>                                                        </li><li data-id="182454" data-parameter="0_5021df_rfill_2_6221ff1b28e24f40986e8632b163584c">                                                            <a href="https://www.leiphone.com/news/201903/s3AsIPnmM7ZjU27b.html?ulu-rcmd=0_5021df_rfill_2_6221ff1b28e24f40986e8632b163584c" class="pic" target="_blank">                                                                <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5c7ea806a0f19.png" alt="钉钉，终于盯上教育" width="170" height="100">                                                            </a>                                                            <div class="txt">                                                                <a href="https://www.leiphone.com/news/201903/s3AsIPnmM7ZjU27b.html?ulu-rcmd=0_5021df_rfill_2_6221ff1b28e24f40986e8632b163584c" target="_blank">钉钉，终于盯上教育</a>                                                            </div>                                                        </li><li data-id="182439" data-parameter="0_5021df_rfill_3_6221ff1b28e24f40986e8632b163584c">                                                            <a href="https://www.leiphone.com/news/201903/oRhLwhXVfL7pP8ma.html?ulu-rcmd=0_5021df_rfill_3_6221ff1b28e24f40986e8632b163584c" class="pic" target="_blank">                                                                <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5c7e9457308cd.png" alt="关于激光雷达的 11 个谣言，你不得不知" width="170" height="100">                                                            </a>                                                            <div class="txt">                                                                <a href="https://www.leiphone.com/news/201903/oRhLwhXVfL7pP8ma.html?ulu-rcmd=0_5021df_rfill_3_6221ff1b28e24f40986e8632b163584c" target="_blank">关于激光雷达的 11 个谣言，你不得不知</a>                                                            </div>                                                        </li></ul>
+                        </div>
+                    </div>
+                    <!-- 广告 -->
+                    
+                    <!-- 文章 评论  -->
+                    <!-- 评论 -->
+<div class="article-comment lp-comment" id="lph-comment-167263">
+    <div class="useComJs">
+        <!-- <input id="lp_item_id" type="hidden" name="item_id" value="167263">
+        <input id="lp_item_type" type="hidden" name="type" value="2"> -->
+
+        <div class="h2 clr">
+            <h2>文章点评：</h2>
+            <!-- <strong class="h2-tip">
+                （您需要<a class="c-log" href="javascript:openPop('#lp-login-pop');">登录</a>后才能评论 <a href="https://home.leiphone.com/main/register" class="c-reg">没有账号</a> ？）</strong>
+            -->        
+        </div>
+        <div class="submit clr commentForm" id="">
+            <div class="text">
+                <textarea name="Comment[content]" placeholder="我有话要说……"></textarea>
+            </div>
+            <div class="sub clr publishtosina">
+                <span class="emotionc emotion0" data-emotion="0">表情</span>
+                <label><input id="" type="checkbox" name="pushForWeibo"> 同步到新浪微博</label>
+                <div class="qqFace" style="position:absolute; display:none; z-index:10"></div>
+                <button type="submit" title="提交">提交</button>
+            </div>
+        </div>
+        <!-- <div class="jcWords">
+            <h3><strong>精彩评论</strong></h3>
+            <ul class="comment-say">
+                
+            </ul>
+        </div>
+        <div class="words">
+            <h3><strong>最新评论</strong><span></span>条评论<i></i></h3>
+            <ul class="comment-say">
+                
+            </ul>
+            <div id="comment-say-more" class="comment-say-more">
+
+                <span>加载更多</span>
+                <em>没有更多了</em>
+
+            </div>
+        </div> -->
+    </div>
+				<div class="article-comment-container" data-item-id="-1" data-type-id="2">														</div>		</div>
+<!-- 评论 -->
+
+
+
+                </div>
+
+                
+<div class="article-right" style="height: 4551px; box-sizing: border-box; position: relative;">
+    
+<div class="aboutTopic">
+    <div class="imgs">
+        <a href="https://www.leiphone.com/special/293/201707/596f56733bd57.html" target="_blank"><img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/596f571457cc8.jpeg"></a>
+        <span class="tag">专题</span>
+    </div>
+    <div class="list">
+        <h2><a href="https://www.leiphone.com/special/293/201707/596f56733bd57.html" target="_blank">CVPR 2017</a></h2>
+        <p class="p1">本专题其他文章</p>
+        <ul>
+                                            <li>
+                    <a href="https://www.leiphone.com/news/201708/KGJYBHXPwsRYMhWw.html" target="_blank">CVPR 2017精彩论文解读：对Xception（一种深度可分离卷积）模型的介绍</a>
+                </li>
+                               <li>
+                    <a href="https://www.leiphone.com/news/201708/3WIEn3Rp1PAInFFz.html" target="_blank">CVPR 2017精彩论文解读：综合使用多形态核磁共振数据的3D生物医学图像分割方法 | 分享总结</a>
+                </li>
+                               <li>
+                    <a href="https://www.leiphone.com/news/201708/q1URHqspGIewpxDs.html" target="_blank">错过CVPR 2017？绝对不能错过GAIR大讲堂——上海交大专场开启报名</a>
+                </li>
+                               <li>
+                    <a href="https://www.leiphone.com/news/201708/43p2jv1EFxaa6kIC.html" target="_blank">CVPR 2017精彩论文解读：显著降低模型训练成本的主动增量学习 | 分享总结</a>
+                </li>
+                               <li>
+                    <a href="https://www.leiphone.com/news/201708/SvNLPoNue0IOLJ6x.html" target="_blank">CVPR 2017精彩论文解读：综合使用多形态核磁共振数据的3D生物医学图像分割方法</a>
+                </li>
+                               <li>
+                    <a href="https://www.leiphone.com/news/201708/0MNOwwfvWiAu43WO.html" target="_blank">CVPR 2017最佳论文作者解读：DenseNet 的“what”、“why”和“how”｜CVPR 2017</a>
+                </li>
+                                   </ul>
+        <a href="https://www.leiphone.com/special/293/201707/596f56733bd57.html" target="_blank" class="more">more</a>
+    </div>
+</div>
+
+
+    
+
+            
+        
+<div style="width: 255px; position: static;"><div class="aboutAur-main">
+        <div class="aboutAur-msg">
+            <a href="https://www.leiphone.com/author/muzi713" class="avater" target="_blank" rel="nofollow">
+                <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5b6414c9b69a1_100_100.jpeg" alt="" width="80" height="80">
+            </a>
+            <div class="name">
+                <a href="https://www.leiphone.com/author/muzi713" target="_blank" rel="nofollow"><span>木子</span><em class="gold"></em></a>
+            </div>
+            <p class="profession">编辑</p>
+            <div class="saying">
+                <em class="l-quote"></em>
+                <span>~</span>
+                <em class="r-quote"></em>
+            </div>
+            <div class="operate-btn">
+                <table>
+                    <tbody><tr>
+                                                <td>
+                            <a href="https://weibo.com/2118746300/profile?topnav=1&amp;wvr=6" target="_blank" class="sina sub_a" rel="nofollow"><em></em></a>
+                        </td>
+                                                                        <td>
+                            <a href="mailto:chenmuzi@leiphone.com" class="eml sub_a" rel="nofollow"><em></em></a>
+                        </td>
+                                                                        <td>
+                            <a href="javascript:;" class="wx sub_a" rel="nofollow">
+                                <em></em>
+                                <div class="hideCode">
+                                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/5b4f022988b1b.jpeg" width="114" height="114">
+                                    <p>扫描关注作者微信</p>
+                                </div>
+                            </a>
+                        </td>
+                                            </tr>
+                </tbody></table>
+            </div>
+            <div class="btns">
+                <a href="javascript:;">发私信</a>
+            </div>
+        </div>
+
+
+        <!-- 作者的文章 -->
+        
+<div class="mouthHot-article">
+    <div class="title">当月热门文章</div>
+        <div class="list">
+            <ul>
+                        <li>
+                <a href="https://www.leiphone.com/news/201906/ZAj5uF4X6SVIHQ6r.html" title="蓦然认知牵手奔驰：将为其提供语音购买电影票技术支持 " target="_blank">蓦然认知牵手奔驰：将为其提供语音购买电影票技术支持 </a>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201905/2fRouBigwW7Rhv7H.html" title="亮相世界智能大会，千寻位置高精度定位能力获认可" target="_blank">亮相世界智能大会，千寻位置高精度定位能力获认可</a>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201905/Vne0qMUXttiSr8z4.html" title="搜狗开源业内最全「阅读理解工具集合」，助力研发人员快速构建高效模型" target="_blank">搜狗开源业内最全「阅读理解工具集合」，助力研发人员快速构建高效模型</a>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201905/cBMT0oOHK1flJv0t.html" title="微软修复严重漏洞 360提醒XP用户也要及时打补丁" target="_blank">微软修复严重漏洞 360提醒XP用户也要及时打补丁</a>
+            </li>
+                        <li>
+                <a href="https://www.leiphone.com/news/201905/cVEYMPjnh7IuvpzN.html" title="千寻位置破局时空基准，智慧城市最好的时代来了" target="_blank">千寻位置破局时空基准，智慧城市最好的时代来了</a>
+            </li>
+                    </ul>
+    </div>
+</div>
+       <!-- 作者文章结束 -->
+    </div><div class="weekly-choice hotNew-article">
+        <div class="rComTitle">
+            最新文章
+        </div>
+        <div class="list">
+            <ul class="justTxt">
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/QmTuqcHLKVXLPNiK.html" target="_blank">
+                            <em></em>富士康：如果苹果需要，有能力将生产线移出中国 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/Z6HgKec2FkbgWpfz.html" target="_blank">
+                            <em></em>海尔国潮家电节：3大差异化优势开启全场景智慧生活 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/ujDfIET4thrI9V7w.html" target="_blank">
+                            <em></em>解读 | 互联网女皇 2019 最新报告：这 20 个亮点你不能错过 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/L2R1anhrk89NPPo6.html" target="_blank">
+                            <em></em>下一代公司是怎么样的？我们在阿里看到模型 </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/Rl6azuMkUACJocZe.html" target="_blank">
+                            <em></em>明道云大转弯，从协作SaaS到aPaaS </a>
+                    </li>
+                                    <li>
+                        <a href="https://www.leiphone.com/news/201906/ngvvgU8V3z1WjFk0.html" target="_blank">
+                            <em></em>10 万个名人，1000 万张照片，全球最大人脸识别数据库被删除了 </a>
+                    </li>
+                            </ul>
+        </div>
+    </div><div class="serKesy-list">
+    <div class="rComTitle">
+        热门搜索
+    </div>
+    <div class="list clr">
+                <a href="https://www.leiphone.com/tag/%E5%8D%8E%E4%B8%BA" target="_blank">华为</a>
+                <a href="https://www.leiphone.com/tag/%E8%AF%BA%E5%9F%BA%E4%BA%9A" target="_blank">诺基亚</a>
+                <a href="https://www.leiphone.com/tag/AMD" target="_blank">AMD</a>
+                <a href="https://www.leiphone.com/tag/WWDC" target="_blank">WWDC</a>
+                <a href="https://www.leiphone.com/tag/%E9%9B%B7%E7%A9%BF%E6%88%B4" target="_blank">雷穿戴</a>
+                <a href="https://www.leiphone.com/tag/%E5%B7%A5%E4%BF%A1%E9%83%A8" target="_blank">工信部</a>
+                <a href="https://www.leiphone.com/tag/%E7%AE%97%E6%B3%95" target="_blank">算法</a>
+                <a href="https://www.leiphone.com/tag/Spotify" target="_blank">Spotify</a>
+                <a href="https://www.leiphone.com/tag/%E6%95%B0%E6%8D%AE%E5%88%86%E6%9E%90" target="_blank">数据分析</a>
+                <a href="https://www.leiphone.com/tag/Galaxy%20S7" target="_blank">Galaxy S7</a>
+                <a href="https://www.leiphone.com/tag/%E7%BE%8E%E5%9B%A2" target="_blank">美团</a>
+            </div>
+</div></div></div>
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="lineBg"></div>
+    <!-- 百度分享 -->
+    
+</div>
+
+
+
+
+
+
+<script>
+    function openYNote(url, title, pic, vendor, summary) {
+        var target = 'http://note.youdao.com/memory/?url=' + encodeURIComponent(url) +
+            '&title=' + encodeURIComponent(title) + '&pic=' + encodeURIComponent(pic) +
+            '&product=' + encodeURIComponent('网页收藏') +
+            '&summary=' + encodeURIComponent(summary) + '&vendor=' + encodeURIComponent(vendor);
+        window.open(target);
+    }
+  seajs.use(['https://www.leiphone.com/resWeb/js/article' , 'https://www.leiphone.com/resWeb/js/load_articles']);
+
+
+
+   // document.getElementById('weixin-qt').insertBefore(qcode.create(),document.getElementById('weixin-qt-msg'));
+</script>
+
+<footer class="yp-footer">
+    <!-- 友情链接，热门关键字 -->
+    <div class="yp-footer-link">
+        <div class="wrapper">
+            <div class="tab_tit clr">
+                                <a href="javascript:;">热门关键字</a>
+            </div>
+            <div class="tab_con">
+                <ul>
+                                        
+                                        <li class="cur">
+                                        
+                                                                                            <a href="http://www.leiphone.com/tags" target="_blank">热门标签</a>                                                                    <a href="http://www.leiphone.com/tag/%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD" target="_blank">人工智能 </a>                                                                    <a href="https://www.leiphone.com/tag/%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">机器人</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0" target="_blank">机器学习</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%B7%B1%E5%BA%A6%E5%AD%A6%E4%B9%A0" target="_blank">深度学习</a>                                                                    <a href="https://www.leiphone.com/tag/%E9%87%91%E8%9E%8D%E7%A7%91%E6%8A%80" target="_blank">金融科技</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%9C%AA%E6%9D%A5%E5%8C%BB%E7%96%97" target="_blank">未来医疗</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E9%A9%BE%E9%A9%B6" target="_blank">智能驾驶</a>                                                                    <a href="https://www.leiphone.com/tag/%E8%87%AA%E5%8A%A8%E9%A9%BE%E9%A9%B6" target="_blank">自动驾驶</a>                                                                    <a href="https://www.leiphone.com/tag/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89" target="_blank">计算机视觉</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%BF%80%E5%85%89%E9%9B%B7%E8%BE%BE" target="_blank">激光雷达</a>                                                                    <a href="https://www.leiphone.com/tag/%E5%9B%BE%E5%83%8F%E8%AF%86%E5%88%AB" target="_blank">图像识别</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E9%9F%B3%E7%AE%B1" target="_blank">智能音箱</a>                                                                    <a href="https://www.leiphone.com/tag/%E5%8C%BA%E5%9D%97%E9%93%BE" target="_blank">区块链</a>                                                                    <a href="https://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E6%8A%95%E9%A1%BE" target="_blank">智能投顾</a>                                                                    <a href="https://www.leiphone.com/tag/%E5%8C%BB%E5%AD%A6%E5%BD%B1%E5%83%8F" target="_blank">医学影像</a>                                                                    <a href="https://www.leiphone.com/tag/%E7%89%A9%E8%81%94%E7%BD%91" target="_blank">物联网</a>                                                                    <a href="https://www.leiphone.com/tag/IoT" target="_blank">IoT</a>                                                                    <a href="https://www.leiphone.com/tag/CV" target="_blank">CV</a>                                                                    <a href="http://www.leiphone.com/special/235/201609/57e4fe78a71ea.html" target="_blank">微信小程序平台</a>                                                                    <a href="http://www.leiphone.com/news/201701/ri7dDB7Fq0mMj1qh.html" target="_blank">微信小程序在哪</a>                                                                    <a href="http://www.leiphone.com/tag/CES%202017" target="_blank">CES 2017</a>                                                                    <a href="http://www.leiphone.com/tag/CES" target="_blank">CES</a>                                                                    <a href="http://www.leiphone.com/tag/2016%E5%B9%B4%E6%9C%80%E5%80%BC%E5%BE%97%E8%B4%AD%E4%B9%B0%E7%9A%84%E6%99%BA%E8%83%BD%E7%A1%AC%E4%BB%B6" target="_blank">2016年最值得购买的智能硬件</a>                                                                    <a href="http://www.leiphone.com/news/201612/sI2n04bJ5aVzS5Pr.html" target="_blank">2016 互联网</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%B0%8F%E7%A8%8B%E5%BA%8F" target="_blank">小程序</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%BE%AE%E4%BF%A1%E6%9C%8B%E5%8F%8B%E5%9C%88" target="_blank">微信朋友圈</a>                                                                    <a href="http://www.leiphone.com/news/201612/J8qZLCwViDpwygen.html" target="_blank">抢票软件</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E6%89%8B%E6%9C%BA" target="_blank">智能手机</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E5%AE%B6%E5%B1%85" target="_blank">智能家居</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E6%89%8B%E7%8E%AF" target="_blank">智能手环</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">智能机器人</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E7%94%B5%E8%A7%86" target="_blank">智能电视</a>                                                                    <a href="http://www.leiphone.com/tag/360%E6%99%BA%E8%83%BD%E7%A1%AC%E4%BB%B6" target="_blank">360智能硬件</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E6%91%84%E5%83%8F%E6%9C%BA" target="_blank">智能摄像机</a>                                                                    <a href="http://www.leiphone.com/news/201601/mQ8TFsppN7ROxYmS.html" target="_blank">智能硬件产品</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E7%A1%AC%E4%BB%B6%E5%8F%91%E5%B1%95" target="_blank">智能硬件发展</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%99%BA%E8%83%BD%E7%A1%AC%E4%BB%B6%E5%88%9B%E4%B8%9A" target="_blank">智能硬件创业</a>                                                                    <a href="http://www.leiphone.com/tag/%E9%BB%91%E5%AE%A2" target="_blank">黑客</a>                                                                    <a href="http://www.leiphone.com/tag/%E7%99%BD%E5%B8%BD%E5%AD%90" target="_blank">白帽子</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%A4%A7%E6%95%B0%E6%8D%AE" target="_blank">大数据</a>                                                                    <a href="http://www.leiphone.com/tag/%E4%BA%91%E8%AE%A1%E7%AE%97" target="_blank">云计算</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%96%B0%E8%83%BD%E6%BA%90%E6%B1%BD%E8%BD%A6" target="_blank">新能源汽车</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%97%A0%E4%BA%BA%E9%A9%BE%E9%A9%B6" target="_blank">无人驾驶</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%97%A0%E4%BA%BA%E6%9C%BA" target="_blank">无人机</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%A4%A7%E7%96%86" target="_blank">大疆</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%B0%8F%E7%B1%B3%E6%97%A0%E4%BA%BA%E6%9C%BA" target="_blank">小米无人机</a>                                                                    <a href="http://www.leiphone.com/tag/%E7%89%B9%E6%96%AF%E6%8B%89" target="_blank">特斯拉</a>                                                                    <a href="http://www.leiphone.com/tag/VR%E6%B8%B8%E6%88%8F" target="_blank">VR游戏</a>                                                                    <a href="http://www.leiphone.com/tag/VR%E7%94%B5%E5%BD%B1" target="_blank">VR电影</a>                                                                    <a href="http://www.leiphone.com/tag/VR%E8%A7%86%E9%A2%91" target="_blank">VR视频</a>                                                                    <a href="http://www.leiphone.com/tag/VR%E7%9C%BC%E9%95%9C" target="_blank">VR眼镜</a>                                                                    <a href="http://www.leiphone.com/tag/VR%E8%B4%AD%E7%89%A9" target="_blank">VR购物</a>                                                                    <a href="http://www.leiphone.com/tag/AR" target="_blank">AR</a>                                                                    <a href="http://www.leiphone.com/tag/%E7%9B%B4%E6%92%AD" target="_blank">直播</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%89%AB%E5%9C%B0%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">扫地机器人</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%8C%BB%E7%96%97%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">医疗机器人</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%B7%A5%E4%B8%9A%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">工业机器人</a>                                                                    <a href="http://www.leiphone.com/tag/%E7%B1%BB%E4%BA%BA%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">类人机器人</a>                                                                    <a href="http://www.leiphone.com/tag/%E8%81%8A%E5%A4%A9%E6%9C%BA%E5%99%A8%E4%BA%BA" target="_blank">聊天机器人</a>                                                                    <a href="http://www.leiphone.com/news/201606/kyKJpmCelZrWE7K4.html" target="_blank">微信机器人</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F" target="_blank">微信小程序</a>                                                                    <a href="http://www.leiphone.com/tag/%E7%A7%BB%E5%8A%A8%E6%94%AF%E4%BB%98" target="_blank">移动支付</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%94%AF%E4%BB%98%E5%AE%9D" target="_blank">支付宝</a>                                                                    <a href="http://www.leiphone.com/tag/P2P" target="_blank">P2P</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%8C%BA%E5%9D%97%E9%93%BE" target="_blank">区块链</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%AF%94%E7%89%B9%E5%B8%81" target="_blank">比特币</a>                                                                    <a href="http://www.leiphone.com/tag/%E9%A3%8E%E6%8E%A7" target="_blank">风控</a>                                                                    <a href="http://www.leiphone.com/tag/%E9%AB%98%E7%9B%9B" target="_blank">高盛</a>                                                                    <a href="http://www.leiphone.com/tag/%E4%BA%BA%E8%84%B8%E8%AF%86%E5%88%AB" target="_blank">人脸识别</a>                                                                    <a href="http://www.leiphone.com/tag/%E6%8C%87%E7%BA%B9%E8%AF%86%E5%88%AB" target="_blank">指纹识别</a>                                                                    <a href="http://www.leiphone.com/tag/%E9%BB%91%E7%A7%91%E6%8A%80" target="_blank">黑科技</a>                                                                    <a href="http://www.leiphone.com/news/201502/S5yH58slS9gpBrm4.html" target="_blank">谷歌地图</a>                                                                    <a href="http://www.leiphone.com/tag/%E8%B0%B7%E6%AD%8C" target="_blank">谷歌</a>                                                                    <a href="http://www.leiphone.com/tag/IBM" target="_blank">IBM</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%BE%AE%E8%BD%AF" target="_blank">微软</a>                                                                    <a href="http://www.leiphone.com/tag/%E4%B9%90%E8%A7%86" target="_blank">乐视</a>                                                                    <a href="http://www.leiphone.com/tag/%E7%99%BE%E5%BA%A6" target="_blank">百度</a>                                                                    <a href="http://www.leiphone.com/tag/%E4%B8%89%E6%98%9Fs8" target="_blank">三星s8</a>                                                                    <a href="http://www.leiphone.com/tag/%E8%85%BE%E8%AE%AF" target="_blank">腾讯</a>                                                                    <a href="http://www.leiphone.com/list/%E4%B8%89%E6%98%9FNote8" target="_blank">三星Note8 </a>                                                                    <a href="http://www.leiphone.com/news/201610/oUUuMZtyi7H6xMGA.html" target="_blank">小米MIX</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%B0%8F%E7%B1%B3Note" target="_blank">小米Note</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%8D%8E%E4%B8%BA" target="_blank">华为</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%B0%8F%E7%B1%B3" target="_blank">小米</a>                                                                    <a href="http://www.leiphone.com/tag/%E9%98%BF%E9%87%8C%E5%B7%B4%E5%B7%B4" target="_blank">阿里巴巴</a>                                                                    <a href="http://www.leiphone.com/tag/%E8%8B%B9%E6%9E%9C" target="_blank">苹果</a>                                                                    <a href="http://www.leiphone.com/tag/MacBook%20Pro" target="_blank">MacBook Pro</a>                                                                    <a href="http://www.leiphone.com/tag/iPhone" target="_blank">iPhone</a>                                                                    <a href="http://www.leiphone.com/tag/Facebook" target="_blank">Facebook</a>                                                                    <a href="http://www.leiphone.com/tag/GAIR" target="_blank">GAIR</a>                                                                    <a href="http://www.leiphone.com/tag/IROS" target="_blank">IROS</a>                                                                    <a href="http://www.leiphone.com/tag/%E5%8F%8C%E5%88%9B%E5%91%A8" target="_blank">双创周</a>                                                                    <a href="http://www.leiphone.com/tag/%E4%BA%91%E6%A0%96%E5%A4%A7%E4%BC%9A" target="_blank">云栖大会</a>                                                                    <a href="http://www.xiandadan.com/" target="_blank">先打</a>                                                                    <a href="http://www.leiphone.com/news/201610/qN5pHyh1kQUQEGtw.html" target="_blank">智能硬件公司</a>                                                                    <a href="http://www.leiphone.com/category/weiwu" target="_blank">智能硬件</a>                                                                    <a href="http://www.leiphone.com/news/201701/RnURKJ8H5PaG9g7y.html" target="_blank">QQ红包</a>                                                                    <a href="http://www.leiphone.com/news/201701/RnURKJ8H5PaG9g7y.html" target="_blank">支付宝红包</a>                                                                    <a href="http://www.leiphone.com/news/201701/cdANtd69SJLFwdXs.html" target="_blank">敬业福</a>                                                                                    
+                        <a href="https://www.leiphone.com/list/%E5%B0%8F%E7%B1%B3%E6%91%84%E5%83%8F%E5%A4%B4" target="_blank">小米摄像头</a><a href="https://www.leiphone.com/list/%E9%80%9F%E6%8E%A8app" target="_blank">速推app</a><a href="https://www.leiphone.com/list/tensorflow%E5%AE%89%E8%A3%85" target="_blank">tensorflow安装</a><a href="https://www.leiphone.com/list/%E4%BA%AE%E9%A3%8E%E5%8F%B0" target="_blank">亮风台</a><a href="https://www.leiphone.com/list/%E5%B0%8F%E7%B1%B3vr%E7%9C%BC%E9%95%9C" target="_blank">小米vr眼镜</a><a href="https://www.leiphone.com/list/%E7%94%B5%E7%A3%81%E8%BD%A8%E9%81%93%E7%82%AE" target="_blank">电磁轨道炮</a><a href="https://www.leiphone.com/list/%E8%B7%AF%E6%A1%A9%E5%AE%89%E8%A3%85" target="_blank">路桩安装</a><a href="https://www.leiphone.com/list/%E7%AC%AC%E4%B8%80%E5%8F%B0%E8%AE%A1%E7%AE%97%E6%9C%BA" target="_blank">第一台计算机</a><a href="https://www.leiphone.com/list/vr%E6%89%8B%E5%A5%97" target="_blank">vr手套</a><a href="https://www.leiphone.com/list/%E6%AF%94%E7%89%B9%E5%B8%81%E4%B8%8E%E4%BC%A0%E7%BB%9F%E8%B4%A7%E5%B8%81%E7%9B%B8%E6%AF%94" target="_blank">比特币与传统货币相比</a><a href="https://www.leiphone.com/list/%E7%B4%A2%E5%B0%BC1abt" target="_blank">索尼1abt</a><a href="https://www.leiphone.com/list/%E5%90%B4%E6%81%A9%E8%BE%BE%E7%A6%BB%E5%BC%80%E7%99%BE%E5%BA%A6%E5%8E%BB%E5%93%AA%E4%BA%86" target="_blank">吴恩达离开百度去哪了</a><a href="https://www.leiphone.com/list/%E5%B0%8F%E7%B1%B3%20%E8%A1%80%E5%8E%8B%E8%AE%A1" target="_blank">小米 血压计</a><a href="https://www.leiphone.com/list/%E5%BE%AE%E4%BF%A1%E5%B0%8F%E7%A8%8B%E5%BA%8F%E5%BC%80%E5%8F%91%E8%80%85%E6%96%87%E6%A1%A3" target="_blank">微信小程序开发者文档</a><a href="https://www.leiphone.com/list/%E7%99%BE%E5%BA%A6%E5%A4%96%E5%8D%96" target="_blank">百度外卖</a>                        <a href="https://www.leiphone.com/list/" target="_blank">更多</a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+    <div class="yp-footer-msg">
+        <div class="wrapper clr">
+            <!-- links -->
+            <div class="links">
+                <a rel="nofollow" href="https://www.leiphone.com/us/contact">联系我们</a>
+                <a rel="nofollow" href="https://www.leiphone.com/us/index">关于我们</a>
+                <a rel="nofollow" href="https://www.leiphone.com/news/201611/0nOqnvNoxI6vX4L9.html">加入我们</a>
+                <a rel="nofollow" href="https://www.leiphone.com/us/feedback">意见反馈</a>
+                <a rel="nofollow" href="https://www.leiphone.com/contribute/index">投稿</a>
+            </div>
+            <a href="javascript:;" class="contribute"><em></em>申请专栏作者</a>
+            <!-- 下载app -->
+            <div class="downLoad-app">
+                <div class="qrcode">
+                    <!-- /site/download -->
+                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/downCode.jpeg" alt="" width="96" height="96">
+                </div>
+                <div class="txt">
+                    <p>下载雷锋网客户端</p>
+                    <a rel="nofollow" href="https://itunes.apple.com/cn/app/lei-feng-wang-yi-dong-hu-lian/id579529120?mt=8" target="_blank" class="iPhone"><em></em>iPhone</a>
+                    <a rel="nofollow" href="https://android.myapp.com/myapp/detail.htm?apkName=com.leiphone.app" target="_blank" class="Android"><em></em>Android</a>
+                </div>
+            </div>
+            <!-- 关注-->
+            <div class="contact">
+                <a rel="nofollow" href="mailto:web@leiphone.com" class="eml sub_a"><em></em></a>
+                <a rel="nofollow" href="https://www.weibo.com/p/1006062118746300" target="_blank" class="sina sub_a"><em></em></a>
+            </div>
+        </div>
+    </div>
+    <!-- copyRight -->
+    <div class="yp-copyright">
+        <div class="wrapper">
+            <p>Copyright © 2011-2019 www.leiphone.com 雷锋网-读懂智能&amp;未来 All Rights Reserved <a target="_blank" style="color:#9baab6;" href="https://www.miitbeian.gov.cn/">粤ICP备11095991号-1</a>
+<!--                 <a  key ="54914497efbfb06e545f711c"  logo_size="83x30"  logo_type="realname"  href="https://www.anquan.org" ><script src="https://static.anquan.org/static/outer/js/aq_auth.js"></script></a> -->
+                &nbsp;&nbsp;
+                <a href="http://szcert.ebs.org.cn/0ee69ac3-f114-4bd9-9ea1-a5a04f7cd44b" rel="nofollow" target="_blank"><img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/govIcon.gif" width="29" height="40"></a>
+<!--                <script id="ebsgovicon" src="https://szcert.ebs.org.cn/govicon.js?id=0ee69ac3-f114-4bd9-9ea1-a5a04f7cd44b&width=29&height=40&type=1" type="text/javascript" charset="utf-8"></script>                &nbsp;&nbsp;-->
+                <a rel="nofollow" href="https://www.leiphone.com/resWeb/images/ICP.jpg" target="_blank" style="color:#9baab6">ICP证粤B2-20150332</a>
+                <a rel="nofollow" href="http://www.qiniu.com/" target="_blank" style="float:right">
+                    <img src="%E7%9C%8B%E5%AE%8C%E7%AB%8B%E5%88%BB%E7%90%86%E8%A7%A3GAN%EF%BC%81%E5%88%9D%E5%AD%A6%E8%80%85%E4%B9%9F%E6%B2%A1%E5%85%B3%E7%B3%BB%20%20%20%E9%9B%B7%E9%94%8B%E7%BD%91_files/hzs4.png">
+                </a>
+            </p>
+        </div>
+    </div>
+</footer>
+<div id="lph-footer-gotoBar">
+    <div class="gotoTop">   
+        <a href="javascript:;" class="top" data-goto="0" data-start="100" style="display: block;"><em></em></a>
+    </div>
+</div>
+
+<!-- 申请专栏作者 -->
+<form id="applyAutor" method="post" onsubmit="return false">
+    <div class="applyAutor-pop">   
+        <i class="close"></i> 
+        <div class="title">请填写申请人资料</div>
+        <div class="main">
+            <div class="rows clr">
+               <span class="name">姓名</span>
+               <input type="text" id="name" name="MemberAuthorType[name]">
+               <span class="error"></span>
+            </div>
+            <div class="rows clr">
+               <span class="name">电话</span>
+               <input type="text" id="phone" name="MemberAuthorType[phone]">
+               <span class="error"></span>
+            </div>
+            <div class="rows clr">
+               <span class="name">邮箱</span>
+               <input type="text" id="eml" name="MemberAuthorType[email]">
+               <span class="error"></span>
+            </div>
+            <div class="rows clr">
+               <span class="name">微信号</span>
+               <input type="text" id="weixin" name="MemberAuthorType[wechat]">
+               <span class="error"></span>
+            </div>
+            <div class="rows clr">
+               <span class="name">作品链接</span>
+               <input type="text" id="job" name="MemberAuthorType[link]">
+            </div>
+            <div class="rows clr">
+               <span class="name">个人简介</span>
+               <textarea id="description" name="MemberAuthorType[description]"></textarea>
+            </div>
+            <div class="rows clr rows-last">
+                <input type="submit" value="提 交" id="subBtn">
+                <input type="button" value="取 消" id="clsBtn">
+            </div>
+        </div>
+    </div>  
+</form>
+<!-- 遮罩层 -->
+<div class="lph-overlay"></div>
+    <!-- 右上角持续提示，邮箱未绑定的时候输出 -->
+    <div class="yzEmail_tip yzEmail_tip1" id="bandEmailTip">
+        <em></em>
+        <span>为了您的账户安全，请<a class="bbtn" href="javascript:;">验证邮箱</a></span>
+        <i class="close"></i>
+    </div>
+
+    <!-- 右上角持续提示，邮箱发送但未验证的时候输出 -->
+    <div class="yzEmail_tip yzEmail_tip2" id="sendEmailTip">
+        <span style="text-align: center;">您的邮箱还未验证,完成可获20积分哟！</span>
+        <p class="links"><a class="rbtn" href="javascript:;">重发邮箱</a><a class="sbtn" href="javascript:;">修改邮箱</a></p>
+        <i class="close"></i>
+    </div>
+
+    <!-- 记cookie弹窗，邮箱未绑定的时候弹出 -->
+    <div class="yzEmail_box yzEmail_box1 lph-pops" id="sendEmailBox">
+        <div class="head">请验证您的邮箱</div>
+        <div class="box">
+            <span class="tipp"><!-- *邮箱 --></span>
+            <input class="inp" id="sendEmail_input" placeholder="输入您的邮箱">
+            <!-- <strong>验证邮件已发送，请您查收</strong> -->
+            <a class="btn" href="javascript:;" target="_blank" id="sendEmail_btn"><i></i><em>立即验证</em></a>
+            <div class="error"></div>
+        </div>
+        <!-- <div class="boxOk">
+            <strong>验证邮件已发送，请您查收</strong>
+        </div> -->
+        <i class="close"></i>
+    </div>
+
+    <!-- 记cookie弹窗，已发送邮件但未验证 -->
+    <div class="yzEmail_box yzEmail_box2 lph-pops" id="setPwBox">
+        <div class="head">完善账号信息</div>
+        <div class="top">
+            <span>您的账号已经绑定，现在您可以<a href="javascript:;">设置密码</a>以方便用邮箱登录</span>
+        </div>
+        <div class="btm">
+            <input class="inp" type="password" id="" placeholder="输入您的密码" value="">
+            <a class="btn" href="javascript:;" target="_blank" id=""><i></i><em>立即设置</em></a>
+            <a class="clo" href="javascript:;">以后再说</a>
+            <div class="error"></div>
+        </div>
+        <i class="close"></i>
+    </div>
+
+<script>
+    // 四站登录
+   // with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src=BASE_URL+'/resWeb/home/js/login/yp_login.js?cdnversion='+~(-new Date()/36e5)];
+</script>
+<!-- 优路跟踪代码 -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-5HDG4H');</script>
+<script>
+    (function(){
+        var bp = document.createElement('script');
+        var curProtocol = window.location.protocol.split(':')[0];
+        if (curProtocol === 'https'){
+            bp.src = 'https://zz.bdstatic.com/linksubmit/push.js';
+        }
+        else{
+            bp.src = 'https://push.zhanzhang.baidu.com/push.js';
+        }
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(bp, s);
+
+    })();
+</script>
+
+
+
+<script type="text/javascript" id="">(function(){var g="https://www.qipus.cn/cmp",h=5021,e=function(){function e(a,b){b&&(a.addEventListener?a.onload=b:a.onreadystatechange=function(){a.readyState in{loaded:1,complete:1}&&(a.onreadystatechange=null,b())})}function k(a,b,f){var d=c.createElement("script");d.type="text/javascript";d.async=!0;d.src=a;e(d,b);f&&(d.onerror=f);a=d;b=c.getElementsByTagName("script")[0]||c.body||c.head;b.parentNode.insertBefore(a,b)}var c=document;k(g+"/cmp.api?r\x3d"+encodeURIComponent(c.referrer||"")+"\x26s\x3d"+
+h+"\x26u\x3d"+encodeURIComponent(c.location.href));window._ycnt_cb=function(a,b){}};e()})();</script>
+</body></html>
